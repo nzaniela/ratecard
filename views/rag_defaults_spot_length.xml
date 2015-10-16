@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ DANIEL MWAI
+-->
+<openerp>
+    <data>
+        <record id="spot_length_search_form_view" model="ir.ui.view">
+            <field name="name">spot_length.search.form</field>
+            <field name="model">spot.length</field>
+            <field name="arch" type="xml">
+                <search string="Spot Length">
+                    <field name="name"/>
+                </search>
+            </field>
+        </record>
+        <act_window  id="action_open_spot_length"
+                     name="Spot Length Products"
+                     res_model="product.template"
+                     view_type="form"
+                     view_mode="kanban,form,tree"
+                     domain="[('spot_length_id', '=', active_id)]"/>
+        <record id="view_spot_length_form" model="ir.ui.view">
+            <field name="name">spot_length.form</field>
+            <field name="model">spot.length</field>
+            <field name="arch" type="xml">
+                <form string="Spot Length" version="7.0">
+                    <sheet>
+                        <field name="logo" widget="image" class="oe_avatar oe_left"/>
+                        <div class="oe_title">
+                            <div class="oe_edit_only">
+                                <label for="name" string="Spot  Length Name"/>
+                            </div>
+                            <h1>
+                                <field name="name"/>
+                                <field name="seconds"    placeholder="Seconds" />
+
+                            </h1>
+                        </div>
+                        <div class="oe_right oe_button_box">
+                            <button
+                                class="oe_inline oe_stat_button"
+                                type="action"
+                                name="%(action_open_spot_length)d"
+                                icon="fa-cubes">
+                                <field name="products_count" string="Products" widget="statinfo" />
+                            </button>
+                        </div>
+                        <group>
+                        </group>
+                        <group string="Description">
+                            <field name="description" nolabel="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <act_window
+            id="action_open_single_spot_length"
+            name="Spot Length"
+            res_model="outlet.type"
+            view_type="form"
+            view_mode="kanban,form,tree"
+            target="current"
+            domain="[('product_ids', 'in', active_id)]"/>
+        <record id="view_spot_length_form" model="ir.ui.view">
+            <field name="name">spot_length.form</field>
+            <field name="model">spot.length</field>
+            <field name="arch" type="xml">
+                <form string="Spot Length" version="7.0">
+                    <sheet>
+                        <field name="logo" widget="image" class="oe_avatar oe_left"/>
+                        <div class="oe_title">
+                            <div class="oe_edit_only">
+                                <label for="name" string="Spot Length Name"/>
+                            </div>
+                            <h1>
+                                <field name="name"/>
+                            </h1>
+                        </div>
+                        <div class="oe_right oe_button_box">
+                            <button
+                                class="oe_inline oe_stat_button"
+                                type="action"
+                                name="%(action_open_spot_length)d"
+                                icon="fa-cubes">
+                                <field name="products_count" string="Products" widget="statinfo" />
+                            </button>
+                        </div>
+                        <group>
+                        </group>
+                        <h3>
+                            <group colspan="4" col="4">
+                                <field name="seconds"    placeholder="Seconds" />
+                            </group>
+                        
+                        </h3>
+                        <group string="Description">
+                            <field name="description" nolabel="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="view_spot_length_tree" model="ir.ui.view">
+            <field name="name">spot_length.tree</field>
+            <field name="model">spot.length</field>
+            <field name="arch" type="xml">
+                <tree string="spot_length">
+                    <field name="name"/>
+                    <field name="description"/>
+                    <field name="seconds"/>
+                </tree>
+            </field>
+        </record>
+        <record id="view_spot_length_kanban" model="ir.ui.view">
+            <field name="name">spot_length.kanban</field>
+            <field name="model">spot.length</field>
+            <field name="arch" type="xml">
+                <kanban>
+                    <field name="logo"/>
+                    <field name="products_count"/>
+                    <field name="description"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_vignette oe_semantic_html_override">
+                                <a type="open">
+                                    <img t-att-src="kanban_image('product.product', 'logo', record.id.value)"
+                                         class="oe_kanban_image"/>
+                                </a>
+                                <div class="oe_kanban_details">
+                                    <h4>
+                                        <a type="open">
+                                            <field name="name"/>
+                                            <field name="seconds"/>
+                                        </a>
+                                    </h4>
+                                    <div>
+                                        <a name="%(action_open_spot_length)d"
+                                           type="action">
+                                            <t t-esc="record.products_count.value"/> Products
+                                        
+                                        </a>
+                                    </div>
+                                    <span>
+                                        <t t-esc="record.description.value.substr(0,200)"/>
+                                        <t t-if="record.description.value.length > 200">
+                                            <a type="open">
+                                                <b>...</b>
+                                            </a>
+                                        </t>
+                                    </span>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+        <record id="product_search_form_view" model="ir.ui.view">
+            <field name="name">product.search.form</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_search_form_view"/>
+            <field name="arch" type="xml">
+                <field name="categ_id" position="after">
+                    <field name="spot_length_id"/>
+                </field>
+                <group string='Group by...' position="inside">
+                    <filter string="Spot Length" name="groupby_spot_length" domain="[]"
+                            context="{'group_by' : 'spot_length_id'}"/>
+                </group>
+            </field>
+        </record>
+        <record id="view_product_template_search_outlet" model="ir.ui.view">
+            <field name="name">product.template.search.spot_length</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_search_view"/>
+            <field name="arch" type="xml">
+                <field name="name" position="after">
+                    <field name="spot_length_id"/>
+                </field>
+                <group string='Group by...' position="inside">
+                    <filter string="Spot Length" name="groupby_spot_length" domain="[]"
+                            context="{'group_by' : 'spot_length_id'}"/>
+                </group>
+            </field>
+        </record>
+        <record id="product_template_form_spot_length_add" model="ir.ui.view">
+            <field name="name">product.template.product.form</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_form_view" />
+            <field name="arch" type="xml">
+                <xpath expr="//page[@string='DIGITAL DEFAULTS']" position="inside">
+                    <group>
+                        <field name="spot_length_id" placeholder="Spot Length"/>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+        <record id="view_product_template_kanban_spot_length" model="ir.ui.view">
+            <field name="name">product kanban view: add spot_length</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_kanban_view" />
+            <field name="arch" type="xml">
+                <xpath expr="//h4" position="after">
+                    <div>
+                        <a t-if="record.spot_length_id" type="action"
+                           name="%(action_open_single_spot_length)d">
+                            <field name="spot_length_id"/>
+                        </a>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+        <record id="view_product_variant_kanban_spot_length" model="ir.ui.view">
+            <field name="name">product variant kanban view: add spot_length</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_kanban_view" />
+            <field name="arch" type="xml">
+                <xpath expr="//h4" position="after">
+                    <div>
+                        <a t-if="record.spot_length_id" type="open">
+                            <field name="spot_length_id"/>
+                        </a>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+       
+        <record id="view_product_template_tree_spot_length" model="ir.ui.view">
+            <field name="name">product tree view: add spot_length</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_tree_view" />
+            <field name="arch" type="xml">
+                <field name="name" position="after">
+                    <field name="spot_length_id"/>
+                </field>
+            </field>
+        </record>
+        <record id="view_product_variant_tree_spot_length" model="ir.ui.view">
+            <field name="name">product variant tree view: add spot_length</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_product_tree_view" />
+            <field name="arch" type="xml">
+                <field name="name" position="after">
+                    <field name="spot_length_id"/>
+                </field>
+            </field>
+        </record>
+      
+        <record model="ir.actions.act_window" id="action_spot_length">
+            <field name="name">Spot Lengths</field>
+            <field name="res_model">spot.length</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form,kanban</field>
+        </record>
+        
+        <menuitem id="timeorder_spot_menu" name="SPOTS LENGTH DEFAULTS" sequence="6" parent ="timeorder_management_menu"/>
+        
+        <menuitem  name="SPOT  LENGTH" id="menu_spot_length"  action="action_spot_length"  sequence="15"   
+                   parent="timeorder_spot_menu"/>
+    </data>
+</openerp>

@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ DANIEL MWAI
+-->
+<openerp>
+    <data>
+        <record id="quote_stage_search_form_view" model="ir.ui.view">
+            <field name="name">quote_stage.search.form</field>
+            <field name="model">quote.stage</field>
+            <field name="arch" type="xml">
+                <search string="QUOTE  STAGE">
+                    <field name="name"/>
+                    <field name="outlet_id"/>
+                </search>
+            </field>
+        </record>
+        <act_window  id="action_open_quote_stage"
+                     name="QUOTE  STAGE Products"
+                     res_model="product.template"
+                     view_type="form"
+                     view_mode="kanban,form,tree"
+                     domain="[('quote_stage_id', '=', active_id)]"/>
+        <record id="view_quote_stage_form" model="ir.ui.view">
+            <field name="name">quote_stage.form</field>
+            <field name="model">quote.stage</field>
+            <field name="arch" type="xml">
+                <form string="QUOTE  STAGE" version="7.0">
+                    <sheet>
+                        <field name="logo" widget="image" class="oe_avatar oe_left"/>
+                        <div class="oe_title">
+                            <div class="oe_edit_only">
+                                <label for="name" string="QUOTE  STAGE  Type Name"/>
+                            </div>
+                            <h1>
+                                <field name="name"/>
+                                <field name="code"    placeholder="RateClass  Code" />
+                                <field name="quote_stage"/>
+                            </h1>
+                        </div>
+                        <div class="oe_right oe_button_box">
+                            <button
+                                class="oe_inline oe_stat_button"
+                                type="action"
+                                name="%(action_open_quote_stage)d"
+                                icon="fa-cubes">
+                                <field name="products_count" string="Products" widget="statinfo" />
+                            </button>
+                        </div>
+                        <group>
+                            <field name="outlet_id"/>
+                        </group>
+                        <group string="Description">
+                            <field name="description" nolabel="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <act_window
+            id="action_open_single_quote_stage"
+            name="QUOTE  STAGE"
+            res_model="outlet.type"
+            view_type="form"
+            view_mode="kanban,form,tree"
+            target="current"
+            domain="[('product_ids', 'in', active_id)]"/>
+        <record id="view_quote_stage_form" model="ir.ui.view">
+            <field name="name">quote_stage.form</field>
+            <field name="model">quote.stage</field>
+            <field name="arch" type="xml">
+                <form string="QUOTE  STAGE" version="7.0">
+                    <sheet>
+                        <field name="logo" widget="image" class="oe_avatar oe_left"/>
+                        <div class="oe_title">
+                            <div class="oe_edit_only">
+                                <label for="name" string="QUOTE  STAGE Name"/>
+                            </div>
+                            <h1>
+                                <field name="name"/>
+                            </h1>
+                        </div>
+                        <div class="oe_right oe_button_box">
+                            <button
+                                class="oe_inline oe_stat_button"
+                                type="action"
+                                name="%(action_open_quote_stage)d"
+                                icon="fa-cubes">
+                                <field name="products_count" string="Products" widget="statinfo" />
+                            </button>
+                        </div>
+                        <group>
+                            <field name="outlet_id"/>
+                        </group>
+                        <h3>
+                            <group colspan="4" col="4">
+                                <field name="code"    placeholder="RateClass  Code" />
+                                <field name="quote_stage"/>
+                            </group>
+                        </h3>
+                        <group string="Description">
+                            <field name="description" nolabel="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="view_quote_stage_tree" model="ir.ui.view">
+            <field name="name">quote_stage.tree</field>
+            <field name="model">quote.stage</field>
+            <field name="arch" type="xml">
+                <tree string="quote_stage">
+                    <field name="name"/>
+                    <field name="description"/>
+                    <field name="code"    placeholder="RateClass  Code" />
+                    <field name="quote_stage"/>
+                    <field name="outlet_id"/>
+                </tree>
+            </field>
+        </record>
+        <record id="view_quote_stage_kanban" model="ir.ui.view">
+            <field name="name">quote_stage.kanban</field>
+            <field name="model">quote.stage</field>
+            <field name="arch" type="xml">
+                <kanban>
+                    <field name="logo"/>
+                    <field name="products_count"/>
+                    <field name="description"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_vignette oe_semantic_html_override">
+                                <a type="open">
+                                    <img t-att-src="kanban_image('product.product', 'logo', record.id.value)"
+                                         class="oe_kanban_image"/>
+                                </a>
+                                <div class="oe_kanban_details">
+                                    <h4>
+                                        <a type="open">
+                                            <field name="name"/>
+                                            <field name="code"    placeholder="RateClass  Code" />
+                                            <field name="quote_stage"/>
+                                        </a>
+                                    </h4>
+                                    <div>
+                                        <a name="%(action_open_quote_stage)d"
+                                           type="action">
+                                            <t t-esc="record.products_count.value"/> Products
+                                        
+                                        </a>
+                                    </div>
+                                    <span>
+                                        <t t-esc="record.description.value.substr(0,200)"/>
+                                        <t t-if="record.description.value.code > 200">
+                                            <a type="open">
+                                                <b>...</b>
+                                            </a>
+                                        </t>
+                                    </span>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+        <record id="product_search_form_view" model="ir.ui.view">
+            <field name="name">product.search.form</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_search_form_view"/>
+            <field name="arch" type="xml">
+                <field name="categ_id" position="after">
+                    <field name="quote_stage_id"/>
+                </field>
+                <group string='Group by...' position="inside">
+                    <filter string="QUOTE  STAGE" name="groupby_quote_stage" domain="[]"
+                            context="{'group_by' : 'quote_stage_id'}"/>
+                </group>
+            </field>
+        </record>
+        <record id="view_product_template_search_outlet" model="ir.ui.view">
+            <field name="name">product.template.search.quote_stage</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_search_view"/>
+            <field name="arch" type="xml">
+                <field name="name" position="after">
+                    <field name="quote_stage_id"/>
+                </field>
+                <group string='Group by...' position="inside">
+                    <filter string="QUOTE  STAGE" name="groupby_quote_stage" domain="[]"
+                            context="{'group_by' : 'quote_stage_id'}"/>
+                </group>
+            </field>
+        </record>
+        <record id="product_template_form_quote_stage_add" model="ir.ui.view">
+            <field name="name">product.template.product.form</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_form_view" />
+            <field name="arch" type="xml">
+                <xpath expr="//page[@string='Information']" position="after">
+                    <page name="QUOTESTAGE" string="QUOTE STAGE">
+                        <group>
+                    <field name="quote_stage_id" placeholder="QUOTE STAGE"/>
+                  </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+        <record id="view_product_template_kanban_quote_stage" model="ir.ui.view">
+            <field name="name">product kanban view: add quote_stage</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_kanban_view" />
+            <field name="arch" type="xml">
+                <xpath expr="//h4" position="after">
+                    <div>
+                        <a t-if="record.quote_stage_id" type="action"
+                           name="%(action_open_single_quote_stage)d">
+                            <field name="quote_stage_id"/>
+                        </a>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+        <record id="view_product_variant_kanban_quote_stage" model="ir.ui.view">
+            <field name="name">product variant kanban view: add quote_stage</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_kanban_view" />
+            <field name="arch" type="xml">
+                <xpath expr="//h4" position="after">
+                    <div>
+                        <a t-if="record.quote_stage_id" type="open">
+                            <field name="quote_stage_id"/>
+                        </a>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+       
+        <record id="view_product_template_tree_quote_stage" model="ir.ui.view">
+            <field name="name">product tree view: add quote_stage</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_tree_view" />
+            <field name="arch" type="xml">
+                <field name="name" position="after">
+                    <field name="quote_stage_id"/>
+                </field>
+            </field>
+        </record>
+        <record id="view_product_variant_tree_quote_stage" model="ir.ui.view">
+            <field name="name">product variant tree view: add quote_stage</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_product_tree_view" />
+            <field name="arch" type="xml">
+                <field name="name" position="after">
+                    <field name="quote_stage_id"/>
+                </field>
+            </field>
+        </record>
+      
+        <record model="ir.actions.act_window" id="action_quote_stage">
+            <field name="name">QUOTE  STAGE Types</field>
+            <field name="res_model">quote.stage</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form,kanban</field>
+        </record>
+        <menuitem id="timeorder_quote_stages_menu" name="QUOTE  STAGE DEFAULTS" sequence="14" parent ="timeorder_management_menu"/>
+
+        <menuitem  name="QUOTE  STAGE" id="menu_quote_stage"  action="action_quote_stage"  parent="timeorder_quote_stages_menu"/>
+    </data>
+</openerp>

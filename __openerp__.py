@@ -1,0 +1,48 @@
+# -*- encoding: utf-8 -*-
+###############################################################################
+# #                                                                           #                                                             #
+###############################################################################
+{
+    'name': 'Radio  Africa  Defaults Manager',
+    'version': '0.1',
+    'category': 'Product',
+    'summary': 'Add radio africa defaults to products',
+       'author': 'DANIEL  MWAI',
+       'license': 'AGPL-3',
+    'depends': ['product'],
+    'data': [
+        #Entry
+        'views/rag_defaults_outlet.xml',
+        'views/rag_defaults_outlet_type.xml',
+        #
+       # 'views/rag_defaults_company.xml',
+        #
+        'views/rag_defaults_timeband.xml',
+        'views/rag_defaults_pages.xml',
+        
+          'views/rag_defaults_spot_length.xml',
+          
+        'views/rag_defaults_ad_size.xml',
+        'views/rag_defaults_ad_type.xml',
+        
+        'views/rag_defaults_digital_location.xml',  
+        'views/rag_defaults_digital_size.xml',  
+        'views/rag_defaults_digital_type.xml',  
+        
+        'views/rag_defaults_vat_rate.xml',
+        'views/rag_defaults_payment_terms.xml',  
+        
+        'views/rag_defaults_rateclass_code.xml',
+        'views/rag_defaults_ratecard_mul.xml',        
+        'views/rag_defaults_ratecard_sin.xml',
+        'views/rag_defaults_quote_stage.xml',
+        
+        
+        
+        
+        
+        
+        'security/ir.model.access.csv',
+    ],
+    'installable': True,
+}

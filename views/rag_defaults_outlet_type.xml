@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ DANIEL MWAI
+-->
+<openerp>
+    <data>
+        <record id="outlet_type_search_form_view" model="ir.ui.view">
+            <field name="name">outlet_type.search.form</field>
+            <field name="model">outlet.type</field>
+            <field name="arch" type="xml">
+                <search string="Outlet Type">
+                    <field name="name"/>
+                    <field name="outlet_id"/>
+                </search>
+            </field>
+        </record>
+        <act_window  id="action_open_outlet_type"
+                     name="View Products  On  Outlet"
+                     res_model="product.template"
+                     view_type="form"
+                     view_mode="kanban,form,tree"
+                     domain="[('outlet_type_id', '=', active_id)]"/>
+                     
+        <record id="view_outlet_type_form" model="ir.ui.view">
+            <field name="name">outlet_type.form</field>
+            <field name="model">outlet.type</field>
+            <field name="arch" type="xml">
+                <form string="Outlet Type" version="7.0">
+                    <sheet>
+                        <field name="logo" widget="image" class="oe_avatar oe_left"/>
+                        <div class="oe_title">
+                            <div class="oe_edit_only">
+                                <!--<label for="name" string="Ad Size Name"/>-->
+                            </div>
+                            <h1>
+                                <field name="name"/>
+
+                            </h1>
+                        </div>
+                        <div class="oe_right oe_button_box">
+                            <button
+                                class="oe_inline oe_stat_button"
+                                type="action"
+                                name="%(action_open_outlet_type)d"
+                                icon="fa-cubes">
+                                <field name="products_count" string="Products" widget="statinfo" />
+                            </button>
+                        </div>
+                        <group>
+                            <field name="outlet_id"/>
+                        </group>
+                        <group string="Description">
+                            <field name="description" nolabel="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <act_window
+            id="action_open_single_outlet_type"
+            name="Outlet Type"
+            res_model="outlet.type"
+            view_type="form"
+            view_mode="kanban,form,tree"
+            target="current"
+            domain="[('product_ids', 'in', active_id)]"/>
+        <record id="view_outlet_type_form" model="ir.ui.view">
+            <field name="name">outlet_type.form</field>
+            <field name="model">outlet.type</field>
+            <field name="arch" type="xml">
+                <form string="Outlet Type" version="7.0">
+                    <sheet>
+                        <field name="logo" widget="image" class="oe_avatar oe_left"/>
+                        <!--<div class="oe_title">-->
+                            <!--<div class="oe_edit_only">-->
+                                <!--<label for="name" string="Outlet Type Name"/>-->
+                            <!--</div>-->
+                            <!--<h1>-->
+                                <!--<field name="name"/>-->
+                            <!--</h1>-->
+                        <!--</div>-->
+                        <group>
+                             <field name="name"/>
+                        </group>
+                        <!--<div class="oe_right oe_button_box">-->
+                            <!--<button-->
+                                <!--class="oe_inline oe_stat_button"-->
+                                <!--type="action"-->
+                                <!--name="%(action_open_outlet_type)d"-->
+                                <!--icon="fa-cubes">-->
+                                <!--<field name="products_count" string="Products" widget="statinfo" />-->
+                            <!--</button>-->
+                        <!--</div>-->
+                        <group>
+                            <field name="outlet_id"/>
+                        </group>
+                        <h3>
+                            <group colspan="4" col="4">
+                            </group>
+                        </h3>
+                        <group string="Description">
+                            <field name="description" nolabel="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="view_outlet_type_tree" model="ir.ui.view">
+            <field name="name">outlet_type.tree</field>
+            <field name="model">outlet.type</field>
+            <field name="arch" type="xml">
+                <tree string="outlet_type">
+                    <field name="name"/>
+                    <field name="description"/>
+                    <field name="outlet_id"/>
+                </tree>
+            </field>
+        </record>
+        <record id="view_outlet_type_kanban" model="ir.ui.view">
+            <field name="name">outlet_type.kanban</field>
+            <field name="model">outlet.type</field>
+            <field name="arch" type="xml">
+                <kanban>
+                    <field name="logo"/>
+                    <field name="products_count"/>
+                    <field name="description"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_vignette oe_semantic_html_override">
+                                <a type="open">
+                                    <img t-att-src="kanban_image('product.product', 'logo', record.id.value)"
+                                         class="oe_kanban_image"/>
+                                </a>
+                                <div class="oe_kanban_details">
+                                    <h4>
+                                        <a type="open">
+                                            <field name="name"/>
+                                        </a>
+                                    </h4>
+                                    <div>
+                                        <a name="%(action_open_outlet_type)d"
+                                           type="action">
+                                            <t t-esc="record.products_count.value"/> Products
+                                        
+                                        </a>
+                                    </div>
+                                    <span>
+                                        <t t-esc="record.description.value.substr(0,200)"/>
+                                        <t t-if="record.description.value.length > 200">
+                                            <a type="open">
+                                                <b>...</b>
+                                            </a>
+                                        </t>
+                                    </span>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+        <record id="product_search_form_view" model="ir.ui.view">
+            <field name="name">product.search.form</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_search_form_view"/>
+            <field name="arch" type="xml">
+                <field name="categ_id" position="after">
+                    <field name="outlet_type_id"/>
+                </field>
+                <group string='Group by...' position="inside">
+                    <filter string="Outlet Type" name="groupby_outlet_type" domain="[]"
+                            context="{'group_by' : 'outlet_type_id'}"/>
+                </group>
+            </field>
+        </record>
+        <record id="view_product_template_search_outlet" model="ir.ui.view">
+            <field name="name">product.template.search.outlet_type</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_search_view"/>
+            <field name="arch" type="xml">
+                <field name="name" position="after">
+                    <field name="outlet_type_id"/>
+                </field>
+                <group string='Group by...' position="inside">
+                    <filter string="Outlet Type" name="groupby_outlet_type" domain="[]"
+                            context="{'group_by' : 'outlet_type_id'}"/>
+                </group>
+            </field>
+        </record>
+        <record id="product_template_form_outlet_type_add" model="ir.ui.view">
+            <field name="name">product.template.product.form</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_form_view" />
+            <field name="arch" type="xml">
+                <field name="name" position="after"  >
+                    <field name="outlet_type_id" placeholder="Outlet Type"/>
+                </field>
+            </field>
+        </record>
+        <record id="view_product_template_kanban_outlet_type" model="ir.ui.view">
+            <field name="name">product kanban view: add outlet_type</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_kanban_view" />
+            <field name="arch" type="xml">
+                <xpath expr="//h4" position="after">
+                    <div>
+                        <a t-if="record.outlet_type_id" type="action"
+                           name="%(action_open_single_outlet_type)d">
+                            <field name="outlet_type_id"/>
+                        </a>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+        <record id="view_product_variant_kanban_outlet_type" model="ir.ui.view">
+            <field name="name">product variant kanban view: add outlet_type</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_kanban_view" />
+            <field name="arch" type="xml">
+                <xpath expr="//h4" position="after">
+                    <div>
+                        <a t-if="record.outlet_type_id" type="open">
+                            <field name="outlet_type_id"/>
+                        </a>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+       
+        <record id="view_product_template_tree_outlet_type" model="ir.ui.view">
+            <field name="name">product tree view: add outlet_type</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_tree_view" />
+            <field name="arch" type="xml">
+                <field name="name" position="after">
+                    <field name="outlet_type_id"/>
+                </field>
+            </field>
+        </record>
+        <record id="view_product_variant_tree_outlet_type" model="ir.ui.view">
+            <field name="name">product variant tree view: add outlet_type</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_product_tree_view" />
+            <field name="arch" type="xml">
+                <field name="name" position="after">
+                    <field name="outlet_type_id"/>
+                </field>
+            </field>
+        </record>
+      
+        <record model="ir.actions.act_window" id="action_outlet_type">
+            <field name="name">Outlet Types</field>
+            <field name="res_model">outlet.type</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <!-- kanban,form,-->
+        </record>
+
+
+        <menuitem id="timeorder_outlet_type_menu"  name="OUTLET  TYPE DEFAULTS" sequence="2" parent ="timeorder_management_menu"/>
+        
+        <menuitem  name="OUTLET TYPES " id="menu_outlet_type"  action="action_outlet_type"  parent="timeorder_outlet_type_menu"/>
+    </data>
+</openerp>
