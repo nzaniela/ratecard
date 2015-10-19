@@ -8,14 +8,17 @@
             <field name="name">ad_type.search.form</field>
             <field name="model">ad.type</field>
             <field name="arch" type="xml">
-                <search string="AD  Type">
-                    <field name="name"/>
+                <search string="ADTYPE">
+                     <field name="name"/>
                     <field name="outlet_id"/>
+                    <field name="outlet_type_id"/>
+                    <field name="rate_card_type"/>
+                    <field name="description"/>
                 </search>
             </field>
         </record>
         <act_window  id="action_open_ad_type"
-                     name="AD  Type Products"
+                     name="AD TYPE"
                      res_model="product.template"
                      view_type="form"
                      view_mode="kanban,form,tree"
@@ -24,16 +27,19 @@
             <field name="name">ad_type.form</field>
             <field name="model">ad.type</field>
             <field name="arch" type="xml">
-                <form string="AD  Type" version="7.0">
+                <form string="AD TYPE" version="7.0">
                     <sheet>
                         <field name="logo" widget="image" class="oe_avatar oe_left"/>
                         <div class="oe_title">
                             <div class="oe_edit_only">
-                                <label for="name" string="Digital  Type Name"/>
+                                <label for="name" string="AD TYPE"/>
                             </div>
                             <h1>
-                                <field name="name"/>
-                                <field name="digital_ad_type"/>
+                                 <!--<field name="name"/>-->
+                                <field name="description"/>
+                                <field name="outlet_id"/>
+                                <field name="outlet_type_id"/>
+                                <field name="rate_card_type"/>
                              </h1>
                         </div>
                         <div class="oe_right oe_button_box">
@@ -45,9 +51,9 @@
                                 <field name="products_count" string="Products" widget="statinfo" />
                             </button>
                         </div>
-                        <group>
-                            <field name="outlet_id"/>
-                        </group>
+                        <!--<group>-->
+                            <!--<field name="outlet_id"/>-->
+                        <!--</group>-->
                         <group string="Description">
                             <field name="description" nolabel="1"/>
                         </group>
@@ -57,7 +63,7 @@
         </record>
         <act_window
             id="action_open_single_ad_type"
-            name="AD  Type"
+            name="AD TYPE"
             res_model="outlet.type"
             view_type="form"
             view_mode="kanban,form,tree"
@@ -67,12 +73,12 @@
             <field name="name">ad_type.form</field>
             <field name="model">ad.type</field>
             <field name="arch" type="xml">
-                <form string="AD  Type" version="7.0">
+                <form string="AD TYPE" version="7.0">
                     <sheet>
                         <field name="logo" widget="image" class="oe_avatar oe_left"/>
                         <div class="oe_title">
                             <div class="oe_edit_only">
-                                <label for="name" string="AD  Type Name"/>
+                                <label for="name" string="AD TYPE"/>
                             </div>
                             <h1>
                                 <field name="name"/>
@@ -87,13 +93,15 @@
                                 <field name="products_count" string="Products" widget="statinfo" />
                             </button>
                         </div>
-                        <group>
-                            <field name="outlet_id"/>
-                        </group>
+                        <!--<group>-->
+                            <!--<field name="outlet_id"/>-->
+                        <!--</group>-->
                         <h3>
                             <group colspan="4" col="4">
-                                <field name="digital_ad_type"    placeholder="Type" />
-                                            <!--<field name="rate_card_type"/>-->
+                               <!--<field name="name"/>-->
+                            <field name="outlet_id"/>
+                            <field name="outlet_type_id"/>
+                            <field name="rate_card_type"/>
                             </group>
                         </h3>
                         <group string="Description">
@@ -109,10 +117,11 @@
             <field name="arch" type="xml">
                 <tree string="ad_type">
                     <field name="name"/>
-                    <field name="description"/>
-                    <field name="digital_ad_type"/>
-                                            <!--<field name="rate_card_type"/>-->
                     <field name="outlet_id"/>
+                    <field name="outlet_type_id"/>
+                    <field name="rate_card_type"/>
+                  <field name="description"/>
+
                 </tree>
             </field>
         </record>
@@ -134,9 +143,11 @@
                                 <div class="oe_kanban_details">
                                     <h4>
                                         <a type="open">
-                                            <field name="name"/>
-                                            <field name="digital_ad_type"/>
-                                            <!--<field name="rate_card_type"/>-->
+                                             <field name="name"/>
+                                            <field name="description"/>
+                                            <field name="outlet_id"/>
+                                            <field name="outlet_type_id"/>
+                                            <field name="rate_card_type"/>
                                         </a>
                                     </h4>
                                     <div>
@@ -170,7 +181,7 @@
                     <field name="ad_type_id"/>
                 </field>
                 <group string='Group by...' position="inside">
-                    <filter string="AD  Type" name="groupby_ad_type" domain="[]"
+                    <filter string="AD TYPE" name="groupby_ad_type" domain="[]"
                             context="{'group_by' : 'ad_type_id'}"/>
                 </group>
             </field>
@@ -189,18 +200,18 @@
                 </group>
             </field>
         </record>
-        <record id="product_template_form_ad_type_add" model="ir.ui.view">
-            <field name="name">product.template.product.form</field>
-            <field name="model">product.template</field>
-            <field name="inherit_id" ref="product.product_template_form_view" />
-            <field name="arch" type="xml">
-             <xpath expr="//page[@string='AD DEFAULTS']" position="inside">
-                 <group>
-                    <field name="ad_type_id" placeholder="AD  Type"/>
-                  </group>
-                </xpath>
-            </field>
-        </record>
+        <!--<record id="product_template_form_ad_type_add" model="ir.ui.view">-->
+            <!--<field name="name">product.template.product.form</field>-->
+            <!--<field name="model">product.template</field>-->
+            <!--<field name="inherit_id" ref="product.product_template_form_view" />-->
+            <!--<field name="arch" type="xml">-->
+             <!--<xpath expr="//page[@string='AD DEFAULTS']" position="inside">-->
+                 <!--<group>-->
+                    <!--<field name="ad_type_id" placeholder="AD  Type"/>-->
+                  <!--</group>-->
+                <!--</xpath>-->
+            <!--</field>-->
+        <!--</record>-->
         <record id="view_product_template_kanban_ad_type" model="ir.ui.view">
             <field name="name">product kanban view: add ad_type</field>
             <field name="model">product.template</field>
@@ -253,7 +264,7 @@
         </record>
       
         <record model="ir.actions.act_window" id="action_ad_type">
-            <field name="name">AD  Type </field>
+            <field name="name">AD TYPE</field>
             <field name="res_model">ad.type</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form,kanban</field>

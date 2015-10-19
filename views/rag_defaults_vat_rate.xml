@@ -190,20 +190,20 @@
                 </group>
             </field>
         </record>
-        <record id="product_template_form_vat_rate_add" model="ir.ui.view">
-            <field name="name">product.template.product.form</field>
-            <field name="model">product.template</field>
-            <field name="inherit_id" ref="product.product_template_form_view" />
-            <field name="arch" type="xml">
-                <xpath expr="//page[@string='Sales']" position="after">
-                    <page name="VATRATE" string="VAT  RATE">
-                        <group>
-                    <field name="vat_rate_id" placeholder="VAT RATE"/>
-                  </group>
-                    </page>
-                </xpath>
-            </field>
-        </record>
+        <!--<record id="product_template_form_vat_rate_add" model="ir.ui.view">-->
+            <!--<field name="name">product.template.product.form</field>-->
+            <!--<field name="model">product.template</field>-->
+            <!--<field name="inherit_id" ref="product.product_template_form_view" />-->
+            <!--<field name="arch" type="xml">-->
+                <!--<xpath expr="//page[@string='Sales']" position="after">-->
+                    <!--<page name="VATRATE" string="VAT  RATE">-->
+                        <!--<group>-->
+                    <!--<field name="vat_rate_id" placeholder="VAT RATE"/>-->
+                  <!--</group>-->
+                    <!--</page>-->
+                <!--</xpath>-->
+            <!--</field>-->
+        <!--</record>-->
         <record id="view_product_template_kanban_vat_rate" model="ir.ui.view">
             <field name="name">product kanban view: add vat_rate</field>
             <field name="model">product.template</field>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+                <!--  noofspots -->
+        <record id="view_noof_spots_form" model="ir.ui.view">
+            <field name="name">noof.spots.form</field>
+            <field name="model">noof.spots</field>
+            <field name="arch" type="xml">
+                <form string="ALLOCATE SPOTS ON DAYS">
+                        <group col="4">
+                                   <group col="2" colspan="2">
+                                            <field name='sunday'/>
+                                            <field name='monday'/>
+                                            <field name='tuesday'/>
+                                            <field name='wednesday'/>
+                                            <field name='thursday'/>
+                                            <field name='friday'/>
+                                            <field name='saturday'/>
+                                             <field name="spot_total"/> 
+                                             <field name="weeks"/>
+                                             </group>
+                        </group>
+                               <!--<field name="description" nolabel="1"/>-->
+                </form>
+            </field>
+        </record>
+        
+        <record id="view_noof_spots_tree" model="ir.ui.view">
+            <field name="name">noof.spots.tree</field>
+            <field name="model">noof.spots</field>
+            <field name="arch" type="xml">
+                <tree string="ALLOCATE SPOTS ON DAYS">
+                        <field name='sunday'/>
+                        <field name='monday'/>
+                        <field name='tuesday'/>
+                        <field name='wednesday'/>
+                        <field name='thursday'/>
+                        <field name='friday'/>
+                        <field name='saturday'/>
+                        <field name="spot_total" />
+                        <field name="weeks"/>
+
+                </tree>
+            </field>
+        </record>
+        
+        <record id="action_noof_spots" model="ir.actions.act_window">
+            <field name="name">NO OF  SPOTS</field>
+            <field name="res_model">noof.spots</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        
+          <menuitem id="timeorder_noofspots_menu" name="NO OF SPOT DEFAULTS" sequence="20" parent ="timeorder_management_menu"/>
+        <menuitem  name="NO OF SPOTS TYPES" id="menu_noofspots"  action="action_noof_spots"  parent="timeorder_noofspots_menu"/>
+         </data>
+</openerp>

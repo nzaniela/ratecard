@@ -186,20 +186,20 @@
                 </group>
             </field>
         </record>
-        <record id="product_template_form_pages_add" model="ir.ui.view">
-            <field name="name">product.template.product.form</field>
-            <field name="model">product.template</field>
-            <field name="inherit_id" ref="product.product_template_form_view" />
-            <field name="arch" type="xml">
-                <xpath expr="//page[@string='DIGITAL DEFAULTS']" position="after">
-                    <page name="PAGES" string="PAGES">
-                        <group>
-                            <field name="pages_id" placeholder="Page"/>
-                      </group>
-                    </page>
-                </xpath>
-            </field>
-        </record>
+        <!--<record id="product_template_form_pages_add" model="ir.ui.view">-->
+            <!--<field name="name">product.template.product.form</field>-->
+            <!--<field name="model">product.template</field>-->
+            <!--<field name="inherit_id" ref="product.product_template_form_view" />-->
+            <!--<field name="arch" type="xml">-->
+                <!--<xpath expr="//page[@string='DIGITAL DEFAULTS']" position="after">-->
+                    <!--<page name="PAGES" string="PAGES">-->
+                        <!--<group>-->
+                            <!--<field name="pages_id" placeholder="Page"/>-->
+                      <!--</group>-->
+                    <!--</page>-->
+                <!--</xpath>-->
+            <!--</field>-->
+        <!--</record>-->
         <record id="view_product_template_kanban_pages" model="ir.ui.view">
             <field name="name">product kanban view: add pages</field>
             <field name="model">product.template</field>
@@ -255,7 +255,7 @@
             <field name="name">Page Types</field>
             <field name="res_model">pages</field>
             <field name="view_type">form</field>
-            <field name="view_mode">kanban,form,tree</field>
+            <field name="view_mode">tree,form,kanban</field>
         </record>
         <menuitem id="timeorder_pages_menu" name="PAGES DEFAULTS" sequence="20" parent ="timeorder_management_menu"/>
 

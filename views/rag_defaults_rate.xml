@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+                <!--   -->
+        <record id="view_rate_form" model="ir.ui.view">
+            <field name="name">rate.form</field>
+            <field name="model">rate</field>
+            <field name="arch" type="xml">
+                <form string="RATES">
+                        <group col="4">
+                                   <group col="2" colspan="2">
+                                                                                          <field name="name"/>
+                                             <field name="timeband_id"/>
+                                            <field name='rate_amount'/>
+                                            <!--<field name='outlet_id'/>-->
+                                          
+                                             </group>
+                        </group>
+                               <!--<field name="description" nolabel="1"/>-->
+                </form>
+            </field>
+        </record>
+        
+        <record id="view_rate_tree" model="ir.ui.view">
+            <field name="name">rate.tree</field>
+            <field name="model">rate</field>
+            <field name="arch" type="xml">
+                <tree string="RATES">
+                                                                                                          <field name="name"/>
+
+                                             <field name="timeband_id"/>
+                                            <field name='rate_amount'/>
+                                            <!--<field name='outlet_id'/>-->
+
+                </tree>
+            </field>
+        </record>
+        
+        <record id="action_rate" model="ir.actions.act_window">
+            <field name="name">RATE</field>
+            <field name="res_model">rate</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        
+          <menuitem id="timeorder_rate_menu" name="RATE DEFAULTS" sequence="20" parent ="timeorder_management_menu"/>
+        <menuitem  name="RATES TYPES" id="menu_rate"  action="action_rate"  parent="timeorder_rate_menu"/>
+         </data>
+</openerp>

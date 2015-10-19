@@ -190,20 +190,20 @@
                 </group>
             </field>
         </record>
-        <record id="product_template_form_quote_stage_add" model="ir.ui.view">
-            <field name="name">product.template.product.form</field>
-            <field name="model">product.template</field>
-            <field name="inherit_id" ref="product.product_template_form_view" />
-            <field name="arch" type="xml">
-                <xpath expr="//page[@string='Information']" position="after">
-                    <page name="QUOTESTAGE" string="QUOTE STAGE">
-                        <group>
-                    <field name="quote_stage_id" placeholder="QUOTE STAGE"/>
-                  </group>
-                    </page>
-                </xpath>
-            </field>
-        </record>
+        <!--<record id="product_template_form_quote_stage_add" model="ir.ui.view">-->
+            <!--<field name="name">product.template.product.form</field>-->
+            <!--<field name="model">product.template</field>-->
+            <!--<field name="inherit_id" ref="product.product_template_form_view" />-->
+            <!--<field name="arch" type="xml">-->
+                <!--<xpath expr="//page[@string='Information']" position="after">-->
+                    <!--<page name="QUOTESTAGE" string="QUOTE STAGE">-->
+                        <!--<group>-->
+                    <!--<field name="quote_stage_id" placeholder="QUOTE STAGE"/>-->
+                  <!--</group>-->
+                    <!--</page>-->
+                <!--</xpath>-->
+            <!--</field>-->
+        <!--</record>-->
         <record id="view_product_template_kanban_quote_stage" model="ir.ui.view">
             <field name="name">product kanban view: add quote_stage</field>
             <field name="model">product.template</field>

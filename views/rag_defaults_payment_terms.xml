@@ -29,7 +29,7 @@
                         <field name="logo" widget="image" class="oe_avatar oe_left"/>
                         <div class="oe_title">
                             <div class="oe_edit_only">
-                                <label for="name" string="PAYMENT  TERMS  Type Name"/>
+                                <label for="name" string="PAYMENT  TERMS"/>
                             </div>
                             <h1>
                                 <field name="name"/>
@@ -75,7 +75,7 @@
                         <field name="logo" widget="image" class="oe_avatar oe_left"/>
                         <div class="oe_title">
                             <div class="oe_edit_only">
-                                <label for="name" string="PAYMENT  TERMS Name"/>
+                                <label for="name" string="PAYMENT  TERMS"/>
                             </div>
                             <h1>
                                 <field name="name"/>
@@ -192,20 +192,20 @@
                 </group>
             </field>
         </record>
-        <record id="product_template_form_payment_terms_add" model="ir.ui.view">
-            <field name="name">product.template.product.form</field>
-            <field name="model">product.template</field>
-            <field name="inherit_id" ref="product.product_template_form_view" />
-            <field name="arch" type="xml">
-                    <xpath expr="//page[@string='Sales']" position="after">
-                    <page name="PAYMENTTERMS" string="PAYMENT  TERMS">
-                        <group>
-                    <field name="payment_terms_id" placeholder="PAYMENT  TERMS"/>
-                  </group>
-                    </page>
-                </xpath>
-            </field>
-        </record>
+        <!--<record id="product_template_form_payment_terms_add" model="ir.ui.view">-->
+            <!--<field name="name">product.template.product.form</field>-->
+            <!--<field name="model">product.template</field>-->
+            <!--<field name="inherit_id" ref="product.product_template_form_view" />-->
+            <!--<field name="arch" type="xml">-->
+                    <!--<xpath expr="//page[@string='Sales']" position="after">-->
+                    <!--<page name="PAYMENTTERMS" string="PAYMENT  TERMS">-->
+                        <!--<group>-->
+                    <!--<field name="payment_terms_id" placeholder="PAYMENT  TERMS"/>-->
+                  <!--</group>-->
+                    <!--</page>-->
+                <!--</xpath>-->
+            <!--</field>-->
+        <!--</record>-->
         <record id="view_product_template_kanban_payment_terms" model="ir.ui.view">
             <field name="name">product kanban view: add payment_terms</field>
             <field name="model">product.template</field>

@@ -9,18 +9,26 @@
     'summary': 'Add radio africa defaults to products',
        'author': 'DANIEL  MWAI',
        'license': 'AGPL-3',
-    'depends': ['product'],
+    'depends': ['product','sale'],
     'data': [
         #Entry
         'views/rag_defaults_outlet.xml',
         'views/rag_defaults_outlet_type.xml',
         #
        # 'views/rag_defaults_company.xml',
+       'views/rag_defaults_singular_quotation.xml',
+       
         #
         'views/rag_defaults_timeband.xml',
         'views/rag_defaults_pages.xml',
+        #
+        'views/rag_defaults_rate.xml',        
         
           'views/rag_defaults_spot_length.xml',
+          'views/rag_defaults_noof_spots.xml',
+          #
+          'views/rag_defaults_schedule_type.xml',
+          
           
         'views/rag_defaults_ad_size.xml',
         'views/rag_defaults_ad_type.xml',
