@@ -881,7 +881,7 @@ class  rate(models.Model):
     rate_amount = fields.Integer(string='RATE AMOUNT')
     
 
-class sale_order(models.Model):
+class quotation_sale_order(models.Model):
     _inherit = 'sale.order'
     product_name  = fields.Char(string='Product  Name')
     is_template  = fields.Boolean(string='Template')
