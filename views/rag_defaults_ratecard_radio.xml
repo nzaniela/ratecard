@@ -4,20 +4,20 @@
 -->
 <openerp>
     <data>
-        <record id="ratecard_sin_search_form_view" model="ir.ui.view">
-            <field name="name">ratecard_sin.search.form</field>
-            <field name="model">ratecard.sin</field>
+        <record id="ratecard_sin_radio_search_form_view" model="ir.ui.view">
+            <field name="name">ratecard_sin_radio.search.form</field>
+            <field name="model">ratecard.sin.radio</field>
             <field name="arch" type="xml">
                 <search string="RateCard Type Singular">
                     <field name="name"/>
                     <field name="outlet_id" placeholder="OUTLET"/>
-                    <field name="outlet_type_id" placeholder="OUTLET TYPE" />
+                    <field name="outlet_type_id" domain="[('outlet_id', '=' ,outlet_id)]" placeholder="OUTLET TYPE" />
                     <field name="ad_type_id" placeholder="AD TYPE" />
                     <field name="schedule_type_id" placeholder="SCHEDULE TYPE"/>
                     <field name="pages_id" placeholder="PAGES" />
-                    <field name="digital_location_id" placeholder="DIGITAL AD  LOCATION" />
-                    <field name="digital_type_id" placeholder="DIGITAL TYPE" />
-                    <field name="digital_size_id" placeholder="DIGITAL AD SIZE" />
+                    <!--<field name="digital_location_id" placeholder="DIGITAL AD  LOCATION" />-->
+                    <!--<field name="digital_type_id" placeholder="DIGITAL TYPE" />-->
+                    <!--<field name="digital_size_id" placeholder="DIGITAL AD SIZE" />-->
                     <field name="timeband_id" placeholder="TIME BAND" />
                     <field name="spot_length_id" placeholder="Spot Length" />
                     <field name="rateclass_code_id" placeholder="RATECLASS CODE" />
@@ -33,15 +33,15 @@
                 </search>
             </field>
         </record>
-        <act_window  id="action_open_ratecard_sin"
+        <act_window  id="action_open_ratecard_sin_radio"
                      name="RateCard Type Singular Products"
                      res_model="product.template"
                      view_type="form"
                      view_mode="kanban,form,tree"
-                     domain="[('ratecard_sin_id', '=', active_id)]"/>
-        <record id="view_ratecard_sin_form" model="ir.ui.view">
-            <field name="name">ratecard_sin.form</field>
-            <field name="model">ratecard.sin</field>
+                     domain="[('ratecard_sin_radio_id', '=', active_id)]"/>
+        <record id="view_ratecard_sin_radio_form" model="ir.ui.view">
+            <field name="name">ratecard_sin_radio.form</field>
+            <field name="model">ratecard.sin.radio</field>
             <field name="arch" type="xml">
                 <form string="RateCard Type Singular" version="7.0">
                     <sheet>
@@ -52,15 +52,15 @@
                             </div>
                             <h1>
                                 <field name="name"/>
-                                <field name="outlet_id" placeholder="OUTLET"/>
-                                <field name="outlet_type_id" placeholder="OUTLET TYPE" />
+                                <field name="outlet_id" on_change="onchange_outlet(outlet_id)" placeholder="OUTLET"/>
+                    <field name="outlet_type_id" domain="[('outlet_id', '=' ,outlet_id)]" placeholder="OUTLET TYPE" />
                                 <field name="ad_type_id" placeholder="AD TYPE" />
                                                     <field name="schedule_type_id" placeholder="SCHEDULE TYPE"/>
 
                                 <field name="pages_id" placeholder="PAGES" />
-                                <field name="digital_location_id" placeholder="DIGITAL AD  LOCATION" />
-                                <field name="digital_type_id" placeholder="DIGITAL TYPE" />
-                                <field name="digital_size_id" placeholder="DIGITAL AD SIZE" />
+                                <!--<field name="digital_location_id" placeholder="DIGITAL AD  LOCATION" />-->
+                                <!--<field name="digital_type_id" placeholder="DIGITAL TYPE" />-->
+                                <!--<field name="digital_size_id" placeholder="DIGITAL AD SIZE" />-->
                                 <field name="timeband_id" placeholder="TIME BAND" />
                                 <field name="spot_length_id" placeholder="Spot Length" />
                                 <field name="rateclass_code_id" placeholder="RATECLASS CODE" />
@@ -75,7 +75,7 @@
                             <button
                                 class="oe_inline oe_stat_button"
                                 type="action"
-                                name="%(action_open_ratecard_sin)d"
+                                name="%(action_open_ratecard_sin_radio)d"
                                 icon="fa-cubes">
                                 <field name="products_count" string="Products" widget="statinfo" />
                             </button>
@@ -91,16 +91,16 @@
             </field>
         </record>
         <act_window
-            id="action_open_single_ratecard_sin"
+            id="action_open_single_ratecard_sin_radio"
             name="RateCard Singular"
             res_model="outlet.type"
             view_type="form"
             view_mode="kanban,form,tree"
             target="current"
             domain="[('product_ids', 'in', active_id)]"/>
-        <record id="view_ratecard_sin_form" model="ir.ui.view">
-            <field name="name">ratecard_sin.form</field>
-            <field name="model">ratecard.sin</field>
+        <record id="view_ratecard_sin_radio_form" model="ir.ui.view">
+            <field name="name">ratecard_sin_radio.form</field>
+            <field name="model">ratecard.sin.radio</field>
             <field name="arch" type="xml">
                 <form string="RateCard Singular" version="7.0">
                     <sheet>
@@ -117,7 +117,7 @@
                             <button
                                 class="oe_inline oe_stat_button"
                                 type="action"
-                                name="%(action_open_ratecard_sin)d"
+                                name="%(action_open_ratecard_sin_radio)d"
                                 icon="fa-cubes">
                                 <field name="products_count" string="Products" widget="statinfo" />
                             </button>
@@ -127,15 +127,15 @@
                         </group>
                         <h3>
                             <group colspan="4" col="4">
-                                <field name="outlet_id" placeholder="OUTLET"/>
+                                <field name="outlet_id" on_change="onchange_outlet(outlet_id)" placeholder="OUTLET"/>
                                 <field name="outlet_type_id" placeholder="OUTLET TYPE" />
                                 <field name="ad_type_id" placeholder="AD TYPE" />
-                                                    <field name="schedule_type_id" placeholder="SCHEDULE TYPE"/>
+                                 <field name="schedule_type_id" placeholder="SCHEDULE TYPE"/>
 
                                 <field name="pages_id" placeholder="PAGES" />
-                                <field name="digital_location_id" placeholder="DIGITAL AD  LOCATION" />
-                                <field name="digital_type_id" placeholder="DIGITAL TYPE" />
-                                <field name="digital_size_id" placeholder="DIGITAL AD SIZE" />
+                                <!--<field name="digital_location_id" placeholder="DIGITAL AD  LOCATION" />-->
+                                <!--<field name="digital_type_id" placeholder="DIGITAL TYPE" />-->
+                                <!--<field name="digital_size_id" placeholder="DIGITAL AD SIZE" />-->
                                 <field name="timeband_id" placeholder="TIME BAND" />
                                 <field name="spot_length_id" placeholder="Spot Length" />
                                 <field name="rateclass_code_id" placeholder="RATECLASS CODE" />
@@ -153,11 +153,11 @@
                 </form>
             </field>
         </record>
-        <record id="view_ratecard_sin_tree" model="ir.ui.view">
-            <field name="name">ratecard_sin.tree</field>
-            <field name="model">ratecard.sin</field>
+        <record id="view_ratecard_sin_radio_tree" model="ir.ui.view">
+            <field name="name">ratecard_sin_radio.tree</field>
+            <field name="model">ratecard.sin.radio</field>
             <field name="arch" type="xml">
-                <tree string="ratecard_sin">
+                <tree string="ratecard_sin_radio">
                     <field name="name"/>
                     <field name="description"/>
                     <field name="outlet_id" placeholder="OUTLET"/>
@@ -166,9 +166,9 @@
                                         <field name="schedule_type_id" placeholder="SCHEDULE TYPE"/>
 
                     <field name="pages_id" placeholder="PAGES" />
-                    <field name="digital_location_id" placeholder="DIGITAL AD  LOCATION" />
-                    <field name="digital_type_id" placeholder="DIGITAL TYPE" />
-                    <field name="digital_size_id" placeholder="DIGITAL AD SIZE" />
+                    <!--<field name="digital_location_id" placeholder="DIGITAL AD  LOCATION" />-->
+                    <!--<field name="digital_type_id" placeholder="DIGITAL TYPE" />-->
+                    <!--<field name="digital_size_id" placeholder="DIGITAL AD SIZE" />-->
                     <field name="timeband_id" placeholder="TIME BAND" />
                     <field name="spot_length_id" placeholder="Spot Length" />
                     <field name="rateclass_code_id" placeholder="RATECLASS CODE" />
@@ -180,9 +180,9 @@
                 </tree>
             </field>
         </record>
-        <record id="view_ratecard_sin_kanban" model="ir.ui.view">
-            <field name="name">ratecard_sin.kanban</field>
-            <field name="model">ratecard.sin</field>
+        <record id="view_ratecard_sin_radio_kanban" model="ir.ui.view">
+            <field name="name">ratecard_sin_radio.kanban</field>
+            <field name="model">ratecard.sin.radio</field>
             <field name="arch" type="xml">
                 <kanban>
                     <field name="logo"/>
@@ -205,9 +205,9 @@
                                                                 <field name="schedule_type_id" placeholder="SCHEDULE TYPE"/>
 
                                             <field name="pages_id" placeholder="PAGES" />
-                                            <field name="digital_location_id" placeholder="DIGITAL AD  LOCATION" />
-                                            <field name="digital_type_id" placeholder="DIGITAL TYPE" />
-                                            <field name="digital_size_id" placeholder="DIGITAL AD SIZE" />
+                                            <!--<field name="digital_location_id" placeholder="DIGITAL AD  LOCATION" />-->
+                                            <!--<field name="digital_type_id" placeholder="DIGITAL TYPE" />-->
+                                            <!--<field name="digital_size_id" placeholder="DIGITAL AD SIZE" />-->
                                             <field name="timeband_id" placeholder="TIME BAND" />
                                             <field name="spot_length_id" placeholder="Spot Length" />
                                             <field name="rateclass_code_id" placeholder="RATECLASS CODE" />
@@ -219,7 +219,7 @@
                                         </a>
                                     </h4>
                                     <div>
-                                        <a name="%(action_open_ratecard_sin)d"
+                                        <a name="%(action_open_ratecard_sin_radio)d"
                                            type="action">
                                             <t t-esc="record.products_count.value"/> Products
                                         
@@ -246,98 +246,99 @@
             <field name="inherit_id" ref="product.product_search_form_view"/>
             <field name="arch" type="xml">
                 <field name="categ_id" position="after">
-                    <field name="ratecard_sin_id"/>
+                    <field name="ratecard_sin_radio_id"/>
                 </field>
                 <group string='Group by...' position="inside">
-                    <filter string="RateCard Type Singular" name="groupby_ratecard_sin" domain="[]"
-                            context="{'group_by' : 'ratecard_sin_id'}"/>
+                    <filter string="RateCard Type Singular" name="groupby_ratecard_sin_radio" domain="[]"
+                            context="{'group_by' : 'ratecard_sin_radio_id'}"/>
                 </group>
             </field>
         </record>
         <record id="view_product_template_search_outlet" model="ir.ui.view">
-            <field name="name">product.template.search.ratecard_sin</field>
+            <field name="name">product.template.search.ratecard_sin_radio</field>
             <field name="model">product.template</field>
             <field name="inherit_id" ref="product.product_template_search_view"/>
             <field name="arch" type="xml">
                 <field name="name" position="after">
-                    <field name="ratecard_sin_id"/>
+                    <field name="ratecard_sin_radio_id"/>
                 </field>
                 <group string='Group by...' position="inside">
-                    <filter string="RateCard Type Singular" name="groupby_ratecard_sin" domain="[]"
-                            context="{'group_by' : 'ratecard_sin_id'}"/>
+                    <filter string="RateCard Type Singular" name="groupby_ratecard_sin_radio" domain="[]"
+                            context="{'group_by' : 'ratecard_sin_radio_id'}"/>
                 </group>
             </field>
         </record>
-        <record id="product_template_form_ratecard_sin_add" model="ir.ui.view">
+        <record id="product_template_form_ratecard_sin_radio_add" model="ir.ui.view">
             <field name="name">product.template.product.form</field>
             <field name="model">product.template</field>
             <field name="inherit_id" ref="product.product_template_form_view" />
             <field name="arch" type="xml">
              <field name="name" position="after">
                    <group>
-                        <field name="ratecard_sin_id" placeholder="RateCard Singular"/>
+                        <field name="ratecard_sin_radio_id" placeholder="RateCard Singular"/>
                   </group>
                 </field>
             </field>
         </record>
-        <record id="view_product_template_kanban_ratecard_sin" model="ir.ui.view">
-            <field name="name">product kanban view: add ratecard_sin</field>
+        <record id="view_product_template_kanban_ratecard_sin_radio" model="ir.ui.view">
+            <field name="name">product kanban view: add ratecard_sin_radio</field>
             <field name="model">product.template</field>
             <field name="inherit_id" ref="product.product_template_kanban_view" />
             <field name="arch" type="xml">
                 <xpath expr="//h4" position="after">
                     <div>
-                        <a t-if="record.ratecard_sin_id" type="action"
-                           name="%(action_open_single_ratecard_sin)d">
-                            <field name="ratecard_sin_id"/>
+                        <a t-if="record.ratecard_sin_radio_id" type="action"
+                           name="%(action_open_single_ratecard_sin_radio)d">
+                            <field name="ratecard_sin_radio_id"/>
                         </a>
                     </div>
                 </xpath>
             </field>
         </record>
-        <record id="view_product_variant_kanban_ratecard_sin" model="ir.ui.view">
-            <field name="name">product variant kanban view: add ratecard_sin</field>
+        <record id="view_product_variant_kanban_ratecard_sin_radio" model="ir.ui.view">
+            <field name="name">product variant kanban view: add ratecard_sin_radio</field>
             <field name="model">product.product</field>
             <field name="inherit_id" ref="product.product_kanban_view" />
             <field name="arch" type="xml">
                 <xpath expr="//h4" position="after">
                     <div>
-                        <a t-if="record.ratecard_sin_id" type="open">
-                            <field name="ratecard_sin_id"/>
+                        <a t-if="record.ratecard_sin_radio_id" type="open">
+                            <field name="ratecard_sin_radio_id"/>
                         </a>
                     </div>
                 </xpath>
             </field>
         </record>
        
-        <record id="view_product_template_tree_ratecard_sin" model="ir.ui.view">
-            <field name="name">product tree view: add ratecard_sin</field>
+        <record id="view_product_template_tree_ratecard_sin_radio" model="ir.ui.view">
+            <field name="name">product tree view: add ratecard_sin_radio</field>
             <field name="model">product.template</field>
             <field name="inherit_id" ref="product.product_template_tree_view" />
             <field name="arch" type="xml">
                 <field name="name" position="after">
-                    <field name="ratecard_sin_id"/>
+                    <field name="ratecard_sin_radio_id"/>
                 </field>
             </field>
         </record>
-        <record id="view_product_variant_tree_ratecard_sin" model="ir.ui.view">
-            <field name="name">product variant tree view: add ratecard_sin</field>
+        <record id="view_product_variant_tree_ratecard_sin_radio" model="ir.ui.view">
+            <field name="name">product variant tree view: add ratecard_sin_radio</field>
             <field name="model">product.product</field>
             <field name="inherit_id" ref="product.product_product_tree_view" />
             <field name="arch" type="xml">
                 <field name="name" position="after">
-                    <field name="ratecard_sin_id"/>
+                    <field name="ratecard_sin_radio_id"/>
                 </field>
             </field>
         </record>
       
-        <record model="ir.actions.act_window" id="action_ratecard_sin">
-            <field name="name">RateCard Type Singular Types</field>
-            <field name="res_model">ratecard.sin</field>
+        <record model="ir.actions.act_window" id="action_ratecard_sin_radio">
+            <field name="name">RADIO  SINGULAR RATECARD</field>
+            <field name="res_model">ratecard.sin.radio</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form,kanban</field>
         </record>
+          <menuitem id="timeorder_ratecard_menu" name="RATE CARD   DEFAULTS" sequence="10" parent ="timeorder_management_menu"/>
 
-        <menuitem  name="SINGULAR RATE CARD" id="menu_ratecard_sin"  action="action_ratecard_sin"  parent="timeorder_ratecard_menu"/>
+        <menuitem  name="RADIO SINGULAR RATE CARD" id="menu_ratecard_sin_radio"  action="action_ratecard_sin_radio"  parent="timeorder_ratecard_menu"/>
     </data>
 </openerp>

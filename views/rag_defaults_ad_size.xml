@@ -258,7 +258,7 @@
             <field name="name">AD Size Types</field>
             <field name="res_model">ad.size</field>
             <field name="view_type">form</field>
-            <field name="view_mode">kanban,form,tree</field>
+            <field name="view_mode">tree,form,kanban</field>
         </record>
         <menuitem id="timeorder_ads_menu" name="ADS DEFAULTS" sequence="20" parent ="timeorder_management_menu"/>
 

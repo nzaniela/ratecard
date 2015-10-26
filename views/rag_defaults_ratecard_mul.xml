@@ -33,6 +33,11 @@
                             </div>
                             <h1>
                                 <field name="name"/>
+                                 <group>
+                                      <field name="min_weeks"/>
+                                      <field name="max_weeks"/> 
+                                </group>
+                                    
                                 <field name="multiple_ratecard_id"   widget="many2many"  />
                             </h1>
                         </div>
@@ -47,6 +52,7 @@
                         </div>
                         <group>
                             <!--<field name="outlet_id"/>-->
+                             
                         </group>
                         <group string="Description">
                             <field name="description" nolabel="1"/>
@@ -76,6 +82,7 @@
                             </div>
                             <h1>
                                 <field name="name"/>
+                                
                             </h1>
                         </div>
                         <div class="oe_right oe_button_box">
@@ -87,8 +94,14 @@
                                 <field name="products_count" string="Products" widget="statinfo" />
                             </button>
                         </div>
+                         <group>
+                                    <field name="outlet_id" on_change="onchange_outlet(outlet_id)" placeholder="OUTLET"/>
+                                      <field name="outlet_type_id" placeholder="OUTLET TYPE" />
+                                      <field name="min_weeks"/>
+                                      <field name="max_weeks"/> 
+                                </group>
                        
-                <field name="multiple_ratecard_id"    placeholder="Multiple" />
+                        <field name="multiple_ratecard_id"    placeholder="Multiple" />
                         <group string="Description">
                             <field name="description" nolabel="1"/>
                         </group>
@@ -102,6 +115,10 @@
             <field name="arch" type="xml">
                 <tree string="ratecard_mul">
                     <field name="name"/>
+                                    <field name="outlet_id" on_change="onchange_outlet(outlet_id)" placeholder="OUTLET"/>
+                                    <field name="outlet_type_id" placeholder="OUTLET TYPE" />
+                                      <field name="min_weeks"/>
+                                      <field name="max_weeks"/> 
                     <field name="description"/>
                     <field name="multiple_ratecard_id" widget="many2many" />
                     <!--<field name="outlet_id"/>-->
@@ -127,7 +144,11 @@
                                     <h4>
                                         <a type="open">
                                             <field name="name"/>
-                                                    <field name="multiple_ratecard_id"   widget="many2many"  />
+                                             <group>
+                                                    <field name="min_weeks"/>
+                                                    <field name="max_weeks"/> 
+                                              </group>
+                                            <field name="multiple_ratecard_id"   widget="many2many"  />
                                         </a>
                                     </h4>
                                     <div>
@@ -185,10 +206,10 @@
             <field name="model">product.template</field>
             <field name="inherit_id" ref="product.product_template_form_view" />
             <field name="arch" type="xml">
-            <field name="name" position="after">
-                   <group>
-                    <field name="multiple_ratecard_id" placeholder="RateCard  Multiple"/>
-                  </group>
+                <field name="name" position="after">
+                    <group>
+                        <field name="multiple_ratecard_id" placeholder="RateCard  Multiple"/>
+                    </group>
                 </field>
                
             </field>
@@ -250,8 +271,10 @@
             <field name="view_type">form</field>
             <field name="view_mode">kanban,form,tree</field>
         </record>
-        <menuitem id="timeorder_ratecard_menu" name="RATE CARD   DEFAULTS" sequence="10" parent ="timeorder_management_menu"/>
+        <!--<menuitem id="timeorder_ratecard_menu" name="RATE CARD MULTIPLE DEFAULTS" sequence="10" parent ="timeorder_management_menu"/>-->
 
-        <menuitem  name="MULTIPLE RATE  CARD "  id="menu_ratecard_mul"  action="action_ratecard_mul"  parent="timeorder_ratecard_menu"/>
+        <menuitem id="timeorder_ratecard_multiple" name="MULTIPLE RATECARD" sequence="10" parent ="timeorder_management_menu"/>
+
+        <menuitem  name="RADIO MULTIPLE RATE  CARD"  id="menu_ratecard_mul"  action="action_ratecard_mul"  parent="timeorder_ratecard_multiple"/>
     </data>
 </openerp>

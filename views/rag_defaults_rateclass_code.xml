@@ -259,7 +259,7 @@
             <field name="name">RATECLASS CODE Types</field>
             <field name="res_model">rateclass.code</field>
             <field name="view_type">form</field>
-            <field name="view_mode">kanban,form,tree</field>
+            <field name="view_mode">tree,form,kanban</field>
         </record>
         <menuitem id="timeorder_rateclass_code_menu" name="RATECLASS CODE DEFAULTS" sequence="8" parent ="timeorder_management_menu"/>
 
