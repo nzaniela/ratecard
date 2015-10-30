@@ -18,6 +18,7 @@
                                             <field name='saturday'/>
                                              <field name="spot_total"/> 
                                              <field name="weeks"/>
+                                             <field name="ratecard_mul_id" widget="x2many_2d_matrix" field_x_axis="monday" field_y_axis="tuesday" field_value="wednesday"/> />
                                              </group>
                         </group>
                                <!--<field name="description" nolabel="1"/>-->

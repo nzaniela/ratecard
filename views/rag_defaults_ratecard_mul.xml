@@ -97,11 +97,68 @@
                          <group>
                                     <field name="outlet_id" on_change="onchange_outlet(outlet_id)" placeholder="OUTLET"/>
                                       <field name="outlet_type_id" placeholder="OUTLET TYPE" />
-                                      <field name="min_weeks"/>
-                                      <field name="max_weeks"/> 
+                                       <!--<field name="scheduled_for"/>-->
+                                      <!--<field name="min_weeks"/>-->
+                                         <!--<field name="max_weeks"/> -->
+                                      <!--<field name="m2m_left2right" widget='many2many'/>-->
+                                                             <!--<separator/>-->
+                                     <field name="o2m_left_ids" widget="one2many" >
+                                                            <tree>
+                                                                <field name='code_left_right' widget='many2many'/>
+                                                            </tree>
+                                                            </field>
                                 </group>
-                       
+                       <separator/>
                         <field name="multiple_ratecard_id"    placeholder="Multiple" />
+                         <group string="NO OF SPOTS / MENTIONS /ITEMS ">
+                                     <!--<group  colspan="4" cols="4">-->
+                                         <!--<field name='from_date'/>-->
+                                          <!--<field name='to_date'/>-->
+                                             <!--<field name='order_month'/>-->
+                                          <!--<field name='order_day'/>-->
+                                          <!--<field name='order_year'/>-->
+                                          <!--<field name="test_day" options="{'datepicker':{'yearRange': 'c-100:c+0'}}"/>-->
+
+                                      <!--</group>-->
+                                                         
+                         <field name="week_ids"   widget="one2many_list">
+                                                                                            <tree  string="SPOTS" editable="top">
+                                                                                                <field name='monday'/>
+                                                                                                <field name='tuesday'/>
+                                                                                                <field name='wednesday'/>
+                                                                                                <field name='thursday'/>
+                                                                                                <field name='friday'/>
+                                                                                                <field name='saturday'/>
+                                                                                                 <field name='sunday'/>
+                                                                                                 <field name="spot_total"/> 
+                                                                                             </tree>
+                                                                                              <form  string="ALLOCATE">
+                                                                                                <field name='monday'/>
+                                                                                                <field name='tuesday'/>
+                                                                                                <field name='wednesday'/>
+                                                                                                <field name='thursday'/>
+                                                                                                <field name='friday'/>
+                                                                                                <field name='saturday'/>
+                                                                                                 <field name='sunday'/>
+
+                                                                                                 <field name="spot_total"/> 
+                                                                                             </form>
+                                                <group class="oe_subtotal_footer oe_right" colspan="2" name="spot_total">
+                                                        <div class="oe_subtotal_footer_separator oe_inline">
+                                                            <label for="spot_total" />
+                                                        </div>
+                                                        <field name="total" nolabel="1" class="oe_subtotal_footer_separator" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                                    </group>
+                             </field>
+                             <!--<group class="oe_subtotal_footer oe_right" colspan="2" name="total">-->
+                                    <!--<div class="oe_subtotal_footer_separator oe_inline">-->
+                                        <!--<label for="total" />-->
+                                        <!---<button name="button_dummy" states="draft,sent" string="(update)" type="object" class="oe_edit_only oe_link"/>-->
+                                    <!--</div>-->
+                                    <!--<field name="total" nolabel="1" class="oe_subtotal_footer_separator" widget='monetary' options="{'currency_field': 'currency_id'}"/>-->
+                                <!--</group>-->
+                            <field name="week_id" />
+                        </group>
                         <group string="Description">
                             <field name="description" nolabel="1"/>
                         </group>
@@ -117,8 +174,20 @@
                     <field name="name"/>
                                     <field name="outlet_id" on_change="onchange_outlet(outlet_id)" placeholder="OUTLET"/>
                                     <field name="outlet_type_id" placeholder="OUTLET TYPE" />
+                                      <field name="scheduled_for"/>
                                       <field name="min_weeks"/>
                                       <field name="max_weeks"/> 
+                                                 <field name="week_ids"   widget="one2many_list">
+                                                                                            <tree  string="SPOTS" editable="top">
+                                                                                                <field name='monday'/>
+                                                                                                <field name='tuesday'/>
+                                                                                                <field name='wednesday'/>
+                                                                                                <field name='thursday'/>
+                                                                                                <field name='friday'/>
+                                                                                                <field name='saturday'/>
+                                                                                                 <field name="spot_total"/> 
+                                                                                             </tree>
+                            </field>
                     <field name="description"/>
                     <field name="multiple_ratecard_id" widget="many2many" />
                     <!--<field name="outlet_id"/>-->
@@ -273,7 +342,7 @@
         </record>
         <!--<menuitem id="timeorder_ratecard_menu" name="RATE CARD MULTIPLE DEFAULTS" sequence="10" parent ="timeorder_management_menu"/>-->
 
-        <menuitem id="timeorder_ratecard_multiple" name="MULTIPLE RATECARD" sequence="10" parent ="timeorder_management_menu"/>
+        <menuitem id="timeorder_ratecard_multiple" name="DEFAULTS MULTIPLE RATECARD  " sequence="10" parent ="timeorder_management_menu"/>
 
         <menuitem  name="RADIO MULTIPLE RATE  CARD"  id="menu_ratecard_mul"  action="action_ratecard_mul"  parent="timeorder_ratecard_multiple"/>
     </data>

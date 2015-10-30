@@ -4,8 +4,9 @@
 ###############################################################################
 from openerp import models, fields, api
 from openerp.tools.translate import _
-from openerp import tools
+from openerp import tools ,exceptions
 
+import time
 from datetime import date
 from datetime import timedelta
 from dateutil.relativedelta import relativedelta
@@ -26,8 +27,25 @@ class  week(models.Model):
     thursday   = fields.Integer(string='THUR')
     friday   = fields.Integer(string='FRI')
     saturday   = fields.Integer(string='SAT')
-    sunday   = fields.Integer(string='SUN')       
+    sunday   = fields.Integer(string='SUN')
+    spot_total  = fields.Integer(string='SPOTS TOTAL' , compute='_compute_spots' , store=True)
+    weeks  = fields.Integer(string='WEEKS')  
+    ratecard_mul_rel_id  = fields.One2many(comodel_name='ratecard.mul.rel', inverse_name='allocate_id', 
+                                   string='WEEK ALLOCATE SP')
+    
+    
     allocate_mul_spots_id  = fields.One2many(comodel_name='allocate.mul.spots', inverse_name='week_id', string='WEEK')
+    ratecard_multiple_id  = fields.Many2one(comodel_name='ratecard.multiple', string='WEEK')
+    
+    ratecard_multi_id  = fields.One2many(comodel_name='ratecard.mul', inverse_name='week_id', string='WEEK')
+    @api.one
+    @api.depends('sunday' , 'monday','tuesday' ,'wednesday'  , 'thursday'  ,'friday'  , 'saturday')    
+    def _compute_spots(self):
+        self.spot_total = False
+        for  line  in  self:
+            total  = line.sunday + line.monday + line.tuesday+ line.wednesday+line.thursday + line.friday + line.saturday
+        self.update({'spot_total':total})    
+ 
     
     
 class  allocate_spots(models.Model):
@@ -685,14 +703,7 @@ class  ratecard_sin_radio(models.Model):
     timeband_id  = fields.Many2one(comodel_name='timeband', string='TimeBand')
     pages_id  =   fields.Many2one(comodel_name='pages', string='Pages')
     outlet_type_id  = fields.Many2one(comodel_name='outlet.type', string='Outlet Type')
-    
-    def onchange_outlet(self,cr,uid,ids,outlet_id):
-        result = {'value':{'outlet_type_id':False}}
-        if  outlet_id:
-            outlet = self.pool.get('outlet').browse(cr,uid,outlet_id)
-            print  outlet 
-            result['value'] = {'outlet_type_id':outlet.outlet_type_id.id}
-        return result
+  
     
     
     ad_type_id  = fields.Many2one(comodel_name='ad.type', string='Ad Type')
@@ -704,6 +715,27 @@ class  ratecard_sin_radio(models.Model):
     schedule_type_id=fields.Many2one(comodel_name='schedule.type', string='Schedule Type')
     description = fields.Text('Description', translate=True)          
     logo = fields.Binary('Logo File')
+    ratecard_multiple_id = fields.Many2one(comodel_name='ratecard.multiple' , string='RADIO SINGULAR RATECARD')
+    
+    #def name_get(self,cr,uid,ids,context=None):
+            #result = {}
+            #for record in self.browse(cr,uid,ids,context=context):
+            
+                 # result[record.id] = record.name + " " + str(record.outlet_id) + " " + str(record.outlet_type_id) + " " + str(ad_type_id)  +" " + str(timeband_id)+ " " + str(schedule_type_id)+ " " + description
+
+                
+
+                #result[record.id] = record.name + " " + str(record.outlet_id) + " " + str(record.outlet_type_id) 
+        
+            #return result.items() 
+        
+    def onchange_outlet(self,cr,uid,ids,outlet_id):
+        result = {'value':{'outlet_type_id':False}}
+        if  outlet_id:
+            outlet = self.pool.get('outlet').browse(cr,uid,outlet_id)
+            print  outlet 
+            result['value'] = {'outlet_type_id':outlet.outlet_type_id.id}
+        return result    
     product_ids = fields.One2many(
           'product.template',
           'ratecard_sin_radio_id',
@@ -711,10 +743,7 @@ class  ratecard_sin_radio(models.Model):
       )    
     ratecard_mul_id = fields.Many2one( 'ratecard.mul',string='RateCard')      
     
-    products_count = fields.Integer(
-        string='Number of products',
-        compute='_get_products_count',
-    )
+    products_count = fields.Integer( string='Number of products',compute='_get_products_count',)
     
     @api.one
     @api.depends('product_ids')
@@ -730,8 +759,87 @@ class  ratecard_sin_radio(models.Model):
         #val.update({'outlet_type_id': [ outlet_type_.id for  outlet_type_ in  outlet_data.outlet_types_ids]})
         #return {'value': val}
 
-    
 
+class  ratecard_multiples(models.Model):
+    _name='ratecard.multiples'
+    name = fields.Char(string='RateCard  ')
+    code  = fields.Char(string='MULTIPLE RATECARD CODE')
+    sinmul_ratecard_id = fields.Char(string='SINMUL')
+    
+    ratecard_multiple_id  = fields.Many2many(comodel_name='ratecard.multiple',  relation='ratecard_multiples_rel',
+                                             column1='ratecard_multiples_id', column2='ratecard_multiple_id' , string='MULTIPLE RATECARD')    
+   
+   
+    #sinmul_ratecard_id  = fields.Many2many(comodel_name='ratecard.sin.radio', relation='ratecard_sinmul_rel', 
+                                                #column1='ratecard_sinmul_id', 
+                                                #column2='ratecard_sin_radio_id', 
+                                                #string='RATECARDS')    
+    
+    
+class  ratecard_multiple(models.Model):
+    _name = 'ratecard.multiple'
+    
+    #_inherits = {'ratecard.sin.radio':'ratecard_sin_radio_id'}
+   # _inherits = {'ratecard.sinmul':'ratecard_sinmul_id'}
+    name = fields.Char(string='Multiple RateCard Product  Name ')
+    code  = fields.Char(string='Multiple RateCard Code ',readonly=True)
+    
+    allocate_spot = fields.Boolean(string='Allocate')
+   
+    multiple_ratecard_id  = fields.Many2many(comodel_name='ratecard.sin.radio', relation='ratecard_mul_ratecard_sin_rel', 
+                                                column1='ratecard_mul_id', 
+                                                column2='ratecard_sin_radio_id', 
+                                                string='RATECARDS')   
+    allocate_multiple_id  =  fields.Many2many(comodel_name='ratecard.mul' ,relation='ratecard_mul_ratecard_sin_rel', column1='multiple_ratecard_id' , column2='week_id' ,string='ALLOCATE RATECARD')
+   
+    ratecard_sin_radio_id = fields.One2many(comodel_name='ratecard.sin.radio', 
+                                              inverse_name='ratecard_multiple_id', 
+                                              string='RADIO  SINGULAR RATECARD') 
+    
+    allocate_schedule = fields.Many2many(comodel_name='week', relation='ratecard_multiple_week_rel', column1='ratecard_multiple_id', column2='week_id', string='ALLOCATE SPOTS')
+   
+    _defaults = {
+        'code':lambda obj,cr,uid,context:'/'
+    }
+    #_defaults = {
+        #'code': lambda self,cr,uid,context={}: self.pool.get('ir.sequence').get(cr, uid, 'object.object'),
+    #}  
+    
+    def  create(self,cr,uid, vals,context=None):
+        vals['code'] = self.pool.get('ir.sequence').get(cr,uid,'ratecard.multiple')
+        return super(ratecard_multiple,self).create(cr,uid,vals,context=context)
+    #not working  but  compiles --> weird  -- investigate further  
+    #def create(self, cr, uid, vals, context=None):
+        #if not vals:
+            #vals = {}
+        #if context is None:
+            #context = {}
+        #vals['code'] = self.pool.get('ir.sequence').get(cr, uid, 'object.object')
+        
+        #return super(ratecard_multiple, self).create(cr, uid, vals, context=context)
+    
+    
+    def onchange_outlet(self,cr,uid,ids,outlet_id):
+        result = {'value':{'outlet_type_id':False}}
+        if  outlet_id:
+            outlet = self.pool.get('outlet').browse(cr,uid,outlet_id)
+            print  outlet 
+            result['value'] = {'outlet_type_id':outlet.outlet_type_id.id}
+        return result        
+        
+    def name_get(self,cr,uid,ids,context=None):
+        result = {}
+        for record in self.browse(cr,uid,ids,context=context):
+            result[record.id] = record.name + " " + str(record.ratecard_sin_radio_id.id)
+    
+        return result.items()    
+        
+#relation
+class ratecard_multiple_week_rel(models.Model):
+    _name = 'ratecard.multiple.week.rel'
+    ratecard_multiple_id = fields.Many2one(comodel_name='ratecard.multiple' )
+    
+    
 class  ratecard_sin_print(models.Model):
     _name =  'ratecard.sin.print'
     _description  = 'RATE CARD SINGULAR PRINT  '
@@ -895,6 +1003,17 @@ class  ratecard_sin_tv(models.Model):
         #val.update({'outlet_type_id': [ outlet_type_.id for  outlet_type_ in  outlet_data.outlet_types_ids]})
         #return {'value': val}
 
+class  ratecard_mul_rel(models.Model):
+    _name  =  'ratecard.mul.rel'
+    
+    ratecard_left_id  = fields.Many2one('ratecard.mul')
+    ratecard_right_id = fields.Many2one('ratecard.mul','Relation')
+    allocate_id  = fields.Many2one(comodel_name='week', string='ALLOCATE SPOTS')
+    week_ids = fields.Many2many(comodel_name='week', relation='ratecard_mul_rel_week_rel', column1='ratecard_mul.rel_id', column2='week_id', string='ALLOCATE SPOTS')    
+    code_left_right = fields.Integer(string="CODE")
+         
+    
+    
     
 
     
@@ -902,6 +1021,9 @@ class  ratecard_mul(models.Model):
     _name = 'ratecard.mul'
     _description = 'RATECARD TYPE  MULTIPLE'
     
+    m2m_right2left = fields.Many2many('ratecard.mul','ratecard_mul_rel','ratecard_right_id','ratecard_left_id')
+    m2m_left2right  = fields.Many2many('ratecard.mul','ratecard_mul_rel' , 'ratecard_left_id', 'ratecard_right_id')
+    o2m_left_ids = fields.One2many('ratecard.mul.rel','ratecard_left_id')
     name  =  fields.Char(string='RATECARD MULTIPLE')
     ratecard_sin_radio_id  =  fields.One2many(comodel_name='ratecard.sin.radio',inverse_name='ratecard_mul_id',
                                 string='MULTIPLES')
@@ -911,9 +1033,73 @@ class  ratecard_mul(models.Model):
                                             string='RATECARDS')
     sale_order_id = fields.One2many(comodel_name='sale.order', inverse_name='ratecard_mul_id',string='MULTIPLE RATECARD')   
     outlet_id = fields.Many2one(comodel_name='outlet', string='Outlet')
-    outlet_type_id  = fields.Many2one(comodel_name='outlet.type', string='Outlet Type')     
+    outlet_type_id  = fields.Many2one(comodel_name='outlet.type', string='Outlet Type')    
+    scheduled_for  = fields.Integer(string='SCHEDULED FOR' , default=1)
     min_weeks = fields.Integer(string="MINIMUM NO OF WEEKS" , default=1 )    
-    max_weeks = fields.Integer(string="Maximum NO OF WEEKS" , default=1)      
+    max_weeks = fields.Integer(string="Maximum NO OF WEEKS" , default=1)    #compute='_compute_max_weeks' , store=True
+    total = fields.Char(string="TOTAL" )     
+    x = fields.Char(string="x" )     
+    y = fields.Char(string="y" )     
+    test_day = fields.Char(string='Test Day')
+    noof_spots_id = fields.Many2one(comodel_name='noof.spots', string='NO  OF  SPOTS')
+    week_id  = fields.Many2one(comodel_name='week', string='ALLOCATE SPOTS')
+    
+    week_ids = fields.Many2many(comodel_name='week', relation='ratecard_mul_week_rel', column1='ratecard_mul_id', column2='week_id', string='ALLOCATE SPOTS')
+    spot = fields.Integer(string='SPOTS',default='0')  
+    from_date  = fields.Date(string="FROM DATE")
+    order_month  = fields.Char(string='MONTH')
+    order_day  = fields.Char(string='DAY')
+    order_year  = fields.Char(string='YEAR')
+    compute_weeks = fields.Integer(string='ALLOCATED WEEKS')
+    
+    
+    to_date  = fields.Date(string="TO DATE")
+    
+    _defaults={
+        
+        'order_month' : lambda *a: time.strftime('%m'),
+        'order_day' : lambda *a: time.strftime('%d'),
+        'order_year' : lambda *a: time.strftime('%Y'),            
+    
+    }
+    
+    #@api.one
+    #@api.depends('from_date','to_date','compute_weeks')
+    #def  _compute_weeks(self):
+        #self.compute_weeks =False
+        #for  line  in  self:
+            #cal_weeks  = 
+            
+   
+    
+    @api.one
+    @api.depends('sunday' , 'monday','tuesday' ,'wednesday'  , 'thursday'  ,'friday'  , 'saturday')    
+    def _compute_spots(self):
+        self.spot_total = False
+        for  line  in  self:
+            total  = line.sunday + line.monday + line.tuesday+ line.wednesday+line.thursday + line.friday + line.saturday
+        self.update({'spot_total':total})    
+        
+    @api.one
+    @api.depends('scheduled_for')
+    def  _compute_max_weeks(self):
+        self.max_weeks = False
+        for  line  in  self:
+            mx  = line.scheduled_for * 1 
+        self.update({'max_weeks':mx})
+        
+        
+    @api.one
+    @api.constrains('min_weeks','max_weeks')
+    def  _check_max_weeks(self):
+        if  self.min_weeks > self.max_weeks :
+            raise exceptions.ValidationError("No Of Minimum  Weeks  cannot be  greater than Maximum  No of Weeks")    
+        
+    @api.one
+    @api.constrains('scheduled_for','min_weeks')
+    def  _check_min_weeks(self):
+        if  self.scheduled_for > self.min_weeks :
+            raise exceptions.ValidationError("Minimum  must  be  greater or  equal to  Scheduled  For ")
     
     
     description = fields.Text('Description', translate=True)          
@@ -928,7 +1114,7 @@ class  ratecard_mul(models.Model):
         string='Number of products',
         compute='_get_products_count',
     )
-    
+       
     
     def onchange_outlet(self,cr,uid,ids,outlet_id):
                 result = {'value':{'outlet_type_id':False}}
@@ -1202,6 +1388,8 @@ class  noof_spots(models.Model):
     weeks  = fields.Integer(string='WEEKS')    
     
     description = fields.Text('Description', translate=True) 
+    ratecard_mul_id  = fields.One2many(comodel_name='ratecard.mul', inverse_name='noof_spots_id', string='WEEK')
+    
     
     #@api.one
     #@api.depends('sunday' , 'monday','tuesday' ,'wednesday'  , 'thursday'  ,'friday'  , 'saturday')

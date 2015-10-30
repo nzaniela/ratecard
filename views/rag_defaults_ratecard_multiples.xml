@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+                <!--  noofspots -->
+        <record id="view_ratecard_multiples_form" model="ir.ui.view">
+            <field name="name">ratecard.multiples.form</field>
+            <field name="model">ratecard.multiples</field>
+            <field name="arch" type="xml">
+                <form string="MULTIPLE RATECARD">
+                        <group col="4">
+                                   <group col="2" colspan="2">
+                                            <field name='name'/>
+                                    <field name='ratecard_multiple_id'   widget="many2many" />
+
+                                          
+                                             </group>
+                        </group>
+                </form>
+            </field>
+        </record>
+        
+        <record id="view_ratecard_multiples_tree" model="ir.ui.view">
+            <field name="name">ratecard.multiples.tree</field>
+            <field name="model">ratecard.multiples</field>
+            <field name="arch" type="xml">
+                <tree string="MULTIPLE RATECARD">
+                        <field name='name'/>
+                        <field name='ratecard_multiple_id'  widget="many2many" />
+
+
+                </tree>
+            </field>
+        </record>
+        
+        <record id="action_ratecard_multiples" model="ir.actions.act_window">
+            <field name="name">RATECARD SINGULARMULTIPLE</field>
+            <field name="res_model">ratecard.multiples</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+         <menuitem id="timeorder_ratecard_multiples" name="MULTIPLE  RATECARD SELECTION   " sequence="7" parent ="timeorder_management_menu"/>        
+        <menuitem  name="SINMULIPLE RATECARD" id="menu_ratecard_multiples"  action="action_ratecard_multiples"  parent="timeorder_ratecard_multiples"/>
+         </data>
+</openerp>

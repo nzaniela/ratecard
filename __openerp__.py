@@ -54,6 +54,10 @@
         
         #MUTIPLES
         'views/rag_defaults_ratecard_mul.xml', 
+        'views/rag_defaults_ratecard_multiple.xml', 
+        'views/rag_defaults_ratecard_multiples.xml', 
+        
+        
         #MULTIPLE  QUOTATION
         #'views/rag_defaults_quo_mul.xml',    
         

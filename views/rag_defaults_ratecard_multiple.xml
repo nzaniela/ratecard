@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="view_ratecard_multiple_form" model="ir.ui.view">
+            <field name="name">ratecard.multiple.form</field>
+            <field name="model">ratecard.multiple</field>
+            <field name="arch" type="xml">
+                <form string="ALLOCATE SPOTS ON DAYS">
+                                    <group colspan="4"  col="4" >
+                                        <tree  editable="bottom">
+                                                <group colspan="2"  col="2" >
+                                                     <field name='name'/>
+                                                    <field name='code'/>
+                                                     <field name="allocate_spot"/>
+                                                      </group>
+                                                     
+                                                   <field name='multiple_ratecard_id'/>
+                                                   <!--<field name='allocate_multiple_id'/>-->
+                                                   <field name="allocate_schedule"   widget="one2many_list">
+                                                                                            <tree  string="SPOTS" editable="bottom">
+                                                                                                <field name='monday'/>
+                                                                                                <field name='tuesday'/>
+                                                                                                <field name='wednesday'/>
+                                                                                                <field name='thursday'/>
+                                                                                                <field name='friday'/>
+                                                                                                <field name='saturday'/>
+                                                                                                 <field name='sunday'/>
+                                                                                                 <field name="spot_total"/> 
+                                                                                             </tree>
+                                                                                              <form  string="ALLOCATE">
+                                                                                                <field name='monday'/>
+                                                                                                <field name='tuesday'/>
+                                                                                                <field name='wednesday'/>
+                                                                                                <field name='thursday'/>
+                                                                                                <field name='friday'/>
+                                                                                                <field name='saturday'/>
+                                                                                                 <field name='sunday'/>
+                                                                                                 <!--<field name="spot_total"/> -->
+                                                                                                     <group class="oe_subtotal_footer oe_right" colspan="2" name="spot_total">
+                                                                                                                <field name="spot_total" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                                                                                                <field name="spot_total" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                                                                                                <div class="oe_subtotal_footer_separator oe_inline">
+                                                                                                                    <label for="spot_total" />
+                                                                                                                    <button name="button_dummy"
+                                                                                                                      string="(update)" type="object" class="oe_edit_only oe_link"/>
+                                                                                                                </div>
+                                                                                                                <field name="spot_total" nolabel="1" class="oe_subtotal_footer_separator" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                                                                                     </group>                   
+                                                                                             </form>
+                                                                                          
+                                                    
+                             </field>
+                                        </tree>
+                                   </group>
+
+                </form>
+            </field>
+        </record>
+    
+        
+        <record id="view_ratecard_multiple_tree" model="ir.ui.view">
+            <field name="name">ratecard.multiple.tree</field>
+            <field name="model">ratecard.multiple</field>
+            <field name="arch" type="xml">
+                <tree string="ALLOCATE SPOTS ON DAYS">
+                        <field name='name'/>
+                         <field name='code'/>
+                          <!--<field name='allocate_multiple_id'/>-->
+                        <field name="allocate_schedule"   widget="one2many_list">
+                                                                                            <tree  string="SPOTS" editable="bottom">
+                                                                                                <field name='monday'/>
+                                                                                                <field name='tuesday'/>
+                                                                                                <field name='wednesday'/>
+                                                                                                <field name='thursday'/>
+                                                                                                <field name='friday'/>
+                                                                                                <field name='saturday'/>
+                                                                                                 <field name='sunday'/>
+                                                                                                 <field name="spot_total"/> 
+                                                                                             </tree>
+                                                                                              <form  string="ALLOCATE">
+                                                                                                <field name='monday'/>
+                                                                                                <field name='tuesday'/>
+                                                                                                <field name='wednesday'/>
+                                                                                                <field name='thursday'/>
+                                                                                                <field name='friday'/>
+                                                                                                <field name='saturday'/>
+                                                                                                 <field name='sunday'/>
+
+                                                                                                 <field name="spot_total"/> 
+                                                                                             </form>
+                                                <group class="oe_subtotal_footer oe_right" colspan="2" name="spot_total">
+                                                        <div class="oe_subtotal_footer_separator oe_inline">
+                                                            <label for="spot_total" />
+                                                        </div>
+                                                        <field name="total" nolabel="1" class="oe_subtotal_footer_separator" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                                    </group>
+                             </field>
+                </tree>
+            </field>
+        </record>
+        
+ <!-- Sequences for Multiple Ratecard -->
+        <record id="seq__ratecard_multiple_type" model="ir.sequence.type">
+            <field name="name">MULTIPLE RATECARD CODE</field>
+            <field name="code">ratecard.multiple</field>
+        </record>
+
+        <record id="seq_ratecard_multiple_sequence" model="ir.sequence">
+            <field name="name">MULTIPLE RATECARD CODE</field>
+            <field name="code">ratecard.multiple</field>
+            <field name="prefix">MULTIPLERATECARD/2015/</field>
+            <field name="padding">5</field>
+        </record>       
+         
+        
+        
+        <record id="action_ratecard_multiple" model="ir.actions.act_window">
+            <field name="name">RATECARD MULTIPLE</field>
+            <field name="res_model">ratecard.multiple</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        
+        <menuitem  name="MULTIPLE RATECARD" id="menu_ratecard_multiple"  action="action_ratecard_multiple"  parent="timeorder_ratecard_multiple"/>
+         </data>
+</openerp>

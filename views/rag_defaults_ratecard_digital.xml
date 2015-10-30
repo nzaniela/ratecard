@@ -19,7 +19,7 @@
                     <field name="digital_type_id" placeholder="DIGITAL TYPE" />
                     <field name="digital_size_id" placeholder="DIGITAL AD SIZE" />
                     <field name="timeband_id" placeholder="TIME BAND" />
-                    <field name="spot_length_id" placeholder="Spot Length" />
+                    <!--<field name="spot_length_id" placeholder="Spot Length" />-->
                     <field name="rateclass_code_id" placeholder="RATECLASS CODE" />
                     <field name="payment_terms_id" placeholder="PAYMENT  TERMS" />
                     <field name="vat_rate_id" placeholder="VAT RATE " />
@@ -62,7 +62,7 @@
                                 <field name="digital_type_id" placeholder="DIGITAL TYPE" />
                                 <field name="digital_size_id" placeholder="DIGITAL AD SIZE" />
                                 <field name="timeband_id" placeholder="TIME BAND" />
-                                <field name="spot_length_id" placeholder="Spot Length" />
+                                <!--<field name="spot_length_id" placeholder="Spot Length" />-->
                                 <field name="rateclass_code_id" placeholder="RATECLASS CODE" />
                                 <field name="payment_terms_id" placeholder="PAYMENT  TERMS" />
                                 <field name="vat_rate_id" placeholder="VAT RATE " />
@@ -137,7 +137,7 @@
                                 <field name="digital_type_id" placeholder="DIGITAL TYPE" />
                                 <field name="digital_size_id" placeholder="DIGITAL AD SIZE" />
                                 <field name="timeband_id" placeholder="TIME BAND" />
-                                <field name="spot_length_id" placeholder="Spot Length" />
+                                <!--<field name="spot_length_id" placeholder="Spot Length" />-->
                                 <field name="rateclass_code_id" placeholder="RATECLASS CODE" />
                                 <field name="payment_terms_id" placeholder="PAYMENT  TERMS" />
                                 <field name="vat_rate_id" placeholder="VAT RATE " />
@@ -170,7 +170,7 @@
                     <field name="digital_type_id" placeholder="DIGITAL TYPE" />
                     <field name="digital_size_id" placeholder="DIGITAL AD SIZE" />
                     <field name="timeband_id" placeholder="TIME BAND" />
-                    <field name="spot_length_id" placeholder="Spot Length" />
+                    <!--<field name="spot_length_id" placeholder="Spot Length" />-->
                     <field name="rateclass_code_id" placeholder="RATECLASS CODE" />
                     <field name="payment_terms_id" placeholder="PAYMENT  TERMS" />
                     <field name="vat_rate_id" placeholder="VAT RATE " />
@@ -209,7 +209,7 @@
                                             <field name="digital_type_id" placeholder="DIGITAL TYPE" />
                                             <field name="digital_size_id" placeholder="DIGITAL AD SIZE" />
                                             <field name="timeband_id" placeholder="TIME BAND" />
-                                            <field name="spot_length_id" placeholder="Spot Length" />
+                                            <!--<field name="spot_length_id" placeholder="Spot Length" />-->
                                             <field name="rateclass_code_id" placeholder="RATECLASS CODE" />
                                             <field name="payment_terms_id" placeholder="PAYMENT  TERMS" />
                                             <field name="vat_rate_id" placeholder="VAT RATE " />
