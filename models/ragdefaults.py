@@ -2,15 +2,18 @@
 ###############################################################################
 #Outlet  --> Outlet                                                             #
 ###############################################################################
-from openerp import models, fields, api
 from openerp.tools.translate import _
 from openerp import tools ,exceptions
 
 import time
 from datetime import date
-from datetime import timedelta
 from dateutil.relativedelta import relativedelta
 from openerp.tools import DEFAULT_SERVER_DATE_FORMAT
+from datetime import datetime, timedelta
+from openerp import SUPERUSER_ID
+from openerp import api, fields, models, _
+import openerp.addons.decimal_precision as dp
+from openerp.tools import float_is_zero, float_compare, DEFAULT_SERVER_DATETIME_FORMAT
 from  ragconstants import  year_week_no , days ,payment_type , schedule_types ,payment_duration, seconds , minutes  ,list_position , hour_from , hour_to , page_no ,_ad_column , _ad_inches , outlettype_
 
 
@@ -29,14 +32,26 @@ class  week(models.Model):
     saturday   = fields.Integer(string='SAT')
     sunday   = fields.Integer(string='SUN')
     spot_total  = fields.Integer(string='SPOTS TOTAL' , compute='_compute_spots' , store=True)
-    weeks  = fields.Integer(string='WEEKS')  
+    total  =  fields.Integer(string='Total')
+    state = fields.Selection([
+            ('draft', 'DRAFT'),
+            ('sent', 'READY'),
+            ('sale', 'FINAL'),
+            ('done', 'Done'),
+            ('cancel', 'Cancelled'),
+            ], string='Status', readonly=True, copy=False, index=True, track_visibility='onchange', default='draft')  
+    validity_date = fields.Date(string='Expiration Date', readonly=True, states={'draft': [('readonly', False)], 'sent': [('readonly', False)]})    
+    
+    price_subtotal = fields.Integer(compute='_compute_spots', string='Subtotal', readonly=True, store=True)
+    price_tax = fields.Integer(compute='_compute_spots', string='Taxes', readonly=True, store=True)
+    price_total = fields.Integer(compute='_compute_spots', string='Total', readonly=True, store=True)    
+    #weeks  = fields.Integer(string='WEEKS')  
     ratecard_mul_rel_id  = fields.One2many(comodel_name='ratecard.mul.rel', inverse_name='allocate_id', 
                                    string='ALLOCATED SPOTS')
     
     
     allocate_mul_spots_id  = fields.One2many(comodel_name='allocate.mul.spots', inverse_name='week_id', string='ALLOCATED SPOTS')
-    ratecard_multiple_id  = fields.Many2one(comodel_name='ratecard.multiple', string='ALLOCATED SPOTS')
-    
+    ratecard_multiple_id  = fields.Many2one(comodel_name='ratecard.multiple', string='ALLOCATED SPOTS')    
     ratecard_multi_id  = fields.One2many(comodel_name='ratecard.mul', inverse_name='week_id', string='ALLOCATED SPOTS')
     @api.one
     @api.depends('sunday' , 'monday','tuesday' ,'wednesday'  , 'thursday'  ,'friday'  , 'saturday')    
@@ -785,25 +800,92 @@ class  ratecard_multiple(models.Model):
     code  = fields.Char(string='Multiple RateCard Code ',readonly=True)
     
     allocate_spot = fields.Boolean(string='Allocate')
+    state = fields.Selection([
+        ('draft', 'Multiple RateCard  Draft'),
+        ('sent', 'Multiple RateCard READY'),
+        ('sale', 'MULTIPLE  RATECARD  FINAL'),
+        ('done', 'Done'),
+        ('cancel', 'Cancelled'),
+        ], string='Status', readonly=True, copy=False, index=True, track_visibility='onchange', default='draft')  
+    
+    validity_date = fields.Date(string='Expiration Date', readonly=True, states={'draft': [('readonly', False)], 'sent': [('readonly', False)]})
+    
+    @api.model
+    def _default_note(self):
+        return self.env.user.company_id.sale_note  
+        
+    note = fields.Text('Terms and conditions', default=_default_note)
+    
+    amount_untaxed = fields.Integer(string='Untaxed Amount', store=True, readonly=True, compute='_amount_all', track_visibility='always')
+    amount_tax = fields.Integer(string='Taxes', store=True, readonly=True, compute='_amount_all', track_visibility='always')
+    amount_total = fields.Integer(string='Total', store=True, readonly=True, compute='_amount_all', track_visibility='always')    
    
     multiple_ratecard_id  = fields.Many2many(comodel_name='ratecard.sin.radio', relation='ratecard_mul_ratecard_sin_rel', 
                                                 column1='ratecard_mul_id', 
                                                 column2='ratecard_sin_radio_id', 
                                                 string='RATECARDS')   
-    allocate_multiple_id  =  fields.Many2many(comodel_name='ratecard.mul' ,relation='ratecard_mul_ratecard_sin_rel', column1='multiple_ratecard_id' , column2='week_id' ,string='ALLOCATE RATECARD')
+    allocate_multiple_id  =  fields.Many2many(comodel_name='ratecard.mul' ,relation='ratecard_mul_ratecard_sin_rel', 
+                                              column1='multiple_ratecard_id' , column2='week_id' ,string='ALLOCATE RATECARD')
    
     ratecard_sin_radio_id = fields.One2many(comodel_name='ratecard.sin.radio', 
                                               inverse_name='ratecard_multiple_id', 
                                               string='RADIO  SINGULAR RATECARD') 
     
-    allocate_schedule = fields.Many2many(comodel_name='week', relation='ratecard_multiple_week_rel', column1='ratecard_multiple_id', column2='week_id', string='ALLOCATE SPOTS')
+    allocate_schedule = fields.Many2many(comodel_name='week', relation='ratecard_multiple_week_rel',
+                                         column1='ratecard_multiple_id', column2='week_id', track_visibility='onchange', string='ALLOCATE SPOTS')
    
     _defaults = {
         'code':lambda obj,cr,uid,context:'/'
     }
     #_defaults = {
         #'code': lambda self,cr,uid,context={}: self.pool.get('ir.sequence').get(cr, uid, 'object.object'),
-    #}  
+    #} 
+    #def  create(self,cr,uid,vals,context=None):
+        #if  not  vals['allocate_schedule'][0][2]:
+            #raise Exception('MISSING ALLOCATED  SPOTS ')
+        #created_hc  = []    self.update({'spot_total':total})  
+        #for  id  in  
+
+    @api.depends('allocate_schedule.price_total')
+    def _amount_all(self):
+        """
+        Compute the total amounts of the Weeks  and  Rate.
+        """
+        for order in self:
+            amount_untaxed = amount_tax = 0.0
+            for line in order.allocate_schedule:
+                amount_untaxed += line.price_subtotal
+                amount_tax += line.price_tax
+            order.update({
+                'amount_untaxed': amount_untaxed,
+                'amount_tax': amount_tax,
+                'amount_total': amount_untaxed + amount_tax,
+            })    
+    @api.multi
+    def button_dummy(self):
+        return True   
+    @api.multi
+    def action_draft(self):
+        self.filtered(lambda s: s.state in ['cancel', 'sent']).write({'state': 'draft'})
+    
+    @api.multi
+    def action_cancel(self):
+        self.write({'state': 'cancel'})
+    @api.multi
+    def action_done(self):
+        self.write({'state': 'done'})    
+    
+    def  _create_allocate_schedule(self):
+        self.allocate_schedule = self.env['ratecard.multiple'].create({
+            'name' : self.name,
+            'padding':5,
+            'company_id':self.company_id.id,
+        })
+    def  create(self,cr,uid, vals,context=None):
+        rec  = super(ratecard_multiple,self).create(vals)
+        if  not  rec.allow_schedule:
+            rec._create_allocate_schedule()
+        return  rec
     
     def  create(self,cr,uid, vals,context=None):
         vals['code'] = self.pool.get('ir.sequence').get(cr,uid,'ratecard.multiple')
@@ -817,7 +899,11 @@ class  ratecard_multiple(models.Model):
         #vals['code'] = self.pool.get('ir.sequence').get(cr, uid, 'object.object')
         
         #return super(ratecard_multiple, self).create(cr, uid, vals, context=context)
-    
+    #def  onchange_allocateschedule(self,cr,uids,ids,allocate_schedule):
+        #res = {} 
+        #for  record  in  self.browse(cr,uid,ids,context=None, )
+        
+        
     
     def onchange_outlet(self,cr,uid,ids,outlet_id):
         result = {'value':{'outlet_type_id':False}}
@@ -827,12 +913,12 @@ class  ratecard_multiple(models.Model):
             result['value'] = {'outlet_type_id':outlet.outlet_type_id.id}
         return result        
         
-    def name_get(self,cr,uid,ids,context=None):
-        result = {}
-        for record in self.browse(cr,uid,ids,context=context):
-            result[record.id] = record.name + " " + str(record.ratecard_sin_radio_id.id)
+    #def name_get(self,cr,uid,ids,context=None):
+        #result = {}
+        #for record in self.browse(cr,uid,ids,context=context):
+            #result[record.id] = record.name + " " + str(record.ratecard_sin_radio_id.id)
     
-        return result.items()    
+        #return result.items()    
         
 #relation
 class ratecard_multiple_week_rel(models.Model):
