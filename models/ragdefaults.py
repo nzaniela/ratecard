@@ -31,13 +31,13 @@ class  week(models.Model):
     spot_total  = fields.Integer(string='SPOTS TOTAL' , compute='_compute_spots' , store=True)
     weeks  = fields.Integer(string='WEEKS')  
     ratecard_mul_rel_id  = fields.One2many(comodel_name='ratecard.mul.rel', inverse_name='allocate_id', 
-                                   string='WEEK ALLOCATE SP')
+                                   string='ALLOCATED SPOTS')
     
     
-    allocate_mul_spots_id  = fields.One2many(comodel_name='allocate.mul.spots', inverse_name='week_id', string='WEEK')
-    ratecard_multiple_id  = fields.Many2one(comodel_name='ratecard.multiple', string='WEEK')
+    allocate_mul_spots_id  = fields.One2many(comodel_name='allocate.mul.spots', inverse_name='week_id', string='ALLOCATED SPOTS')
+    ratecard_multiple_id  = fields.Many2one(comodel_name='ratecard.multiple', string='ALLOCATED SPOTS')
     
-    ratecard_multi_id  = fields.One2many(comodel_name='ratecard.mul', inverse_name='week_id', string='WEEK')
+    ratecard_multi_id  = fields.One2many(comodel_name='ratecard.mul', inverse_name='week_id', string='ALLOCATED SPOTS')
     @api.one
     @api.depends('sunday' , 'monday','tuesday' ,'wednesday'  , 'thursday'  ,'friday'  , 'saturday')    
     def _compute_spots(self):
