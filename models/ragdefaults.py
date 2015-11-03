@@ -24,6 +24,7 @@ from  ragconstants import  year_week_no , days ,payment_type , schedule_types ,p
 class  week(models.Model):
     _name='week'
     
+    multiple_rate  =  fields.Integer(string='RATE ')    
     monday  = fields.Integer(string='MON')
     tuesday   = fields.Integer(string='TUE')
     wednesday   = fields.Integer(string='WED')
@@ -31,8 +32,9 @@ class  week(models.Model):
     friday   = fields.Integer(string='FRI')
     saturday   = fields.Integer(string='SAT')
     sunday   = fields.Integer(string='SUN')
-    spot_total  = fields.Integer(string='SPOTS TOTAL' , compute='_compute_spots' , store=True)
-    total  =  fields.Integer(string='Total')
+    noofweeks = fields.Integer(string="WEEKS",default=1 , store=True,   track_visibility='always')
+    #compute='_noofweeks',
+    spot_total  = fields.Integer( compute='_compute_totalspots' , string='SPOTS TOTAL' ,readonly=True ,  store=True)
     state = fields.Selection([
             ('draft', 'DRAFT'),
             ('sent', 'READY'),
@@ -42,9 +44,8 @@ class  week(models.Model):
             ], string='Status', readonly=True, copy=False, index=True, track_visibility='onchange', default='draft')  
     validity_date = fields.Date(string='Expiration Date', readonly=True, states={'draft': [('readonly', False)], 'sent': [('readonly', False)]})    
     
-    price_subtotal = fields.Integer(compute='_compute_spots', string='Subtotal', readonly=True, store=True)
-    price_tax = fields.Integer(compute='_compute_spots', string='Taxes', readonly=True, store=True)
-    price_total = fields.Integer(compute='_compute_spots', string='Total', readonly=True, store=True)    
+    price_subtotal = fields.Integer(compute='_compute_spotrateweektotal', string='SUBTOTAL', readonly=True, store=True)
+    price_tax = fields.Integer(default=0 ,string='Taxes', readonly=True, store=True)
     #weeks  = fields.Integer(string='WEEKS')  
     ratecard_mul_rel_id  = fields.One2many(comodel_name='ratecard.mul.rel', inverse_name='allocate_id', 
                                    string='ALLOCATED SPOTS')
@@ -53,13 +54,36 @@ class  week(models.Model):
     allocate_mul_spots_id  = fields.One2many(comodel_name='allocate.mul.spots', inverse_name='week_id', string='ALLOCATED SPOTS')
     ratecard_multiple_id  = fields.Many2one(comodel_name='ratecard.multiple', string='ALLOCATED SPOTS')    
     ratecard_multi_id  = fields.One2many(comodel_name='ratecard.mul', inverse_name='week_id', string='ALLOCATED SPOTS')
+    
+    @api.one
+    @api.depends('noofweeks','ratecard_multiple_id.scheduled_for')
+    def _noofweeks(self):
+        """
+        Compute autofill noofweeks.
+        """
+        for order in self:
+            for line in order.ratecard_multiple_id:
+                print  'line.scheduled_for== ' , line.scheduled_for
+                s = line.scheduled_for *1 
+                
+            order.update({'noofweeks': s })            
+    
     @api.one
     @api.depends('sunday' , 'monday','tuesday' ,'wednesday'  , 'thursday'  ,'friday'  , 'saturday')    
-    def _compute_spots(self):
-        self.spot_total = False
-        for  line  in  self:
-            total  = line.sunday + line.monday + line.tuesday+ line.wednesday+line.thursday + line.friday + line.saturday
-        self.update({'spot_total':total})    
+    def _compute_totalspots(self):
+        for order in self:
+            for  line  in  order:
+                spottotal  = line.sunday + line.monday + line.tuesday+ line.wednesday+line.thursday + line.friday + line.saturday
+            self.update({'spot_total':spottotal})    
+        
+    @api.one
+    @api.depends('sunday' , 'monday','tuesday' ,'wednesday'  , 'thursday'  ,'friday'  , 'saturday', 'multiple_rate' , 'noofweeks')    
+    def _compute_spotrateweektotal(self):
+        for order in self:
+            for  line  in  order:
+                week_spot_total  = line.sunday + line.monday + line.tuesday+ line.wednesday+line.thursday + line.friday + line.saturday
+                subtotal = line.multiple_rate * week_spot_total *  line.noofweeks 
+            self.update({'price_subtotal':subtotal})    
  
     
     
@@ -796,8 +820,34 @@ class  ratecard_multiple(models.Model):
     
     #_inherits = {'ratecard.sin.radio':'ratecard_sin_radio_id'}
    # _inherits = {'ratecard.sinmul':'ratecard_sinmul_id'}
-    name = fields.Char(string='Multiple RateCard Product  Name ')
+    name = fields.Char(string='Multiple RateCard Product  Name ' ,required=True)
     code  = fields.Char(string='Multiple RateCard Code ',readonly=True)
+    scheduled_for  = fields.Integer(string='SCHEDULED FOR' , default=1)
+    min_weeks = fields.Integer(string="MINIMUM NO OF WEEKS" , default=1 )    
+    max_weeks = fields.Integer(string="Maximum NO OF WEEKS" , default=1, track_visibility='always' ,store=True) 
+    @api.model
+    def _default_note(self):
+        return self.env.user.company_id.sale_note  
+    @api.one
+    @api.depends('scheduled_for')
+    def  _compute_maxweeks(self):
+        self.max_weeks = False
+        for  line  in  self:
+            mx  = line.scheduled_for * 1 
+        self.update({'max_weeks':mx})     
+
+    @api.one
+    @api.constrains('min_weeks','max_weeks')
+    def  _check_max_weeks(self):
+        if  self.min_weeks > self.max_weeks :
+            raise exceptions.ValidationError("No Of Minimum  Weeks  cannot be  greater than Maximum  No of Weeks")    
+
+    @api.one
+    @api.constrains('scheduled_for','min_weeks')
+    def  _check_min_weeks(self):
+        if  self.scheduled_for > self.min_weeks :
+            raise exceptions.ValidationError("Minimum  must  be  greater or  equal to  Scheduled  For ")  
+    
     
     allocate_spot = fields.Boolean(string='Allocate')
     state = fields.Selection([
@@ -808,35 +858,66 @@ class  ratecard_multiple(models.Model):
         ('cancel', 'Cancelled'),
         ], string='Status', readonly=True, copy=False, index=True, track_visibility='onchange', default='draft')  
     
-    validity_date = fields.Date(string='Expiration Date', readonly=True, states={'draft': [('readonly', False)], 'sent': [('readonly', False)]})
+    validity_date = fields.Date(string='Product Date', readonly=True, states={'draft': [('readonly', False)], 'sent': [('readonly', False)]},required=True)
     
-    @api.model
-    def _default_note(self):
-        return self.env.user.company_id.sale_note  
+    
+    
         
     note = fields.Text('Terms and conditions', default=_default_note)
     
     amount_untaxed = fields.Integer(string='Untaxed Amount', store=True, readonly=True, compute='_amount_all', track_visibility='always')
-    amount_tax = fields.Integer(string='Taxes', store=True, readonly=True, compute='_amount_all', track_visibility='always')
+    amount_tax = fields.Integer(string='Taxes', store=True, readonly=True, compute='_compute_taxedamount', track_visibility='always')
+    tax_id = fields.Many2many('account.tax', string='Taxes')
+    discount = fields.Float(string='Discount (%)', digits_compute=dp.get_precision('Discount'), default=2.0)    
     amount_total = fields.Integer(string='Total', store=True, readonly=True, compute='_amount_all', track_visibility='always')    
-   
+    #company_id = fields.Many2one(comodel='res.company', string='Company', store=True, readonly=True)
+    subtotal_discounted = fields.Integer(string='Total After  Discount', store=True, readonly=True, compute='_compute_discountamount', track_visibility='always')
+    fiscal_position_id = fields.Many2one('account.fiscal.position', oldname='fiscal_position', string='Fiscal Position')  
+    #vat_rate  = fields.Many2one(comodel_name='vat.rate', string='TAX  RATE (%)',digits_compute=dp.get_precision('TAX RATE'), default=0.0)
+    vat_rate  = fields.Float(string='TAX  RATE (%)',digits_compute=dp.get_precision('VAT TAX RATE'), default=17)
+    taxed_amount  = fields.Integer( string='AFTER TAX',store=True, readonly=True, compute='_compute_taxedamount', track_visibility='always')
     multiple_ratecard_id  = fields.Many2many(comodel_name='ratecard.sin.radio', relation='ratecard_mul_ratecard_sin_rel', 
                                                 column1='ratecard_mul_id', 
                                                 column2='ratecard_sin_radio_id', 
                                                 string='RATECARDS')   
     allocate_multiple_id  =  fields.Many2many(comodel_name='ratecard.mul' ,relation='ratecard_mul_ratecard_sin_rel', 
-                                              column1='multiple_ratecard_id' , column2='week_id' ,string='ALLOCATE RATECARD')
+                                              column1='multiple_ratecard_id' , column2='week_id' ,string='ALLOCATE RATECARD',required=True)
    
     ratecard_sin_radio_id = fields.One2many(comodel_name='ratecard.sin.radio', 
                                               inverse_name='ratecard_multiple_id', 
-                                              string='RADIO  SINGULAR RATECARD') 
+                                              string='RADIO  SINGULAR RATECARD',required=True) 
+    
     
     allocate_schedule = fields.Many2many(comodel_name='week', relation='ratecard_multiple_week_rel',
-                                         column1='ratecard_multiple_id', column2='week_id', track_visibility='onchange', string='ALLOCATE SPOTS')
+                                         column1='ratecard_multiple_id', column2='week_id', track_visibility='onchange', string='ALLOCATE SPOTS',required=True)
    
+    partner_id = fields.Many2one('res.partner', string='Customer', readonly=True, states={'draft': [('readonly', False)], 'sent': [('readonly', False)]}, required=True, change_default=True, index=True, track_visibility='always')    
     _defaults = {
         'code':lambda obj,cr,uid,context:'/'
     }
+    @api.one
+    @api.depends('amount_untaxed','discount' ,'vat_rate','amount_tax')    
+    def _compute_taxedamount(self):
+        for order in self:
+            for  line  in  order:
+                subtotaldiscounted= line.amount_untaxed* (1 - (line.discount or 0.0) / 100.0)   
+                subtotaltaxed  = subtotaldiscounted * (1- (line.vat_rate or 0.0)/100.0)
+                amount_tax  = subtotaldiscounted  - subtotaltaxed
+                aftertax  = subtotaldiscounted +amount_tax  
+                
+            line.update({
+                'subtotal_discounted':subtotaldiscounted,
+                'taxed_amount':aftertax,
+                'amount_tax':amount_tax,
+            })         
+    
+    @api.one
+    @api.depends('amount_untaxed','discount' )    
+    def _compute_discountamount(self):
+        for order in self:
+            for  line  in  order:
+                subtotaldiscounted= line.amount_untaxed* (1 - (line.discount or 0.0) / 100.0)                
+            line.update({'subtotal_discounted':subtotaldiscounted})        
     #_defaults = {
         #'code': lambda self,cr,uid,context={}: self.pool.get('ir.sequence').get(cr, uid, 'object.object'),
     #} 
@@ -846,16 +927,26 @@ class  ratecard_multiple(models.Model):
         #created_hc  = []    self.update({'spot_total':total})  
         #for  id  in  
 
-    @api.depends('allocate_schedule.price_total')
+    @api.depends('discount','allocate_schedule.spot_total')
     def _amount_all(self):
         """
         Compute the total amounts of the Weeks  and  Rate.
         """
         for order in self:
+            print 'order' , order            
             amount_untaxed = amount_tax = 0.0
+            print 'amount  untaxed' , amount_untaxed
             for line in order.allocate_schedule:
+                print 'spot_total'
+                print  'order.spot_total == ' , line.spot_total
+                print 'out  of  spot_total'                
+                print 'LINE  IN  ALLOCATE_SCHEDULE' , line
                 amount_untaxed += line.price_subtotal
+                print  'Amount  untaxed == ' , line.price_subtotal               
                 amount_tax += line.price_tax
+                
+                print  'amount_tax == ' , line.price_tax
+                
             order.update({
                 'amount_untaxed': amount_untaxed,
                 'amount_tax': amount_tax,
@@ -921,6 +1012,10 @@ class  ratecard_multiple(models.Model):
         #return result.items()    
         
 #relation
+class  ratecard_mul_ratecard_sin_rel(models.Model):
+    _name = 'ratecard.mul.ratecard.sin.rel'
+    week_id  = fields.Many2one(comodel='week')
+    
 class ratecard_multiple_week_rel(models.Model):
     _name = 'ratecard.multiple.week.rel'
     ratecard_multiple_id = fields.Many2one(comodel_name='ratecard.multiple' )
@@ -1264,7 +1359,7 @@ class  var_rate(models.Model):
     _description = 'VAT  RATE'
     
     name  = fields.Char(string='NAME')
-    rate =  fields.Float(string='VAT RATE', digits=(17,3) )    # TODO  WHY  ITS  CAUSING A  CLIENT  ERROR  _sprinf  huh ? 
+    rate =  fields.Integer(string='VAT RATE', digits_compute=dp.get_precision('VAT RATE'), default=0.0)
 
     description = fields.Text('Description', translate=True)          
     logo = fields.Binary('Logo File')
@@ -1290,7 +1385,8 @@ class  var_rate(models.Model):
             string='Outlet',
             help='Select a brand for this  VAT  RATE if it exists',
             ondelete='restrict'
-        )       
+        )    
+    ratecard_multiple_id  = fields.One2many('ratecard.multiple','vat_rate',string='VAT RATE')
 
 
     

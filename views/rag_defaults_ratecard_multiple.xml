@@ -20,13 +20,18 @@
                                                      <field name='name'/>
                                                     <field name='code'/>
                                                     <field name="validity_date"/>
+                                                    <field name="scheduled_for"/>
+                                                    <field name="min_weeks"/>
+                                                    <field name="max_weeks"/> 
                                                      <field name="allocate_spot"/>
+                                                     <!--<field name='company_id'/>-->
                                                       </group>
                                                    <field name='multiple_ratecard_id'/>
                                                    <!--<field name='allocate_multiple_id'/>-->
                                                    <field name="allocate_schedule"   widget="one2many_list" attrs="{'invisible': [('allocate_spot', '=', 'True')]}">
                                                                                             <tree  string="SPOTS" editable="bottom">
                                                                                                <field name='state'/>
+                                                                                                <field name='multiple_rate'/>
                                                                                                 <field name='monday'/>
                                                                                                 <field name='tuesday'/>
                                                                                                 <field name='wednesday'/>
@@ -35,11 +40,27 @@
                                                                                                 <field name='saturday'/>
                                                                                                  <field name='sunday'/>
                                                                                                  <field name="spot_total"/> 
+                                                                                                 <field name="noofweeks"/>
+                                                                                               <field name='price_subtotal'/>
                                                                                              </tree>
                                               </field>
                                               <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total">
+                                                    <field name="discount" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                                                <label for="discount" groups="sale.group_discount_per_so_line"/>
+                                                                <div name="discount" groups="sale.group_discount_per_so_line">
+                                                                    <field name="discount" class="oe_inline"/> %%
+                                                                   </div>                                               
+                                                    
                                                     <field name="amount_untaxed" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                                    <field name="subtotal_discounted" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                                    <field name="vat_rate"  widget='monetary' options="{'currency_field': 'currency_id'}" />
+                                                         <label for="vat_rate" groups="sale.group_discount_per_so_line"/>
+                                                                <div name="vat_rate" groups="sale.group_discount_per_so_line">
+                                                                    <field name="vat_rate" class="oe_inline"/> %%
+                                                                   </div>       
+                                                <!--<field name="tax_id" widget="many2many_tags" domain="[('type_tax_use','=','sale'),('company_id','=',parent.company_id)]"/>-->
                                                     <field name="amount_tax" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                                     <field name="taxed_amount" widget='monetary' options="{'currency_field': 'currency_id'}"/>
                                                     <div class="oe_subtotal_footer_separator oe_inline">
                                                         <label for="amount_total" />
                                                         <button name="button_dummy" states="draft,sent" string="(update)" type="object" class="oe_edit_only oe_link"/>
@@ -67,6 +88,7 @@
                           <!--<field name='allocate_multiple_id'/>-->
                         <field name="allocate_schedule"   widget="one2many_list">
                                                                                             <tree  string="SPOTS" editable="bottom">
+                                                                                                 <field name='multiple_rate'/>
                                                                                                 <field name='monday'/>
                                                                                                 <field name='tuesday'/>
                                                                                                 <field name='wednesday'/>
@@ -75,8 +97,11 @@
                                                                                                 <field name='saturday'/>
                                                                                                  <field name='sunday'/>
                                                                                                  <field name="spot_total"/> 
+                                                                                               <field name="noofweeks"/>
+                                                                                               <field name='price_subtotal'/>
                                                                                              </tree>
                                                                                               <form  string="ALLOCATE">
+                                                                                                <field name='multiple_rate'/>
                                                                                                 <field name='monday'/>
                                                                                                 <field name='tuesday'/>
                                                                                                 <field name='wednesday'/>
@@ -84,8 +109,9 @@
                                                                                                 <field name='friday'/>
                                                                                                 <field name='saturday'/>
                                                                                                  <field name='sunday'/>
-
                                                                                                  <field name="spot_total"/> 
+                                                                                                  <field name="noofweeks"/>
+                                                                                                <field name='price_subtotal'/>
                                                                                              </form>
                                                 <group class="oe_subtotal_footer oe_right" colspan="2" name="spot_total">
                                                         <div class="oe_subtotal_footer_separator oe_inline">
