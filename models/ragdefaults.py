@@ -15,7 +15,7 @@ from openerp import api, fields, models, _
 import openerp.addons.decimal_precision as dp
 from openerp.tools import float_is_zero, float_compare, DEFAULT_SERVER_DATETIME_FORMAT
 from  ragconstants import  year_week_no , days ,payment_type , schedule_types ,payment_duration, seconds , minutes  ,list_position , hour_from , hour_to , page_no ,_ad_column , _ad_inches , outlettype_
-
+import  pudb
 
 #class sic_codes(models.Model):
     #_name = 'sic.codes'
@@ -816,6 +816,7 @@ class  ratecard_multiples(models.Model):
     
     
 class  ratecard_multiple(models.Model):
+    #pudb.set_trace()
     _name = 'ratecard.multiple'
     
     #_inherits = {'ratecard.sin.radio':'ratecard_sin_radio_id'}
@@ -840,8 +841,8 @@ class  ratecard_multiple(models.Model):
     @api.constrains('min_weeks','max_weeks')
     def  _check_max_weeks(self):
         if  self.min_weeks > self.max_weeks :
-            raise exceptions.ValidationError("No Of Minimum  Weeks  cannot be  greater than Maximum  No of Weeks")    
-
+            raise exceptions.ValidationError("No Of Minimum  Weeks  cannot be  greater than Maximum  No of Weeks")   
+        
     @api.one
     @api.constrains('scheduled_for','min_weeks')
     def  _check_min_weeks(self):
@@ -868,8 +869,39 @@ class  ratecard_multiple(models.Model):
     amount_untaxed = fields.Integer(string='Untaxed Amount', store=True, readonly=True, compute='_amount_all', track_visibility='always')
     amount_tax = fields.Integer(string='Taxes', store=True, readonly=True, compute='_compute_taxedamount', track_visibility='always')
     tax_id = fields.Many2many('account.tax', string='Taxes')
-    discount = fields.Float(string='Discount (%)', digits_compute=dp.get_precision('Discount'), default=2.0)    
-    amount_total = fields.Integer(string='Total', store=True, readonly=True, compute='_amount_all', track_visibility='always')    
+    discount = fields.Float(string='Discount (%)',store=True , digits_compute=dp.get_precision('Discount'), track_visibility='onchange' )    
+ 
+    amount_total = fields.Integer(string='Total', store=True, readonly=True, compute='_amount_all', track_visibility='always')  
+    total_spot = fields.Integer(string='SPOT  TOTAL', store=True, readonly=True, compute='_amount_all', track_visibility='always')    
+    
+    
+    
+    @api.depends('discount','allocate_schedule.price_subtotal')
+    def _discount(self):
+        """
+        """
+        for order in self:
+            print 'order' , order            
+            amount_untaxed = amount_tax = 0.0
+            for line in order.allocate_schedule:
+                if  line.price_subtotal  ==False:
+                    raise exceptions.Warning("Kindly Update Discount ,Its  empty ") 
+                elif  line.price_subtotal  !=False:
+                    discount +=discount
+            order.update({
+                'discount': discount,
+            })    
+    
+    #@api.onchange('discount','amount_untaxed')
+    #def  discount_update_amount_untaxed(self):
+        #for  order  in self:
+            #if  order.discount == False:
+                #raise exceptions.Warning("Kindly Update Discount ,Its  empty ")                
+            #if order.discount != 0 :
+                #print  'amount_untaxed  '  , order.amount_untaxed
+                #print  'discount ' , order.discount
+                #order.amount_untaxed  -=  orderamount_untaxed* (1 - (order.discount ) / 100.0)                
+            
     #company_id = fields.Many2one(comodel='res.company', string='Company', store=True, readonly=True)
     subtotal_discounted = fields.Integer(string='Total After  Discount', store=True, readonly=True, compute='_compute_discountamount', track_visibility='always')
     fiscal_position_id = fields.Many2one('account.fiscal.position', oldname='fiscal_position', string='Fiscal Position')  
@@ -935,10 +967,12 @@ class  ratecard_multiple(models.Model):
         for order in self:
             print 'order' , order            
             amount_untaxed = amount_tax = 0.0
+            total_spot = 0
             print 'amount  untaxed' , amount_untaxed
             for line in order.allocate_schedule:
                 print 'spot_total'
                 print  'order.spot_total == ' , line.spot_total
+                total_spot += line.spot_total 
                 print 'out  of  spot_total'                
                 print 'LINE  IN  ALLOCATE_SCHEDULE' , line
                 amount_untaxed += line.price_subtotal
@@ -946,8 +980,11 @@ class  ratecard_multiple(models.Model):
                 amount_tax += line.price_tax
                 
                 print  'amount_tax == ' , line.price_tax
-                
+            if  (order.amount_untaxed >  (0 or  0.00))and  (order.discount == (0 or  0.00)):
+                print  'untaxed' , order.amount_untaxed 
+                #raise exceptions.ValidationError("Please  Update Discount ! must  be  greater  than  0.00 ") 
             order.update({
+                'total_spot':total_spot,
                 'amount_untaxed': amount_untaxed,
                 'amount_tax': amount_tax,
                 'amount_total': amount_untaxed + amount_tax,

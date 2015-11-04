@@ -45,19 +45,36 @@
                                                                                              </tree>
                                               </field>
                                               <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total">
-                                                    <field name="discount" widget='monetary' options="{'currency_field': 'currency_id'}"/>
-                                                                <label for="discount" groups="sale.group_discount_per_so_line"/>
-                                                                <div name="discount" groups="sale.group_discount_per_so_line">
+                                                 <field name="total_spot" nolabel="1" class="oe_subtotal_footer_separator" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                                         <label for="total_spot"/>
+                                                                <div name="total_spot" >
+                                                                    <field name="total_spot" class="oe_inline"/>
+                                                                   </div>                                                         
+                                                   <separator/>
+                                                    <field name="discount" onchange='_discount(discount,allocate_schedule.price_subtotal)'  widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                                                <label for="discount" />
+                                                                <div name="discount">
                                                                     <field name="discount" class="oe_inline"/> %%
-                                                                   </div>                                               
+                                                                   </div>    
+                                                                   
+                                                                   
+                                                     <div class="oe_subtotal_footer_separator oe_inline">
+                                                        <label for="discount" />
+                                                        <button name="button_dummy" states="draft,sent" string="(update)" type="object" class="oe_edit_only oe_link"/>
+                                                    </div>
+                                                    <field name="discount" nolabel="1" class="oe_subtotal_footer_separator" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                             
                                                     
                                                     <field name="amount_untaxed" widget='monetary' options="{'currency_field': 'currency_id'}"/>
                                                     <field name="subtotal_discounted" widget='monetary' options="{'currency_field': 'currency_id'}"/>
-                                                    <field name="vat_rate"  widget='monetary' options="{'currency_field': 'currency_id'}" />
-                                                         <label for="vat_rate" groups="sale.group_discount_per_so_line"/>
-                                                                <div name="vat_rate" groups="sale.group_discount_per_so_line">
+                                                    
+                                                    <separator/>
+                                                    <field name="vat_rate" onchange='_discount(discount,allocate_schedule.price_subtotal)'  widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                                                <label for="vat_rate" />
+                                                                <div name="vat_rate">
                                                                     <field name="vat_rate" class="oe_inline"/> %%
-                                                                   </div>       
+                                                                   </div>
+                                              
                                                 <!--<field name="tax_id" widget="many2many_tags" domain="[('type_tax_use','=','sale'),('company_id','=',parent.company_id)]"/>-->
                                                     <field name="amount_tax" widget='monetary' options="{'currency_field': 'currency_id'}"/>
                                                      <field name="taxed_amount" widget='monetary' options="{'currency_field': 'currency_id'}"/>
@@ -84,6 +101,7 @@
                 <tree string="ALLOCATE SPOTS ON DAYS">
                         <field name='name'/>
                          <field name='code'/>
+                            <field name="total_spot" sum="Total Spot" widget="monetary"/>
                         <field name="amount_total" sum="Total Tax Included" widget="monetary"/>
                           <!--<field name='allocate_multiple_id'/>-->
                         <field name="allocate_schedule"   widget="one2many_list">
