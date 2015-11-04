@@ -57,7 +57,6 @@
                                                         <button name="button_dummy" states="draft,sent" string="(update)" type="object" class="oe_edit_only oe_link"/>
                                                     </div>
                                                     <field name="discount" nolabel="1" class="oe_inline" widget='monetary' options="{'currency_field': 'currency_id'}"/>
-                             
                                                     
                                                     <field name="amount_untaxed" widget='monetary' options="{'currency_field': 'currency_id'}"/>
                                                     <field name="subtotal_discounted" widget='monetary' options="{'currency_field': 'currency_id'}"/>
