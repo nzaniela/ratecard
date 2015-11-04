@@ -906,8 +906,8 @@ class  ratecard_multiple(models.Model):
     subtotal_discounted = fields.Integer(string='Total After  Discount', store=True, readonly=True, compute='_compute_discountamount', track_visibility='always')
     fiscal_position_id = fields.Many2one('account.fiscal.position', oldname='fiscal_position', string='Fiscal Position')  
     #vat_rate  = fields.Many2one(comodel_name='vat.rate', string='TAX  RATE (%)',digits_compute=dp.get_precision('TAX RATE'), default=0.0)
-    vat_rate  = fields.Float(string='TAX  RATE (%)',digits_compute=dp.get_precision('VAT TAX RATE'), default=17)
-    taxed_amount  = fields.Integer( string='AFTER TAX',store=True, readonly=True, compute='_compute_taxedamount', track_visibility='always')
+    vat_rate  = fields.Float(string='TAX  RATE (%)',digits_compute=dp.get_precision('TAX RATE'), default=17, track_visibility='onchange'  )    
+    taxed_amount  = fields.Integer( string='Total',store=True, readonly=True, compute='_compute_taxedamount', track_visibility='always')
     multiple_ratecard_id  = fields.Many2many(comodel_name='ratecard.sin.radio', relation='ratecard_mul_ratecard_sin_rel', 
                                                 column1='ratecard_mul_id', 
                                                 column2='ratecard_sin_radio_id', 
