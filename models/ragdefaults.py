@@ -5,6 +5,7 @@
 from openerp.tools.translate import _
 from openerp import tools ,exceptions
 
+import logging
 import time
 from datetime import date
 from dateutil.relativedelta import relativedelta
@@ -736,7 +737,8 @@ class  digital_size(models.Model):
 class  ratecard_sin_radio(models.Model):
     _name =  'ratecard.sin.radio'
     _description  = 'RATECARD SINGULAR RADIO  '
-    
+
+    code  = fields.Char(string='SINGULAR RATECARD CODE',readonly=True)
     name  =   fields.Char(string='NAME')
     outlet_id = fields.Many2one(comodel_name='outlet', string='Outlet')
     timeband_id  = fields.Many2one(comodel_name='timeband', string='TimeBand')
@@ -755,6 +757,11 @@ class  ratecard_sin_radio(models.Model):
     description = fields.Text('Description', translate=True)          
     logo = fields.Binary('Logo File')
     ratecard_multiple_id = fields.Many2one(comodel_name='ratecard.multiple' , string='RADIO SINGULAR RATECARD')
+
+    _defaults = {
+
+        'code':lambda obj,cr,uid,context:'SINGULAR/RATECARD/'
+    }
     
     #def name_get(self,cr,uid,ids,context=None):
             #result = {}
@@ -881,6 +888,7 @@ class  ratecard_multiple(models.Model):
         """
         """
         for order in self:
+            discount = 0
             print 'order' , order            
             amount_untaxed = amount_tax = 0.0
             for line in order.allocate_schedule:
@@ -1653,15 +1661,38 @@ class  spot_weeks(models.Model):
     
 class  rate(models.Model):
     _name  = 'rate'
-    
-    name = fields.Char(string='NAME')#ad  type  name
-    #name=fields.Many2one(comodel_name='ad.type', string='NAME')
-    timeband_id = fields.Many2one(
-        'timeband',
-        string='TIMEBAND',
-        help='Select a timeband  for  this  rate if it exists',
-        ondelete='cascade')  
+    code  = fields.Char(string='RATE CODE',readonly=True)
+    timeband_id = fields.Many2one('timeband', string='TIMEBAND',help='Select a timeband  for  this  rate if it exists',ondelete='cascade')
     rate_amount = fields.Integer(string='RATE AMOUNT')
+    description = fields.Text('Description', translate=True)
+    outlet_id = fields.Char(string='OUTLET' , readonly=True)
+
+    _defaults = {
+
+        'code':lambda obj,cr,uid,context:'RATE/TIMEBAND/'
+    }
+
+    def  onchange_timeband_outlet(self,cr,uid,ids,timeband_id,outlet_id,context=None):
+        res = {}
+        timeband_obj  = self.pool.get('timeband')
+        print  timeband_obj
+        timeband_ids  =  timeband_obj.search(cr, uid,[('timeband_id' , '=',outlet_id)])
+        print  timeband_ids
+        for  record  in  timeband_obj.browse(cr,uid,timeband_ids,context=context):
+            logging.info('LIST  OF  TIMEBANDS  ON  OUTLETS')
+            logging.info(timeband_ids)
+            print record
+        return {'domain':{'timeband_id':[('timeband_id','=',timeband_ids)]}}
+
+
+    def onchange_timeband(self,cr,uid,ids,timeband_id):
+        result = {'value':{'outlet_id':False}}
+        if timeband_id:
+            timeband = self.pool.get('timeband').browse(cr,uid,timeband_id)
+            print  timeband
+            result['value'] = {'outlet_id':timeband.outlet_id.id}
+            return result
+
 
 
 class SaleOrderLine(models.Model):

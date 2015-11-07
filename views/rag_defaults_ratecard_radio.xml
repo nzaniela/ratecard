@@ -9,6 +9,7 @@
             <field name="model">ratecard.sin.radio</field>
             <field name="arch" type="xml">
                 <search string="RateCard Type Singular">
+                    <field name='code'/>
                     <field name="name"/>
                     <field name="outlet_id" placeholder="OUTLET"/>
                     <field name="outlet_type_id" domain="[('outlet_id', '=' ,outlet_id)]" placeholder="OUTLET TYPE" />
@@ -25,7 +26,7 @@
                     <field name="vat_rate_id" placeholder="VAT RATE " />
                     <field name="quote_stage_id" placeholder="QUOTE  STAGE" />
 
-                
+
 
 
 
@@ -46,6 +47,7 @@
                 <form string="RateCard Type Singular" version="7.0">
                     <sheet>
                                 <field name="logo" widget="image" class="oe_avatar oe_left"/>
+                                <field name='code'/>
                                 <field name="name"/>
                                 <field name="outlet_id" on_change="onchange_outlet(outlet_id)" placeholder="OUTLET"/>
                                  <field name="outlet_type_id" domain="[('outlet_id', '=' ,outlet_id)]" placeholder="OUTLET TYPE" />
@@ -63,7 +65,7 @@
                                 <label for="name" string="RateCard Singular Name"/>
                             </div>
                         </div>
-                        
+
                         <div class="oe_right oe_button_box">
                             <button
                                 class="oe_inline oe_stat_button"
@@ -116,11 +118,12 @@
                                       </button>
                                   </div>
                             <group string="singular" colspan="4"  col="4">
+                                        <field name='code'/>
                                         <field name="outlet_id" on_change="onchange_outlet(outlet_id)" placeholder="OUTLET"/>
                                         <field name="outlet_type_id" placeholder="OUTLET TYPE" />
                                         <field name="ad_type_id" placeholder="AD TYPE" />
                                          <field name="schedule_type_id" placeholder="SCHEDULE TYPE"/>
-                                        <field name="pages_id" placeholder="PAGES" /> 
+                                        <field name="pages_id" placeholder="PAGES" />
                                         <field name="timeband_id" placeholder="TIME BAND" />
                                         <field name="spot_length_id" placeholder="Spot Length" />
                                         <field name="rateclass_code_id" placeholder="RATECLASS CODE" />
@@ -143,6 +146,7 @@
             <field name="model">ratecard.sin.radio</field>
             <field name="arch" type="xml">
                 <tree string="ratecard_sin_radio">
+                    <field name='code'/>
                     <field name="name"/>
                     <field name="description"/>
                     <field name="outlet_id" placeholder="OUTLET"/>
@@ -151,7 +155,7 @@
                                         <field name="schedule_type_id" placeholder="SCHEDULE TYPE"/>
 
                     <field name="pages_id" placeholder="PAGES" />
-    
+
                     <field name="timeband_id" placeholder="TIME BAND" />
                     <field name="spot_length_id" placeholder="Spot Length" />
                     <field name="rateclass_code_id" placeholder="RATECLASS CODE" />
@@ -181,6 +185,7 @@
                                 <div class="oe_kanban_details">
                                     <h4>
                                         <a type="open">
+                                            <field name='code'/>
                                             <field name="name"/>
                                             <field name="outlet_id" placeholder="OUTLET"/>
                                             <field name="outlet_type_id" placeholder="OUTLET TYPE" />
@@ -205,7 +210,7 @@
                                         <a name="%(action_open_ratecard_sin_radio)d"
                                            type="action">
                                             <t t-esc="record.products_count.value"/> Products
-                                        
+
                                         </a>
                                     </div>
                                     <span>
@@ -292,7 +297,7 @@
                 </xpath>
             </field>
         </record>
-       
+
         <record id="view_product_template_tree_ratecard_sin_radio" model="ir.ui.view">
             <field name="name">product tree view: add ratecard_sin_radio</field>
             <field name="model">product.template</field>
@@ -313,13 +318,32 @@
                 </field>
             </field>
         </record>
-      
+
         <record model="ir.actions.act_window" id="action_ratecard_sin_radio">
             <field name="name">RADIO  SINGULAR RATECARD</field>
             <field name="res_model">ratecard.sin.radio</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form,kanban</field>
         </record>
+
+        <!-- Sequences for SINGULAR Ratecard -->
+        <record id="seq__ratecard_singular_type" model="ir.sequence.type">
+            <field name="name">SINGULAR RATECARD CODE</field>
+            <field name="code">ratecard.sin.radio</field>
+        </record>
+
+        <record id="seq_ratecard_singular_sequence" model="ir.sequence">
+            <field name="name">SINGULAR RATECARD CODE</field>
+            <field name="code">ratecard.sin.radio</field>
+            <field name="prefix">SINGULAR-RATECARD/2015/</field>
+            <field name="padding">5</field>
+        </record>
+
+
+
+
+
+
           <menuitem id="timeorder_ratecard_menu" name="RATE CARD   DEFAULTS" sequence="10" parent ="timeorder_management_menu"/>
 
         <menuitem  name="RADIO SINGULAR RATE CARD" id="menu_ratecard_sin_radio"  action="action_ratecard_sin_radio"  parent="timeorder_ratecard_menu"/>

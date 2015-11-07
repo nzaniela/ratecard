@@ -8,42 +8,46 @@
             <field name="arch" type="xml">
                 <form string="RATES">
                         <group col="4">
-                                   <group col="2" colspan="2">
-                                                                                          <field name="name"/>
-                                             <field name="timeband_id"/>
-                                            <field name='rate_amount'/>
-                                            <!--<field name='outlet_id'/>-->
-                                          
+                                 <group col="2" colspan="2">
+                                             <field name="code"/>
+                                             <field name='rate_amount'/>
+                                        <!--<field name="timeband_id" on_change="onchange_timeband(timeband_id)" placeholder="TIMEBAND"/>-->
+                                        <!--<field name="outlet_id" domain="[('timeband_id', '=' ,'timeband_id')]" placeholder="OUTLET" />-->
+                                       <newline/>
+                                       <field name="timeband_id" on_change="onchange_timeband_outlet(timeband_id,outlet_id)" placeholder="TIMEBAND"/>
+                                        <field name="outlet_id" placeholder="OUTLET" />
+
                                              </group>
                         </group>
-                               <!--<field name="description" nolabel="1"/>-->
+                    <group string="Description">
+                         <field name="description" nolabel="1" placeholder="DESCRIPTION" />
+                    </group>
                 </form>
             </field>
         </record>
-        
+
         <record id="view_rate_tree" model="ir.ui.view">
             <field name="name">rate.tree</field>
             <field name="model">rate</field>
             <field name="arch" type="xml">
                 <tree string="RATES">
-                                                                                                          <field name="name"/>
-
-                                             <field name="timeband_id"/>
+                                            <field name="code"/>
                                             <field name='rate_amount'/>
-                                            <!--<field name='outlet_id'/>-->
+                                            <field name="timeband_id"/>
+                                            <field name='outlet_id'/>
 
                 </tree>
             </field>
         </record>
-        
+
         <record id="action_rate" model="ir.actions.act_window">
             <field name="name">RATE</field>
             <field name="res_model">rate</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
         </record>
-        
-          <menuitem id="timeorder_rate_menu" name="RATE DEFAULTS" sequence="20" parent ="timeorder_management_menu"/>
-        <menuitem  name="RATES TYPES" id="menu_rate"  action="action_rate"  parent="timeorder_rate_menu"/>
+
+          <menuitem id="timeorder_rate_menu" name="RATE DEFAULTS" sequence="2" parent ="timeorder_management_menu"/>
+        <menuitem  name="TIMEBAND RATES" id="menu_rate"  action="action_rate"  parent="timeorder_rate_menu"/>
          </data>
 </openerp>
