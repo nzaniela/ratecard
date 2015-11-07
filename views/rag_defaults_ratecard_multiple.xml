@@ -30,8 +30,8 @@
                                                    <!--<field name='allocate_multiple_id'/>-->
                                                    <field name="allocate_schedule"   widget="one2many_list" attrs="{'invisible': [('allocate_spot', '=', 'True')]}">
                                                                                             <tree  string="SPOTS" editable="bottom">
-                                                                                               <field name='state'/>
-                                                                                                <field name='multiple_rate'/>
+                                                                                               <field name='code'/>
+                                                                                                <!--<field name='multiple_rate'/>-->
                                                                                                 <field name='monday'/>
                                                                                                 <field name='tuesday'/>
                                                                                                 <field name='wednesday'/>
@@ -51,7 +51,13 @@
                                                     </div>
                                                     <field name="total_spot" nolabel="1" class="oe_inline" widget='monetary' options="{'currency_field': 'currency_id'}"/>
                              
-                                                                   
+
+                                                     <div class="oe_inline">
+                                                        <label for="rate_amount" />
+                                                        <button name="button_dummy" states="draft,sent" string="(update)" type="object" class="oe_edit_only oe_link"/>
+                                                    </div>
+                                                    <field name="rate_amount" nolabel="1" class="oe_inline" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+
                                                      <div class="oe_inline">
                                                         <label for="discount" />
                                                         <button name="button_dummy" states="draft,sent" string="(update)" type="object" class="oe_edit_only oe_link"/>
@@ -98,7 +104,7 @@
                           <!--<field name='allocate_multiple_id'/>-->
                         <field name="allocate_schedule"   widget="one2many_list">
                                                                                             <tree  string="SPOTS" editable="bottom">
-                                                                                                 <field name='multiple_rate'/>
+                                                                                                 <field name='code'/>
                                                                                                 <field name='monday'/>
                                                                                                 <field name='tuesday'/>
                                                                                                 <field name='wednesday'/>
@@ -111,7 +117,7 @@
                                                                                                <field name='price_subtotal'/>
                                                                                              </tree>
                                                                                               <form  string="ALLOCATE">
-                                                                                                <field name='multiple_rate'/>
+                                                                                                <field name='code'/>
                                                                                                 <field name='monday'/>
                                                                                                 <field name='tuesday'/>
                                                                                                 <field name='wednesday'/>

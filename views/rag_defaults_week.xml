@@ -1,0 +1,17 @@
+<openerp>
+    <data>
+        <!-- Sequences for WEEK -->
+        <record id="seq__week_type" model="ir.sequence.type">
+            <field name="name">NO OF SPOTS CODE</field>
+            <field name="code">week</field>
+        </record>
+
+        <record id="seq_week_sequence" model="ir.sequence">
+            <field name="name">NO OF SPOTS CODE</field>
+            <field name="code">week</field>
+            <field name="prefix">NOOFSPOTS/ALLOCATED/%(year)s/%(month)s/%(woy)s/%(day)s/</field>
+            <field name="padding">5</field>
+        </record>
+    </data>
+</openerp>
+

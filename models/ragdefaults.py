@@ -26,7 +26,16 @@ import  pudb
 class  week(models.Model):
     _name='week'
     
-    multiple_rate  =  fields.Integer(string='RATE ')    
+    # multiple_rate  =  fields.Integer(string='RATE ')
+    code  = fields.Char(string='Multiple RateCard Code ',readonly=True)
+
+    _defaults = {
+        'code':lambda obj,cr,uid,context:'/'
+    }
+
+    def  create(self,cr,uid, vals,context=None):
+        vals['code'] = self.pool.get('ir.sequence').get(cr,uid,'week')
+        return super(week,self).create(cr,uid,vals,context=context)
     monday  = fields.Integer(string='MON')
     tuesday   = fields.Integer(string='TUE')
     wednesday   = fields.Integer(string='WED')
@@ -79,12 +88,12 @@ class  week(models.Model):
             self.update({'spot_total':spottotal})    
         
     @api.one
-    @api.depends('sunday' , 'monday','tuesday' ,'wednesday'  , 'thursday'  ,'friday'  , 'saturday', 'multiple_rate' , 'noofweeks')    
+    @api.depends('sunday' , 'monday','tuesday' ,'wednesday'  , 'thursday'  ,'friday'  , 'saturday', 'noofweeks')
     def _compute_spotrateweektotal(self):
         for order in self:
             for  line  in  order:
                 week_spot_total  = line.sunday + line.monday + line.tuesday+ line.wednesday+line.thursday + line.friday + line.saturday
-                subtotal = line.multiple_rate * week_spot_total *  line.noofweeks 
+                subtotal = week_spot_total *  line.noofweeks
             self.update({'price_subtotal':subtotal})    
  
     
@@ -957,8 +966,41 @@ class  ratecard_multiple(models.Model):
     _defaults = {
         'code':lambda obj,cr,uid,context:'/'
     }
+
+
+    @api.onchange('multiple_ratecard_id')
+    def _onchange_multiple_ratecard(self):
+        print 'we entered the multiple ratecard many2many'
+        for  order in  self:
+            print 'Order Name' , order.name
+            for line  in  order:
+                line.name
+                print 'line.name' , line.name
+                # print 'rate_amount' , line.rate_amount
+    rate_amount = fields.Float(string='RATES TOTAL Amount', store=True, readonly=True, compute='_getrate', track_visibility='always')
+
     @api.one
-    @api.depends('amount_untaxed','discount' ,'vat_rate','amount_tax')    
+    @api.depends('multiple_ratecard_id.rate_id')
+    def _getrate(self):
+        for  order  in  self:
+            print  'order', order
+            rate_amount = 0.0
+            for  line  in  order.multiple_ratecard_id:
+                print 'timeband' , line.timeband_id.id
+                print 'VAT  RATE' ,line.vat_rate_id.id
+                rate_amount += line.rate_id.rate_amount
+                print 'rate_amount' , rate_amount
+
+            order.update({
+                    'rate_amount':rate_amount,
+
+            })
+
+
+
+
+    @api.one
+    @api.depends('amount_untaxed','discount' ,'vat_rate','amount_tax','rate_amount')
     def _compute_taxedamount(self):
         for order in self:
             for  line  in  order:
@@ -989,7 +1031,7 @@ class  ratecard_multiple(models.Model):
         #created_hc  = []    self.update({'spot_total':total})  
         #for  id  in  
 
-    @api.depends('discount','allocate_schedule.spot_total')
+    @api.depends('rate_amount','discount','allocate_schedule.spot_total')
     def _amount_all(self):
         """
         Compute the total amounts of the Weeks  and  Rate.
@@ -998,6 +1040,7 @@ class  ratecard_multiple(models.Model):
             print 'order' , order            
             amount_untaxed = amount_tax = 0.0
             total_spot = 0
+            print  'rate_amount ', order.rate_amount
             print 'amount  untaxed' , amount_untaxed
             for line in order.allocate_schedule:
                 print 'spot_total'
@@ -1005,7 +1048,7 @@ class  ratecard_multiple(models.Model):
                 total_spot += line.spot_total 
                 print 'out  of  spot_total'                
                 print 'LINE  IN  ALLOCATE_SCHEDULE' , line
-                amount_untaxed += line.price_subtotal
+                amount_untaxed += order.rate_amount * line.price_subtotal
                 print  'Amount  untaxed == ' , line.price_subtotal               
                 amount_tax += line.price_tax
                 
@@ -1602,8 +1645,8 @@ class schedule_type(models.Model):
     #add  name_get  so  that  when  schedule  name  is  called  the  type  to  be  passed  also
     
     name = fields.Selection(selection=[
-        ('banded','BANDED'),
-        ('fixed','FIXED')
+        ('BANDED','BANDED'),
+        ('FIXED','FIXED')
         ],
                             string='Schedule Name')
     schedule_type = fields.Selection(selection=schedule_types, string='Schedule ')

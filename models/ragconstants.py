@@ -15,8 +15,8 @@ seconds  = [
     
 ]
 schedule_types = [
-    ('banded','Banded'),
-    ('fixed','Fixed'),
+    ('Banded','Banded'),
+    ('Fixed','Fixed'),
 ]
 payment_duration = [
     ('1','30'),
@@ -24,9 +24,9 @@ payment_duration = [
     ('3','60'),
     ]
 payment_type=[
-    ('1','NETTE 30'),
-    ('2','NETTE 45'),
-    ('3' ,'NETTE 60'),
+    ('NETTE 30','NETTE 30'),
+    ('NETTE 45','NETTE 45'),
+    ('NETTE 60' ,'NETTE 60'),
 
 ]
 months = {
