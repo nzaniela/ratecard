@@ -10,6 +10,7 @@
                         <group col="4">
                                  <group col="2" colspan="2">
                                              <field name="code"/>
+                                             <field name="name"/>
                                              <field name='rate_amount'/>
                                        <newline/>
                                        <field name="timeband_id" on_change="onchange_timeband_outlet(timeband_id)" placeholder="TIMEBAND"/>
@@ -29,14 +30,30 @@
             <field name="model">rate</field>
             <field name="arch" type="xml">
                 <tree string="RATES">
-                                            <field name="code"/>
-                                            <field name='rate_amount'/>
-                                            <field name="timeband_id"/>
-                                            <field name='outlet_id'/>
-
+            <field name="code"/>
+             <field name="name"/>
+            <field name='rate_amount'/>
+            <field name="timeband_id"/>
+            <field name='outlet_id'/>
                 </tree>
             </field>
         </record>
+
+
+         <!-- Sequences for Rate -->
+        <record id="seq_rate_type" model="ir.sequence.type">
+            <field name="name">TIMEBAND RATE CODE</field>
+            <field name="code">rate</field>
+        </record>
+
+        <record id="seq_rate_sequence" model="ir.sequence">
+            <field name="name">TIMEBAND RATE CODE</field>
+            <field name="code">rate</field>
+            <field name="prefix">TIMEBAND/RATE/%(year)s/%(month)s/%(day)s/</field>
+            <field name="padding">5</field>
+        </record>
+
+
 
         <record id="action_rate" model="ir.actions.act_window">
             <field name="name">RATE</field>

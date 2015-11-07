@@ -10,7 +10,9 @@
             <field name="arch" type="xml">
                 <search string="RATECLASS CODE">
                     <field name="name"/>
-                    <field name="outlet_id"/>
+                    <field name="code"    placeholder="RateClass  Code" />
+                    <field name="rate_class_type" placeholder="TYPE"/>
+                    <!--<field name="outlet_id"/>-->
                 </search>
             </field>
         </record>
@@ -29,12 +31,12 @@
                         <field name="logo" widget="image" class="oe_avatar oe_left"/>
                         <div class="oe_title">
                             <div class="oe_edit_only">
-                                <label for="name" string="RATECLASS CODE  Type Name"/>
+                                <label for="name" string="RATECLASS CODE NAME"/>
                             </div>
                             <h1>
                                 <field name="name"/>
                                 <field name="code"    placeholder="RateClass  Code" />
-                                <field name="rate_class_type"/>
+                                <field name="rate_class_type" placeholder="TYPE"/>
                             </h1>
                         </div>
                         <div class="oe_right oe_button_box">
@@ -47,7 +49,7 @@
                             </button>
                         </div>
                         <group>
-                            <field name="outlet_id"/>
+                            <!--<field name="outlet_id"/>-->
                         </group>
                         <group string="Description">
                             <field name="description" nolabel="1"/>
@@ -73,7 +75,7 @@
                         <field name="logo" widget="image" class="oe_avatar oe_left"/>
                         <div class="oe_title">
                             <div class="oe_edit_only">
-                                <label for="name" string="RATECLASS CODE Name"/>
+                                <label for="name" string="RATECLASS CODE NAME"/>
                             </div>
                             <h1>
                                 <field name="name"/>
@@ -89,12 +91,12 @@
                             </button>
                         </div>
                         <group>
-                            <field name="outlet_id"/>
+                            <!--<field name="outlet_id"/>-->
                         </group>
                         <h3>
                             <group colspan="4" col="4">
                                 <field name="code"    placeholder="RateClass  Code" />
-                                <field name="rate_class_type"/>
+                                <field name="rate_class_type" placeholder="TYPE"/>
                             </group>
                         </h3>
                         <group string="Description">
@@ -112,8 +114,8 @@
                     <field name="name"/>
                     <field name="description"/>
                     <field name="code"    placeholder="RateClass  Code" />
-                    <field name="rate_class_type"/>
-                    <field name="outlet_id"/>
+                    <field name="rate_class_type" placeholder="TYPE"/>
+                    <!--<field name="outlet_id"/>-->
                 </tree>
             </field>
         </record>
@@ -137,7 +139,7 @@
                                         <a type="open">
                                             <field name="name"/>
                                             <field name="code"    placeholder="RateClass  Code" />
-                                            <field name="rate_class_type"/>
+                                            <field name="rate_class_type" placeholder="TYPE"/>
                                         </a>
                                     </h4>
                                     <div>

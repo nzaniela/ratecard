@@ -10,7 +10,7 @@
             <field name="arch" type="xml">
                 <search string="ADTYPE">
                      <field name="name"/>
-                    <field name="outlet_id"/>
+                    <!--<field name="outlet_id"/>-->
                     <field name="outlet_type_id"/>
                     <field name="rate_card_type"/>
                     <field name="description"/>
@@ -35,11 +35,12 @@
                                 <label for="name" string="AD TYPE"/>
                             </div>
                             <h1>
-                                 <!--<field name="name"/>-->
-                                <field name="description"/>
-                                <field name="outlet_id"/>
+                                <field name="name"/>
                                 <field name="outlet_type_id"/>
                                 <field name="rate_card_type"/>
+                                <field name="description"/>
+                                <!--<field name="outlet_id" on_change="onchange_outlet(outlet_id)" placeholder="OUTLET"/>-->
+
                              </h1>
                         </div>
                         <div class="oe_right oe_button_box">
@@ -99,7 +100,7 @@
                         <h3>
                             <group colspan="4" col="4">
                                <!--<field name="name"/>-->
-                            <field name="outlet_id"/>
+                            <!--<field name="outlet_id" on_change="onchange_outlet(outlet_id)" placeholder="OUTLET"/>-->
                             <field name="outlet_type_id"/>
                             <field name="rate_card_type"/>
                             </group>
@@ -117,7 +118,7 @@
             <field name="arch" type="xml">
                 <tree string="ad_type">
                     <field name="name"/>
-                    <field name="outlet_id"/>
+                    <!--<field name="outlet_id"/>-->
                     <field name="outlet_type_id"/>
                     <field name="rate_card_type"/>
                   <field name="description"/>
@@ -144,10 +145,11 @@
                                     <h4>
                                         <a type="open">
                                              <field name="name"/>
-                                            <field name="description"/>
-                                            <field name="outlet_id"/>
-                                            <field name="outlet_type_id"/>
+                                             <field name="outlet_type_id"/>
                                             <field name="rate_card_type"/>
+                                            <field name="description"/>
+                                            <!--<field name="outlet_id"/>-->
+
                                         </a>
                                     </h4>
                                     <div>

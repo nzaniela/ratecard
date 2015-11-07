@@ -15,7 +15,7 @@
                     <field name="outlet_type_id" domain="[('outlet_id', '=' ,outlet_id)]" placeholder="OUTLET TYPE" />
                     <field name="ad_type_id" placeholder="AD TYPE" />
                     <field name="schedule_type_id" placeholder="SCHEDULE TYPE"/>
-                    <field name="pages_id" placeholder="PAGES" />
+                    <!--<field name="pages_id" placeholder="PAGES" />-->
                     <!--<field name="digital_location_id" placeholder="DIGITAL AD  LOCATION" />-->
                     <!--<field name="digital_type_id" placeholder="DIGITAL TYPE" />-->
                     <!--<field name="digital_size_id" placeholder="DIGITAL AD SIZE" />-->
@@ -25,6 +25,8 @@
                     <field name="payment_terms_id" placeholder="PAYMENT  TERMS" />
                     <field name="vat_rate_id" placeholder="VAT RATE " />
                     <field name="quote_stage_id" placeholder="QUOTE  STAGE" />
+                    <field name="rate_id" placeholder="TIMEBAND RATE" />
+
 
 
 
@@ -46,20 +48,25 @@
             <field name="arch" type="xml">
                 <form string="RateCard Type Singular" version="7.0">
                     <sheet>
+                        <group>
+                            <field name="code"/>
+                        </group>
                                 <field name="logo" widget="image" class="oe_avatar oe_left"/>
-                                <field name='code'/>
                                 <field name="name"/>
                                 <field name="outlet_id" on_change="onchange_outlet(outlet_id)" placeholder="OUTLET"/>
                                  <field name="outlet_type_id" domain="[('outlet_id', '=' ,outlet_id)]" placeholder="OUTLET TYPE" />
                                 <field name="ad_type_id" placeholder="AD TYPE" />
                                 <field name="schedule_type_id" placeholder="SCHEDULE TYPE"/>
-                                <field name="pages_id" placeholder="PAGES" />
+                                <!--<field name="pages_id" placeholder="PAGES" />-->
                                 <field name="timeband_id" placeholder="TIME BAND" />
                                 <field name="spot_length_id" placeholder="Spot Length" />
                                 <field name="rateclass_code_id" placeholder="RATECLASS CODE" />
                                 <field name="payment_terms_id" placeholder="PAYMENT  TERMS" />
                                 <field name="vat_rate_id" placeholder="VAT RATE " />
                                 <field name="quote_stage_id" placeholder="QUOTE  STAGE" />
+                                <field name="rate_id" placeholder="TIMEBAND RATE" />
+
+
                         <div class="oe_title">
                             <div class="oe_edit_only">
                                 <label for="name" string="RateCard Singular Name"/>
@@ -99,6 +106,9 @@
             <field name="arch" type="xml">
                 <form string="RateCard Singular" version="7.0">
                     <sheet>
+                        <group>
+                            <field name="code"/>
+                        </group>
                         <field name="logo" widget="image" class="oe_avatar oe_left"/>
                                         <div class="oe_title">
                                                   <div class="oe_edit_only">
@@ -118,21 +128,18 @@
                                       </button>
                                   </div>
                             <group string="singular" colspan="4"  col="4">
-                                        <field name='code'/>
                                         <field name="outlet_id" on_change="onchange_outlet(outlet_id)" placeholder="OUTLET"/>
                                         <field name="outlet_type_id" placeholder="OUTLET TYPE" />
                                         <field name="ad_type_id" placeholder="AD TYPE" />
                                          <field name="schedule_type_id" placeholder="SCHEDULE TYPE"/>
-                                        <field name="pages_id" placeholder="PAGES" />
+                                        <!--<field name="pages_id" placeholder="PAGES" />-->
                                         <field name="timeband_id" placeholder="TIME BAND" />
                                         <field name="spot_length_id" placeholder="Spot Length" />
                                         <field name="rateclass_code_id" placeholder="RATECLASS CODE" />
                                         <field name="payment_terms_id" placeholder="PAYMENT  TERMS" />
                                         <field name="vat_rate_id" placeholder="VAT RATE " />
                                         <field name="quote_stage_id" placeholder="QUOTE  STAGE" />
-
-
-
+                                        <field name="rate_id" placeholder="TIMEBAND RATE" />
                             </group>
                         <group string="Description">
                             <field name="description" nolabel="1"/>
@@ -154,7 +161,7 @@
                     <field name="ad_type_id" placeholder="AD TYPE" />
                                         <field name="schedule_type_id" placeholder="SCHEDULE TYPE"/>
 
-                    <field name="pages_id" placeholder="PAGES" />
+                    <!--<field name="pages_id" placeholder="PAGES" />-->
 
                     <field name="timeband_id" placeholder="TIME BAND" />
                     <field name="spot_length_id" placeholder="Spot Length" />
@@ -162,7 +169,7 @@
                     <field name="payment_terms_id" placeholder="PAYMENT  TERMS" />
                     <field name="vat_rate_id" placeholder="VAT RATE " />
                     <field name="quote_stage_id" placeholder="QUOTE  STAGE" />
-
+                    <field name="rate_id" placeholder="TIMEBAND RATE" />
                     <!--<field name="outlet_id"/>-->
                 </tree>
             </field>
@@ -192,7 +199,7 @@
                                             <field name="ad_type_id" placeholder="AD TYPE" />
                                                                 <field name="schedule_type_id" placeholder="SCHEDULE TYPE"/>
 
-                                            <field name="pages_id" placeholder="PAGES" />
+                                            <!--<field name="pages_id" placeholder="PAGES" />-->
                                             <!--<field name="digital_location_id" placeholder="DIGITAL AD  LOCATION" />-->
                                             <!--<field name="digital_type_id" placeholder="DIGITAL TYPE" />-->
                                             <!--<field name="digital_size_id" placeholder="DIGITAL AD SIZE" />-->
@@ -202,8 +209,7 @@
                                             <field name="payment_terms_id" placeholder="PAYMENT  TERMS" />
                                             <field name="vat_rate_id" placeholder="VAT RATE " />
                                             <field name="quote_stage_id" placeholder="QUOTE  STAGE" />
-
-
+                                            <field name="rate_id" placeholder="TIMEBAND RATE" />
                                         </a>
                                     </h4>
                                     <div>
@@ -335,7 +341,7 @@
         <record id="seq_ratecard_singular_sequence" model="ir.sequence">
             <field name="name">SINGULAR RATECARD CODE</field>
             <field name="code">ratecard.sin.radio</field>
-            <field name="prefix">SINGULAR-RATECARD/2015/</field>
+            <field name="prefix">SINGULAR-RATECARD/%(year)s/%(month)s/%(day)s/</field>
             <field name="padding">5</field>
         </record>
 

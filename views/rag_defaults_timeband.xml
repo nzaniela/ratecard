@@ -9,8 +9,10 @@
             <field name="model">timeband</field>
             <field name="arch" type="xml">
                 <search string="Time Band">
+                    <field name="code"/>
                     <field name="name"/>
                     <field name="outlet_id"/>
+                    <field name="rateclass_code_id"/>
                 </search>
             </field>
         </record>
@@ -26,14 +28,18 @@
             <field name="arch" type="xml">
                 <form string="TIme Band" version="7.0">
                     <sheet>
+                        <group>
+                            <field name="code"/>
+                        </group>
                         <field name="logo" widget="image" class="oe_avatar oe_left"/>
                         <div class="oe_title">
                             <div class="oe_edit_only">
-                                <label for="name" string="Time Band Name"/>
+                                <label for="name" string="TimeBand Name"/>
                             </div>
                             <h1>
                                 <field name="name"/>
                                 <field name="hour_from"/>
+                                <field name="hour_to"/>
                             </h1>
                         </div>
                         <div class="oe_right oe_button_box">
@@ -46,6 +52,7 @@
                             </button>
                         </div>
                         <group>
+                            <field name="rateclass_code_id"/>
                             <field name="outlet_id"/>
                         </group>
                         <group string="Description">
@@ -69,6 +76,9 @@
             <field name="arch" type="xml">
                 <form string="Time Band" version="7.0">
                     <sheet>
+                        <group>
+                            <field name="code"/>
+                        </group>
                         <field name="logo" widget="image" class="oe_avatar oe_left"/>
                         <div class="oe_title">
                             <div class="oe_edit_only">
@@ -94,7 +104,7 @@
                             <group colspan="4" col="4">
                                     <field name="hour_from"    placeholder="HOUR  FROM " />
                                     <field name="hour_to"   placeholder="HOUR  TO"  />
-                                <field name="rate_class"  placeholder="RATECLASSCODE"/>
+                                <field name="rateclass_code_id"  placeholder="RATECLASSCODE"/>
                                 <field name="list_position"    placeholder="LIST POSITION"/>
                             </group>
                         </h3>
@@ -110,11 +120,12 @@
             <field name="model">timeband</field>
             <field name="arch" type="xml">
                 <tree string="timeband">
+                     <field name="code"/>
                     <field name="name"/>
                     <field name="description"/>
                     <field name="hour_from"/>
                     <field name="hour_to"/>
-                     <field name="rate_class"/>
+                     <field name="rateclass_code_id"/>
                     <field name="outlet_id"/>
                 </tree>
             </field>
@@ -125,6 +136,7 @@
             <field name="arch" type="xml">
                 <kanban>
                     <field name="logo"/>
+                    <field name="code"/>
                     <field name="products_count"/>
                     <field name="description"/>
                     <templates>
@@ -137,6 +149,7 @@
                                 <div class="oe_kanban_details">
                                     <h4>
                                         <a type="open">
+                                            <field name="code"/>
                                             <field name="name"/>
                                             <field name="hour_from"/>
                                         </a>
@@ -283,6 +296,19 @@
             <field name="res_model">timeband</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form,kanban</field>
+        </record>
+
+             <!-- Sequences for TIMEBAND -->
+        <record id="seq_timeband_type" model="ir.sequence.type">
+            <field name="name">TIMEBAND CODE</field>
+            <field name="code">timeband</field>
+        </record>
+
+        <record id="seq_timeband_sequence" model="ir.sequence">
+            <field name="name">TIMEBAND CODE</field>
+            <field name="code">timeband</field>
+            <field name="prefix">TIMEBAND/%(year)s/%(month)s/%(day)s/</field>
+            <field name="padding">5</field>
         </record>
         
         

@@ -239,7 +239,8 @@ class outlet(models.Model):
     ratecard_sin_print_id = fields.One2many(comodel_name='ratecard.sin.print', inverse_name='outlet_id',string='RateCard Singular')
     ratecard_sin_radio_id = fields.One2many(comodel_name='ratecard.sin.radio', inverse_name='outlet_id',string='RateCard Singular')
     sale_order_id = fields.One2many(comodel_name='sale.order', inverse_name='outlet_id',string='Outlet')    
-    ratecard_mul_id = fields.One2many(comodel_name='ratecard.mul', inverse_name='outlet_id',string='Outlet')    
+    ratecard_mul_id = fields.One2many(comodel_name='ratecard.mul', inverse_name='outlet_id',string='Outlet')
+    rate  = fields.One2many(comodel_name='rate', inverse_name='outlet_id',string='Outlet')
     
     
     company_id = fields.Many2one(
@@ -442,14 +443,26 @@ class ProductTemplate(models.Model):
 class  timeband(models.Model):
     _name= 'timeband'
     _description = 'Time Band'    
-    
+
+    code  = fields.Char(string='TIMEBAND CODE',store=True)
+
+    _defaults = {
+
+        'code':lambda obj,cr,uid,context:'/TIMEBAND/'
+    }
+
+    def  create(self,cr,uid, vals,context=None):
+        vals['code'] = self.pool.get('ir.sequence').get(cr,uid,'timeband')
+        return super(timeband,self).create(cr,uid,vals,context=context)
+
     name   = fields.Char(string='Name' , size=64  ,  required=True)
     description = fields.Text('Description', translate=True)  
     hour_from  =  fields.Selection(selection=hour_from, string='HOUR FROM')
    # hour_from  = fields.date(string=' HOUR  FROM' , default=lambda self,cr,uid,context=None: fields.date.context_today(self,cr,uid,context) + " 09:00:00")
     hour_to  =  fields.Selection(selection=hour_to, string='HOUR TO')
-    rate_class  = fields.Char(string='RATE  CLASS  CODE')
+    rateclass_code_id  = fields.Many2one('rateclass.code',string='RATECLASS CODE')
     list_position = fields.Selection(selection=list_position, string='LIST POSITION')
+
     
    
     logo = fields.Binary('Logo File')
@@ -460,38 +473,41 @@ class  timeband(models.Model):
     ratecard_sin_digital_id = fields.One2many(comodel_name='ratecard.sin.digital', inverse_name='timeband_id', string='Time Bands')
     ratecard_sin_tv_id = fields.One2many(comodel_name='ratecard.sin.tv', inverse_name='timeband_id', string='Time Bands')
     ratecard_sin_print_id = fields.One2many(comodel_name='ratecard.sin.print', inverse_name='timeband_id', string='Time Bands')
-    
-  
-    
-    product_ids = fields.One2many(
-          'product.template',
-          'timeband_id',
-          string='Time Band',
-      )    
+    product_ids = fields.One2many('product.template','timeband_id',string='Time Band',)
+    products_count = fields.Integer(string='Number of products', compute='_get_products_count',)
+    outlet_id = fields.Many2one('outlet',string='Outlet',help='Select a brand for this Time  Band if it exists',ondelete='restrict')
 
-    products_count = fields.Integer(
-        string='Number of products',
-        compute='_get_products_count',
-    )
 
     @api.one
     @api.depends('product_ids')
     def _get_products_count(self):
         self.products_count = len(self.product_ids)
 
-    
-    outlet_id = fields.Many2one(
-            'outlet',
-            string='Outlet',
-            help='Select a brand for this Time  Band if it exists',
-            ondelete='restrict'
-        )    
+    @api.multi
+    def  name_get(self):
+        result = []
+        for  record in  self:
+            if  record.name  and  record.outlet_id:
+                result.append((record.id,record.name + '/' + record.code))
+        return result
+
+    @api.model
+    def  name_search(self, name='', args=None, operator='ilike', limit=100):
+        args = args or  []
+        recs = self.browse()
+        if  name :
+            recs = self.search([('name' ,'=',name)] + args , limit=limit)
+        if  not  recs:
+            recs = self.search([('name' ,operator , name)] + args , limit=limit)
+        return recs.name_get()
+
+
     
 class  pages(models.Model):
     _name  = 'pages'
     _description = 'Pages'
     
-    name  =  fields.Integer(string='NAME' , size=64  , required=True )
+    name  =  fields.Char(string='NAME' , size=64  , required=True )
     page  = fields.Selection(selection=page_no, string='PAGE')
     
     description = fields.Text('Description', translate=True)          
@@ -567,7 +583,7 @@ class  outlet_type(models.Model):
     description = fields.Text('Description', translate=True)          
     logo = fields.Binary('Logo File')
     outlet_id  = fields.One2many(comodel_name='outlet', inverse_name='outlet_type_id', 
-                                string='Outlet Type')
+                                string='Outlet Type' ,readonly=True)
     ratecard_sin_radio_id  = fields.One2many(comodel_name='ratecard.sin.radio', inverse_name='outlet_type_id', string='Outlet Type')
     ratecard_sin_tv_id  = fields.One2many(comodel_name='ratecard.sin.tv', inverse_name='outlet_type_id', string='Outlet Type')
     ratecard_sin_print_id  = fields.One2many(comodel_name='ratecard.sin.print', inverse_name='outlet_type_id', string='Outlet Type')
@@ -745,9 +761,6 @@ class  ratecard_sin_radio(models.Model):
     timeband_id  = fields.Many2one(comodel_name='timeband', string='TimeBand')
     pages_id  =   fields.Many2one(comodel_name='pages', string='Pages')
     outlet_type_id  = fields.Many2one(comodel_name='outlet.type', string='Outlet Type')
-  
-    
-    
     ad_type_id  = fields.Many2one(comodel_name='ad.type', string='Ad Type')
     vat_rate_id  = fields.Many2one(comodel_name='vat.rate', string='Vat Rate')
     payment_terms_id  = fields.Many2one(comodel_name='payment.terms', string='Payment Terms')
@@ -758,11 +771,16 @@ class  ratecard_sin_radio(models.Model):
     description = fields.Text('Description', translate=True)          
     logo = fields.Binary('Logo File')
     ratecard_multiple_id = fields.Many2one(comodel_name='ratecard.multiple' , string='RADIO SINGULAR RATECARD')
+    rate_id  = fields.Many2one(comodel_name='rate',string='TIMEBAND RATE')
 
     _defaults = {
 
         'code':lambda obj,cr,uid,context:'SINGULAR/RATECARD/'
     }
+
+    def  create(self,cr,uid, vals,context=None):
+        vals['code'] = self.pool.get('ir.sequence').get(cr,uid,'ratecard.sin.radio')
+        return super(ratecard_sin_radio,self).create(cr,uid,vals,context=context)
     
     #def name_get(self,cr,uid,ids,context=None):
             #result = {}
@@ -833,10 +851,12 @@ class  ratecard_multiple(models.Model):
     code  = fields.Char(string='Multiple RateCard Code ',readonly=True)
     scheduled_for  = fields.Integer(string='SCHEDULED FOR' , default=1)
     min_weeks = fields.Integer(string="MINIMUM NO OF WEEKS" , default=1 )    
-    max_weeks = fields.Integer(string="Maximum NO OF WEEKS" , default=1, track_visibility='always' ,store=True) 
+    max_weeks = fields.Integer(string="Maximum NO OF WEEKS" , default=1, track_visibility='always' ,store=True)
+
     @api.model
     def _default_note(self):
-        return self.env.user.company_id.sale_note  
+        return self.env.user.company_id.sale_note
+
     @api.one
     @api.depends('scheduled_for')
     def  _compute_maxweeks(self):
@@ -933,6 +953,7 @@ class  ratecard_multiple(models.Model):
                                          column1='ratecard_multiple_id', column2='week_id', track_visibility='onchange', string='ALLOCATE SPOTS',required=True)
    
     partner_id = fields.Many2one('res.partner', string='Customer', readonly=True, states={'draft': [('readonly', False)], 'sent': [('readonly', False)]}, required=True, change_default=True, index=True, track_visibility='always')    
+
     _defaults = {
         'code':lambda obj,cr,uid,context:'/'
     }
@@ -1368,57 +1389,61 @@ class  ad_type(models.Model):
     ratecard_sin_digital_id = fields.One2many(comodel_name='ratecard.sin.digital', inverse_name='ad_type_id' , string="Ad Type")
     ratecard_sin_print_id = fields.One2many(comodel_name='ratecard.sin.print', inverse_name='ad_type_id' , string="Ad Type")
     ratecard_sin_tv_id = fields.One2many(comodel_name='ratecard.sin.tv', inverse_name='ad_type_id' , string="Ad Type")
-    
+    outlet_id = fields.Many2one('outlet',string='Outlet',help='Select a brand for this  Ad Type if it exists',ondelete='restrict' )
+
     #name  = fields.One2many(comodel_name='rate', inverse_name='name', string='NAME')
  
     description = fields.Text('Description', translate=True)          
     logo = fields.Binary('Logo File')
-    product_ids = fields.One2many(
-          'product.template',
-          'ad_type_id',
-          string='Ad Type',
-      )    
+    product_ids = fields.One2many('product.template','ad_type_id',string='Ad Type',)
 
-    products_count = fields.Integer(
-        string='Number of products',
-        compute='_get_products_count',
-    )
+    products_count = fields.Integer(string='Number of products',compute='_get_products_count',)
+
+    @api.onchange('name','outlet_type_id','rate_card_type')
+    def _onchange_multiple_ratecard_type(self):
+
+        # if self.name !=False:
+        #     for record in self:
+        #     #or 'CLASSIFIED' or 'classified' or 'PROMOTION' or 'promotion':
+        #         print 'AD TYPE NAME' , record.name
+        #         if record.name in record.rate_card_type:
+        #             print record.name
+        #             record.rate_card_type == 'MULTIPLE'
+
+        if self.name ==False:
+            raise exceptions.Warning(_('AD TYPE NAME HAS BE FILLED'))
+
+
+
+
+    # def onchange_outlet(self,cr,uid,ids,outlet_id):
+    #     result = {'value':{'outlet_type_id':False}}
+    #     if  outlet_id:
+    #         outlet = self.pool.get('outlet').browse(cr,uid,outlet_id)
+    #         print  outlet
+    #         result['value'] = {'outlet_type_id':outlet.outlet_type_id.id}
+    #     return result
     
     @api.one
     @api.depends('product_ids')
     def _get_products_count(self):
         self.products_count = len(self.product_ids)
-
-    
-    outlet_id = fields.Many2one(
-            'outlet',
-            string='Outlet',
-            help='Select a brand for this  Ad Type if it exists',
-            ondelete='restrict'
-        )       
 
 
 
 
 class  var_rate(models.Model):
     _name  = 'vat.rate'
-    _description = 'VAT  RATE'
+    _description = 'VAT  RATE (%)'
     
-    name  = fields.Char(string='NAME')
-    rate =  fields.Integer(string='VAT RATE', digits_compute=dp.get_precision('VAT RATE'), default=0.0)
+    name  = fields.Char(string='VAR RATE (%)')
+    rate = fields.Float(string='VAR RATE (%)',store=True , digits_compute=dp.get_precision('VAT RATE (%)'), track_visibility='onchange' )
 
     description = fields.Text('Description', translate=True)          
     logo = fields.Binary('Logo File')
-    product_ids = fields.One2many(
-          'product.template',
-          'vat_rate_id',
-          string='VAT  RATE',
-      )    
+    product_ids = fields.One2many('product.template','vat_rate_id',string='VAR RATE (%)',)
 
-    products_count = fields.Integer(
-        string='Number of products',
-        compute='_get_products_count',
-    )
+    products_count = fields.Integer(string='Number of products',compute='_get_products_count',)
     
     @api.one
     @api.depends('product_ids')
@@ -1426,12 +1451,7 @@ class  var_rate(models.Model):
         self.products_count = len(self.product_ids)
 
     
-    outlet_id = fields.Many2one(
-            'outlet',
-            string='Outlet',
-            help='Select a brand for this  VAT  RATE if it exists',
-            ondelete='restrict'
-        )    
+    outlet_id = fields.Many2one('outlet',string='Outlet',help='Select a brand for this  VAT  RATE if it exists',ondelete='restrict')
     ratecard_multiple_id  = fields.One2many('ratecard.multiple','vat_rate',string='VAT RATE')
 
 
@@ -1484,41 +1504,51 @@ class  rateclass_code(models.Model):
     _name = 'rateclass.code'
     _description = 'RATECLASS  CODE'
     
-    code  =  fields.Char(string='CODE' ,  required=True)
-    name  =  fields.Char(string='MOVEABLE' ,  required=True)
-    rate_class_type  =   fields.Char(string='TYPE' ,  required=True ,  size=256)
+    code = fields.Selection(selection=[('FIXED','FIXED'),('MOVEABLE','MOVEABLE') ,('RUN OF STATION','RUN OF STATION')], string='RATECLASS CODE')
+    name  =  fields.Selection(selection=[('FIXED','FIXED'),('MOVEABLE','MOVEABLE') ,('RUN OF STATION','RUN OF STATION')], string='RATECLASS CODE')
+    rate_class_type  = fields.Selection(selection=[('0','Advertisement is  fixed and  cannot be  moved'),
+                                                   ('2','Advertisement CAN BE  MOVED WITHIN TIMEBAND'),
+                                                   ('3','Scheduled to run  within the overall time parameters inidcated subject to  preemption'
+                                                        'for other  business at the discretion of the  STATION')], string='TYPE')
+
     ratecard_digital_id = fields.One2many(comodel_name='ratecard.sin.digital', inverse_name='rateclass_code_id' , string='RateClass Code')
     ratecard_radio_id = fields.One2many(comodel_name='ratecard.sin.radio', inverse_name='rateclass_code_id' , string='RateClass Code')
     ratecard_print_id = fields.One2many(comodel_name='ratecard.sin.print', inverse_name='rateclass_code_id' , string='RateClass Code')
     ratecard_tv_id = fields.One2many(comodel_name='ratecard.sin.tv', inverse_name='rateclass_code_id' , string='RateClass Code')
-    
-    
-    
+    timeband_id  = fields.One2many(comodel_name='timeband' , inverse_name='rateclass_code_id' ,string='RATECLASS CODE')
+    quote_stage  = fields.One2many(comodel_name='quote.stage' , inverse_name='rateclass_code_id' ,string='RATECLASS CODE')
+
+
     description = fields.Text('Description', translate=True)          
     logo = fields.Binary('Logo File')
-    product_ids = fields.One2many(
-          'product.template',
-          'rateclass_code_id',
-          string='RATECLASS  CODE',
-      )    
+    product_ids = fields.One2many('product.template','rateclass_code_id',string='RATECLASS  CODE',)
+    products_count = fields.Integer( string='Number of products',compute='_get_products_count',)
 
-    products_count = fields.Integer(
-        string='Number of products',
-        compute='_get_products_count',
-    )
-    
+    # @api.multi
+    # def  name_get(self):
+    #     result = []
+    #     for  record in  self:
+    #         if  record.name  and  record.code:
+    #             result.append((record.id,record.name + '/' + record.code + '/' + record.rate_class_type))
+    #     return result
+    #
+    # @api.model
+    # def  name_search(self, name='', args=None, operator='ilike', limit=100):
+    #     args = args or  []
+    #     recs = self.browse()
+    #     if  name :
+    #         recs = self.search([('name' ,'=',name)] + args , limit=limit)
+    #     if  not  recs:
+    #         recs = self.search([('name' ,operator , name)] + args , limit=limit)
+    #     return recs.name_get()
+
     @api.one
     @api.depends('product_ids')
     def _get_products_count(self):
         self.products_count = len(self.product_ids)
 
     
-    outlet_id = fields.Many2one(
-            'outlet',
-            string='Outlet',
-            help='Select a brand for this  RATECLASS  CODE if it exists',
-            ondelete='restrict'
-        )       
+    outlet_id = fields.Many2one('outlet',string='Outlet',help='Select a brand for this  RATECLASS  CODE if it exists', ondelete='restrict')
 
 
     
@@ -1527,7 +1557,7 @@ class  quote_stage(models.Model):
     _decription  =  'QUOTE STAGE'
     
     name  =fields.Char(string='Name')
-    code =  fields.Char(string='CODE' , size=64)
+    rateclass_code_id = fields.Many2one('rateclass.code',string='RATECLASS CODE')
     quote_stage =  fields.Selection([('draft' , 'DRAFT'),
                                      ('negotiation' , 'NEGOTIATION'),
                                      ('delivered' , 'DELIVERED') , 
@@ -1654,30 +1684,42 @@ class  spot_weeks(models.Model):
     _name = 'spot_week'
     
     name=fields.Selection(selection=year_week_no, string='Year Week No')
-    noof_spots_id = fields.Many2one(
-                  'noof.spots',
-                  string='WEEKLY SPOTS',
-                  help='Select a weekly  spot for this product'
-              )        
+    noof_spots_id = fields.Many2one('noof.spots',string='WEEKLY SPOTS',help='Select a weekly  spot for this product')
     
 class  rate(models.Model):
     _name  = 'rate'
+    name = fields.Char(string='RATE OUTLET TIMEBAND NAME' , required=True , help='RATE NAME  IS  BASED ON CHOSEN AUTOFIELD TIMEBAND OUTLET ')
     code  = fields.Char(string='RATE CODE',readonly=True)
     timeband_id = fields.Many2one('timeband', string='TIMEBAND',help='Select a timeband  for  this  rate if it exists',ondelete='cascade')
-    rate_amount = fields.Integer(string='RATE AMOUNT')
-    description = fields.Text('Description', translate=True)
-    outlet_id = fields.Char(string='OUTLET' , readonly=True)
+    rate_amount = fields.Float(string='RATE AMOUNT (Ksh::)' , required=True,store=True , digits_compute=dp.get_precision('RATE AMOUNT'), track_visibility='onchange' )
+    description = fields.Text('Description',required=True, translate=True)
+    outlet_id = fields.Char(string='OUTLET' , store=True, track_visibility='onchange')
+    # outlet_id = fields.Many2one(comodel_name='outlet',string='OUTLET' , store=True, track_visibility='onchange')
+    ratecard_sin_radio_id = fields.One2many(comodel_name='ratecard.sin.radio',inverse_name='rate_id',string='TIMEBAND RATE')
 
     _defaults = {
 
-        'code':lambda obj,cr,uid,context:'RATE/TIMEBAND/'
+        'code':lambda obj,cr,uid,context:'/TIMEBAND/RATE'
     }
+
+    @api.onchange('rate_amount','timeband_id')
+    def _onchange_rate_amount(self):
+        if  self.timeband_id != False and self.rate_amount ==False:
+            raise exceptions.ValidationError('Please Update Rate Amount')
+
+    def  create(self,cr,uid, vals,context=None):
+        vals['code'] = self.pool.get('ir.sequence').get(cr,uid,'rate')
+        return super(rate,self).create(cr,uid,vals,context=context)
+
     @api.multi
     def  name_get(self):
         result = []
         for  record in  self:
-            if  record.name  or  record.id:
-                result.append((record.id,record.name))
+            print 'record name ' , record.rate_amount
+            # if  record.name  and  record.code:
+            #     result.append((record.id,record.name + '/' + record.code))
+            if  record.rate_amount  or  record.id:
+                result.append((record.id,record.name+ str('Ksh::')+str(record.rate_amount)))
         return result
 
     @api.model
@@ -1689,10 +1731,6 @@ class  rate(models.Model):
         if  not  recs:
             recs = self.search([('name' ,operator , name)] + args , limit=limit)
         return recs.name_get()
-
-
-
-
 
     def  onchange_timeband_outlet(self,cr,uid,ids,timeband_id,context=None):
         value={'outlet_id':False}
@@ -1825,7 +1863,7 @@ class sale_order(models.Model):
             return {'value': result}
     
         if not partner_id:
-            raise osv.except_osv(_('No Customer Defined!'), _('Before choosing a template,\n select a customer in the template form.'))
+            raise exceptions.Warning(_('No Customer Defined!'), _('Before choosing a template,\n select a customer in the template form.'))
     
         template = self.browse(cr, uid, template)
         order_lines = template.order_line
@@ -1870,7 +1908,7 @@ class sale_order(models.Model):
                                   'time': time,
                               })
             except:
-                raise osv.except_osv(_('Error!'), _('Wrong python condition defined for template: %s.')% (template.name))
+                raise exceptions.Warning(_('Error!'), _('Wrong python condition defined for template: %s.')% (template.name))
             if result in (None, False):
                 return str("--------")
             return tools.ustr(result)
@@ -1889,7 +1927,7 @@ class sale_order(models.Model):
                 return {'value': result}
         
             if not partner_id:
-                raise osv.except_osv(_('No Customer Defined!'), _('Before choosing a template,\n select a customer in the template form.'))
+                raise exceptions.Warning(_('No Customer Defined!'), _('Before choosing a template,\n select a customer in the template form.'))
         
             template = self.browse(cr, uid, template)
             order_lines = template.order_line

@@ -143,7 +143,7 @@
         <record id="seq_ratecard_multiple_sequence" model="ir.sequence">
             <field name="name">MULTIPLE RATECARD CODE</field>
             <field name="code">ratecard.multiple</field>
-            <field name="prefix">MULTIPLERATECARD/2015/</field>
+            <field name="prefix">MULTIPLERATECARD/%(year)s/%(month)s/%(day)s/</field>
             <field name="padding">5</field>
         </record>       
          

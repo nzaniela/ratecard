@@ -10,7 +10,8 @@
             <field name="arch" type="xml">
                 <search string="Outlet Type">
                     <field name="name"/>
-                            <field name="outlet_id" attrs="{'readonly': [('name' , '=', False)]}"/>
+                            <!--<field name="outlet_id" />-->
+                    <!--<field name="outlet_id" attrs="{'readonly': [('name' , '=', False)]}"/>  -->
                 </search>
             </field>
         </record>
@@ -91,7 +92,7 @@
                             <!--</button>-->
                         <!--</div>-->
                         <group>
-                        <field name="outlet_id" attrs= "{'invisible' : [('name', '=', False)]}"/>
+                    <!--<field name="outlet_id" attrs="{'readonly': [('name' , '=', False)]}"/>  -->
                             <!--<field name="outlet_id" attrs="{'readonly': [('name' , '=', False)]}"/>-->
                             
                         </group>
@@ -113,7 +114,8 @@
                 <tree string="outlet_type">
                     <field name="name"/>
                     <field name="description"/>
-                   <field name="outlet_id" attrs="{'readonly': [('name' , '=', False)]}"/>
+                                        <!--<field name="outlet_id" attrs="{'readonly': [('name' , '=', False)]}"/>  -->
+
                     <!--<field name="outlet_id" attrs="{'invisible':[('name','=',[(6,False,[])])]}"/>-->
                 </tree>
             </field>
