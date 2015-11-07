@@ -11,10 +11,8 @@
                                  <group col="2" colspan="2">
                                              <field name="code"/>
                                              <field name='rate_amount'/>
-                                        <!--<field name="timeband_id" on_change="onchange_timeband(timeband_id)" placeholder="TIMEBAND"/>-->
-                                        <!--<field name="outlet_id" domain="[('timeband_id', '=' ,'timeband_id')]" placeholder="OUTLET" />-->
                                        <newline/>
-                                       <field name="timeband_id" on_change="onchange_timeband_outlet(timeband_id,outlet_id)" placeholder="TIMEBAND"/>
+                                       <field name="timeband_id" on_change="onchange_timeband_outlet(timeband_id)" placeholder="TIMEBAND"/>
                                         <field name="outlet_id" placeholder="OUTLET" />
 
                                              </group>

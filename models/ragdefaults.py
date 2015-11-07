@@ -1672,19 +1672,48 @@ class  rate(models.Model):
 
         'code':lambda obj,cr,uid,context:'RATE/TIMEBAND/'
     }
+    @api.multi
+    def  name_get(self):
+        result = []
+        for  record in  self:
+            if  record.name  or  record.id:
+                result.append((record.id,record.name))
+        return result
 
-    def  onchange_timeband_outlet(self,cr,uid,ids,timeband_id,outlet_id,context=None):
-        res = {}
-        timeband_obj  = self.pool.get('timeband')
-        print  timeband_obj
-        timeband_ids  =  timeband_obj.search(cr, uid,[('timeband_id' , '=',outlet_id)])
-        print  timeband_ids
-        for  record  in  timeband_obj.browse(cr,uid,timeband_ids,context=context):
-            logging.info('LIST  OF  TIMEBANDS  ON  OUTLETS')
-            logging.info(timeband_ids)
-            print record
-        return {'domain':{'timeband_id':[('timeband_id','=',timeband_ids)]}}
+    @api.model
+    def  name_search(self, name='', args=None, operator='ilike', limit=100):
+        args = args or  []
+        recs = self.browse()
+        if  name :
+            recs = self.search([('name' ,'=',name)] + args , limit=limit)
+        if  not  recs:
+            recs = self.search([('name' ,operator , name)] + args , limit=limit)
+        return recs.name_get()
 
+
+
+
+
+    def  onchange_timeband_outlet(self,cr,uid,ids,timeband_id,context=None):
+        value={'outlet_id':False}
+        if  timeband_id:
+            timeband = self.pool.get('timeband').browse(cr,uid,timeband_id)
+            value['outlet_id'] = timeband.outlet_id.name
+        return {'value':value}
+
+
+    # def  onchange_timeband_outlet(self,cr,uid,ids,timeband_id,outlet_id,context=None):
+    #     res = {}
+    #     timeband_obj  = self.pool.get('timeband')
+    #     print  timeband_obj
+    #     timeband_ids  =  timeband_obj.search(cr, uid,[('timeband_id' , '=',outlet_id)])
+    #     print  timeband_ids
+    #     for  record  in  timeband_obj.browse(cr,uid,timeband_ids,context=context):
+    #         logging.info('LIST  OF  TIMEBANDS  ON  OUTLETS')
+    #         logging.info(timeband_ids)
+    #         print record
+    #     return {'domain':{'timeband_id':[('timeband_id','=',timeband_ids)]}}
+    #
 
     def onchange_timeband(self,cr,uid,ids,timeband_id):
         result = {'value':{'outlet_id':False}}
