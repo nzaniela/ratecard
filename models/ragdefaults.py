@@ -7,6 +7,7 @@ from openerp import tools ,exceptions
 
 import logging
 import time
+import  re
 from datetime import date
 from dateutil.relativedelta import relativedelta
 from openerp.tools import DEFAULT_SERVER_DATE_FORMAT
