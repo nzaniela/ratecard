@@ -27,15 +27,16 @@ class  week(models.Model):
     _name='week'
     
     # multiple_rate  =  fields.Integer(string='RATE ')
-    code  = fields.Char(string='Multiple RateCard Code ',readonly=True)
-
-    _defaults = {
-        'code':lambda obj,cr,uid,context:'/'
-    }
-
-    def  create(self,cr,uid, vals,context=None):
-        vals['code'] = self.pool.get('ir.sequence').get(cr,uid,'week')
-        return super(week,self).create(cr,uid,vals,context=context)
+    # code  = fields.Char(string='ALLOCATION SPOTS CODE',readonly=True)
+    #
+    # _defaults = {
+    #     'code':lambda obj,cr,uid,context:'/'
+    # }
+    #
+    # def  create(self,cr,uid, vals,context=None):
+    #     vals['code'] = self.pool.get('ir.sequence').get(cr,uid,'week')
+    #     return super(week,self).create(cr,uid,vals,context=context)
+    week_count = fields.Integer('COUNT WEEK')
     monday  = fields.Integer(string='MON')
     tuesday   = fields.Integer(string='TUE')
     wednesday   = fields.Integer(string='WED')
@@ -232,10 +233,10 @@ class spot_length(models.Model):
 
 
     
-class res_partner(models.Model):
-    _inherit = 'res.partner'
-    
-    vat_no = fields.Integer(string='VAT NO')
+# class res_partner(models.Model):
+#     _inherit = 'res.partner'
+#
+#     vat_no = fields.Integer(string='VAT NO')
     
 class outlet(models.Model):
     _name = 'outlet'
@@ -959,9 +960,25 @@ class  ratecard_multiple(models.Model):
     
     
     allocate_schedule = fields.Many2many(comodel_name='week', relation='ratecard_multiple_week_rel',
-                                         column1='ratecard_multiple_id', column2='week_id', track_visibility='onchange', string='ALLOCATE SPOTS',required=True)
-   
-    partner_id = fields.Many2one('res.partner', string='Customer', readonly=True, states={'draft': [('readonly', False)], 'sent': [('readonly', False)]}, required=True, change_default=True, index=True, track_visibility='always')    
+                                         column1='ratecard_multiple_id', column2='week_id',
+                                         track_visibility='onchange', string='ALLOCATE SPOTS',required=True)
+
+    allocate_schedule_count = fields.Integer(string='WEEKS ALLOCATED',compute='_get_allocate_schedule_count', track_visibility='always' ,store=True)
+    multiple_ratecard_id_count = fields.Integer(string='SINGULAR RATECARDS SELECTED',compute='_get_multiple_ratecard_id_count_count', track_visibility='always' ,store=True)
+
+    @api.one
+    @api.depends('allocate_schedule')
+    def _get_allocate_schedule_count(self):
+        self.allocate_schedule_count = len(self.allocate_schedule)
+        print 'allocate_schedule_counts' , self.allocate_schedule_count
+
+    @api.one
+    @api.depends('multiple_ratecard_id')
+    def _get_multiple_ratecard_id_count_count(self):
+        self.multiple_ratecard_id_count = len(self.multiple_ratecard_id)
+        print 'multiple_ratecard_id_count' , self.multiple_ratecard_id_count
+
+    # partner_id = fields.Many2one('res.partner', string='Customer', readonly=True, states={'draft': [('readonly', False)], 'sent': [('readonly', False)]}, required=True, change_default=True, index=True, track_visibility='always')
 
     _defaults = {
         'code':lambda obj,cr,uid,context:'/'
@@ -1046,8 +1063,9 @@ class  ratecard_multiple(models.Model):
                 print 'spot_total'
                 print  'order.spot_total == ' , line.spot_total
                 total_spot += line.spot_total 
-                print 'out  of  spot_total'                
-                print 'LINE  IN  ALLOCATE_SCHEDULE' , line
+                print 'out  of  spot_total'
+                print 'ALLOCATE SCHEDULE COUNTS' , len(self.allocate_schedule)
+                print 'ORDER TIMES COUNTS' , len(order)
                 amount_untaxed += order.rate_amount * line.price_subtotal
                 print  'Amount  untaxed == ' , line.price_subtotal               
                 amount_tax += line.price_tax
@@ -1128,7 +1146,15 @@ class  ratecard_mul_ratecard_sin_rel(models.Model):
     
 class ratecard_multiple_week_rel(models.Model):
     _name = 'ratecard.multiple.week.rel'
-    ratecard_multiple_id = fields.Many2one(comodel_name='ratecard.multiple' )
+    ratecard_multiple_id = fields.Many2one(comodel_name='ratecard.multiple' , string='NO OF WEEKS')
+
+    @api.onchange('ratecard_multiple_id')
+    def _onchange_methods(self):
+        count = 0
+        for order in self:
+            print  'can  we  get order.ratecard_multiple_id'
+            print len(order.ratecard_multiple_id)
+            count = len(order.ratecard_multiple_id)
     
     
 class  ratecard_sin_print(models.Model):

@@ -1,6 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
 <openerp>
     <data>
-        <!-- Sequences for WEEK -->
+        
+        
+           <!--<record id="view_week_form" model="ir.ui.view">-->
+            <!--<field name="name">week.form</field>-->
+            <!--<field name="model">week</field>-->
+            <!--<field name="arch" type="xml">-->
+                <!--<form string="ALLOCATE SPOTS ON DAYS">-->
+                        <!--<group col="4">-->
+                                   <!--<group col="4" colspan="4">-->
+                                                <!--<field name='code'/>-->
+                                                <!--&lt;!&ndash;<field name='multiple_rate'/>&ndash;&gt;-->
+                                                <!--<field name='monday'/>-->
+                                                <!--<field name='tuesday'/>-->
+                                                <!--<field name='wednesday'/>-->
+                                                <!--<field name='thursday'/>-->
+                                                <!--<field name='friday'/>-->
+                                                <!--<field name='saturday'/>-->
+                                                 <!--<field name='sunday'/>-->
+                                                 <!--<field name="spot_total"/>-->
+                                                 <!--<field name="noofweeks"/>-->
+                                               <!--<field name='price_subtotal'/>-->
+                                             <!--</group>-->
+                        <!--</group>-->
+                               <!--&lt;!&ndash;<field name="description" nolabel="1"/>&ndash;&gt;-->
+                <!--</form>-->
+            <!--</field>-->
+        <!--</record>-->
+        <!---->
+        <!--<record id="view_week_tree" model="ir.ui.view">-->
+            <!--<field name="name">week.tree</field>-->
+            <!--<field name="model">week</field>-->
+            <!--<field name="arch" type="xml">-->
+                <!--<tree string="ALLOCATE SPOTS ON DAYS">-->
+                        <!--<field name='code'/>-->
+                        <!--&lt;!&ndash;<field name='multiple_rate'/>&ndash;&gt;-->
+                        <!--<field name='monday'/>-->
+                        <!--<field name='tuesday'/>-->
+                        <!--<field name='wednesday'/>-->
+                        <!--<field name='thursday'/>-->
+                        <!--<field name='friday'/>-->
+                        <!--<field name='saturday'/>-->
+                         <!--<field name='sunday'/>-->
+                         <!--<field name="spot_total"/>-->
+                         <!--<field name="noofweeks"/>-->
+                       <!--<field name='price_subtotal'/>-->
+
+                <!--</tree>-->
+            <!--</field>-->
+        <!--</record>-->
+        <!---->
+        <!--<record id="action_week" model="ir.actions.act_window">-->
+            <!--<field name="name">NO OF  SPOTS</field>-->
+            <!--<field name="res_model">week</field>-->
+            <!--<field name="view_type">form</field>-->
+            <!--<field name="view_mode">tree,form</field>-->
+        <!--</record>-->
+        <!---->
+
+        <!--<menuitem id="timeorder_week_menu" name="ALLOCATED SPOTS DEFAULTS" sequence="30" parent ="timeorder_management_menu"/>-->
+        <!--<menuitem  name="ALLOCATED" id="menu_week"  action="action_week"  parent="timeorder_week_menu"/>-->
+
+        <!--&lt;!&ndash; Sequences for WEEK &ndash;&gt;-->
         <record id="seq__week_type" model="ir.sequence.type">
             <field name="name">NO OF SPOTS CODE</field>
             <field name="code">week</field>
@@ -9,9 +71,9 @@
         <record id="seq_week_sequence" model="ir.sequence">
             <field name="name">NO OF SPOTS CODE</field>
             <field name="code">week</field>
-            <field name="prefix">NOOFSPOTS/ALLOCATED/%(year)s/%(month)s/%(woy)s/%(day)s/</field>
+            <field name="prefix">week/ALLOCATED/%(year)s/%(month)s/%(woy)s/%(day)s/</field>
             <field name="padding">5</field>
         </record>
+
     </data>
 </openerp>
-

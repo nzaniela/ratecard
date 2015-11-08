@@ -22,15 +22,16 @@
                                                     <field name="validity_date"/>
                                                     <field name="scheduled_for"/>
                                                     <field name="min_weeks"/>
-                                                    <field name="max_weeks"/> 
-                                                     <field name="allocate_spot"/>
+                                                    <field name="max_weeks"/>
+                                                    <field name="multiple_ratecard_id_count"/>
+                                                     <field name="allocate_schedule_count"/>
                                                      <!--<field name='company_id'/>-->
                                                       </group>
                                                    <field name='multiple_ratecard_id'/>
                                                    <!--<field name='allocate_multiple_id'/>-->
-                                                   <field name="allocate_schedule"   widget="one2many_list" attrs="{'invisible': [('allocate_spot', '=', 'True')]}">
+                                                   <field name="allocate_schedule"   widget="one2many_list">
                                                                                             <tree  string="SPOTS" editable="bottom">
-                                                                                               <field name='code'/>
+                                                                                               <!--<field name='code'/>-->
                                                                                                 <!--<field name='multiple_rate'/>-->
                                                                                                 <field name='monday'/>
                                                                                                 <field name='tuesday'/>
@@ -101,41 +102,42 @@
                          <field name='code'/>
                             <field name="total_spot" sum="Total Spot" widget="monetary"/>
                         <field name="amount_total" sum="Total Tax Included" widget="monetary"/>
-                          <!--<field name='allocate_multiple_id'/>-->
-                        <field name="allocate_schedule"   widget="one2many_list">
-                                                                                            <tree  string="SPOTS" editable="bottom">
-                                                                                                 <field name='code'/>
-                                                                                                <field name='monday'/>
-                                                                                                <field name='tuesday'/>
-                                                                                                <field name='wednesday'/>
-                                                                                                <field name='thursday'/>
-                                                                                                <field name='friday'/>
-                                                                                                <field name='saturday'/>
-                                                                                                 <field name='sunday'/>
-                                                                                                 <field name="spot_total"/> 
-                                                                                               <field name="noofweeks"/>
-                                                                                               <field name='price_subtotal'/>
-                                                                                             </tree>
-                                                                                              <form  string="ALLOCATE">
-                                                                                                <field name='code'/>
-                                                                                                <field name='monday'/>
-                                                                                                <field name='tuesday'/>
-                                                                                                <field name='wednesday'/>
-                                                                                                <field name='thursday'/>
-                                                                                                <field name='friday'/>
-                                                                                                <field name='saturday'/>
-                                                                                                 <field name='sunday'/>
-                                                                                                 <field name="spot_total"/> 
-                                                                                                  <field name="noofweeks"/>
-                                                                                                <field name='price_subtotal'/>
-                                                                                             </form>
-                                                <group class="oe_subtotal_footer oe_right" colspan="2" name="spot_total">
-                                                        <div class="oe_subtotal_footer_separator oe_inline">
-                                                            <label for="spot_total" />
-                                                        </div>
-                                                        <field name="total" nolabel="1" class="oe_subtotal_footer_separator" widget='monetary' options="{'currency_field': 'currency_id'}"/>
-                                                    </group>
-                             </field>
+                        <field name="multiple_ratecard_id_count"/>
+                        <field name="allocate_schedule_count"/>
+                        <!--<field name="allocate_schedule"   widget="one2many_list">-->
+                                                                <!--<tree  string="SPOTS" editable="bottom">-->
+                                                                     <!--&lt;!&ndash;<field name='code'/>&ndash;&gt;-->
+                                                                    <!--<field name='monday'/>-->
+                                                                    <!--<field name='tuesday'/>-->
+                                                                    <!--<field name='wednesday'/>-->
+                                                                    <!--<field name='thursday'/>-->
+                                                                    <!--<field name='friday'/>-->
+                                                                    <!--<field name='saturday'/>-->
+                                                                     <!--<field name='sunday'/>-->
+                                                                     <!--<field name="spot_total"/>-->
+                                                                   <!--<field name="noofweeks"/>-->
+                                                                   <!--<field name='price_subtotal'/>-->
+                                                                 <!--</tree>-->
+                                                                  <!--<form  string="ALLOCATE">-->
+                                                                    <!--&lt;!&ndash;<field name='code'/>&ndash;&gt;-->
+                                                                    <!--<field name='monday'/>-->
+                                                                    <!--<field name='tuesday'/>-->
+                                                                    <!--<field name='wednesday'/>-->
+                                                                    <!--<field name='thursday'/>-->
+                                                                    <!--<field name='friday'/>-->
+                                                                    <!--<field name='saturday'/>-->
+                                                                     <!--<field name='sunday'/>-->
+                                                                     <!--<field name="spot_total"/>-->
+                                                                      <!--<field name="noofweeks"/>-->
+                                                                    <!--<field name='price_subtotal'/>-->
+                                                                 <!--</form>-->
+                                                <!--<group class="oe_subtotal_footer oe_right" colspan="2" name="spot_total">-->
+                                                        <!--<div class="oe_subtotal_footer_separator oe_inline">-->
+                                                            <!--<label for="spot_total" />-->
+                                                        <!--</div>-->
+                                                        <!--<field name="total" nolabel="1" class="oe_subtotal_footer_separator" widget='monetary' options="{'currency_field': 'currency_id'}"/>-->
+                                                    <!--</group>-->
+                             <!--</field>-->
                 </tree>
             </field>
         </record>
