@@ -141,7 +141,8 @@
                 </tree>
             </field>
         </record>
-        
+
+ <!---     -->
  <!-- Sequences for Multiple Ratecard -->
         <record id="seq__ratecard_multiple_type" model="ir.sequence.type">
             <field name="name">MULTIPLE RATECARD CODE</field>
