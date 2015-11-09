@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+            <record id="view_res_partner_inherited" model="ir.ui.view">
+              <field name="name">view.res.partner.inherited</field>
+              <field name="model">res.partner</field>
+              <field name="inherit_id" ref="base.view_partner_form" />
+              <field name="arch" type="xml">
+                <field name="parent_id" position="after">
+                    <group col="2" colspan="2">
+
+                    <!--<field name="is_branch" />-->
+                    <!--<field name="parent_root_id" />-->
+                    <field name="vat_no"/>
+
+                    </group>
+                </field>
+              </field>
+            </record>
+
+   </data>
+ </openerp>

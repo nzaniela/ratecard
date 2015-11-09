@@ -233,16 +233,27 @@ class spot_length(models.Model):
 
 
     
-# class res_partner(models.Model):
-#     _inherit = 'res.partner'
-#
-#     vat_no = fields.Integer(string='VAT NO')
-    
+class res_partner(models.Model):
+    _inherit = 'res.partner'
+
+    is_branch = fields.Boolean('Is Branch?')
+    parent_root_id = fields.Many2one('res.partner', 'Main Partner', domain=[('is_company', '=', True), ('is_branch', '=', False)])
+    vat_no = fields.Integer(string='VAT NO:')
+
+    @api.multi
+    def name_get(self):
+        res = super(res_partner, self).name_get()
+        res_dict = dict(res)
+        for record in self:
+            if record.parent_root_id and record.is_branch:
+                res_dict[record.id] = "%s / %s" % (record.parent_root_id.name, res_dict[record.id])
+        return res_dict.items()
+
 class outlet(models.Model):
     _name = 'outlet'
-    _inherit ='res.partner'
 
-    name = fields.Char('Outlet Name', required=True)
+    name  = fields.Many2one('res.partner',string='OUTLET NAME' ,required=True)
+    # name = fields.Char('Outlet Name', required=True)
     outlet_type_id = fields.Many2one(comodel_name='outlet.type', string='Outlet Type')
     description = fields.Text('Description', translate=True)
     ratecard_sin_digital_id= fields.One2many(comodel_name='ratecard.sin.digital', inverse_name='outlet_id',string='RateCard Singular')
@@ -252,129 +263,102 @@ class outlet(models.Model):
     sale_order_id = fields.One2many(comodel_name='sale.order', inverse_name='outlet_id',string='Outlet')    
     ratecard_mul_id = fields.One2many(comodel_name='ratecard.mul', inverse_name='outlet_id',string='Outlet')
     ratecard_multiples_id = fields.One2many(comodel_name='ratecard.multiples', inverse_name='outlet_id',string='Outlet')
-
     rate  = fields.One2many(comodel_name='rate', inverse_name='outlet_id',string='Outlet')
-    
-    
-    company_id = fields.Many2one(
-        'res.company',
-        string='Company',
-        help='Select a company for this outlet if it exists',
-        ondelete='restrict'
-    )
-    
-    
+    company_id = fields.Many2one('res.company',string='Company',help='Select a company for this outlet if it exists',ondelete='restrict')
     logo = fields.Binary('Logo File')
-    product_ids = fields.One2many(
-        'product.template',
-        'outlet_id',
-        string='Outlet Products',
-    )
-    products_count = fields.Integer(
-        string='Number of products',
-        compute='_get_products_count',
-    )
+    product_ids = fields.One2many('product.template','outlet_id',string='Outlet Products',)
+    products_count = fields.Integer(string='Number of products',compute='_get_products_count',)
 
     @api.one
     @api.depends('product_ids')
     def _get_products_count(self):
         self.products_count = len(self.product_ids)
-        timeband_id = fields.Many2one(
-                'timeband',
-                string='Time Band',
-                help='Select a time band for this product'
-            )
-    pages_id = fields.Many2one(
-               'pages',
-               string='Pages',
-               help='Select a page for this product'
-           )    
-    ad_size_id = fields.Many2one(
-                   'ad.size',
-                   string='AD SIZE',
-                   help='Set AD SIZE for this product'
-               )
-    outlet_type_id = fields.Many2one(
-                   'outlet.type',
-                   string='Outlet  Type',
-                   help='Set Outlet  Type for this product'
-               )  
-    digital_location_id = fields.Many2one(
-                      'digital.location',
-                      string='Digital  Location',
-                      help='Select  digital  location  for this product'
-                  )        
-    digital_type_id = fields.Many2one(
-                         'digital.type',
-                         string='Digital  Type',
-                         help='Select  digital  type  for this product'
-                     )  
-    digital_size_id = fields.Many2one(
-                         'digital.size',
-                         string='Digital  Size',
-                         help='Select  digital  size  for this product'
-                     ) 
+        timeband_id = fields.Many2one('timeband',string='Time Band',help='Select a time band for this product')
+    pages_id = fields.Many2one('pages',string='Pages',help='Select a page for this product')
+    ad_size_id = fields.Many2one('ad.size',string='AD SIZE',help='Set AD SIZE for this product')
+    outlet_type_id = fields.Many2one('outlet.type',string='Outlet  Type',help='Set Outlet  Type for this product')
+    digital_location_id = fields.Many2one('digital.location',string='Digital  Location',
+                      help='Select  digital  location  for this product')
+    digital_type_id = fields.Many2one('digital.type',string='Digital  Type',help='Select  digital  type  for this product')
+    digital_size_id = fields.Many2one('digital.size', string='Digital  Size',help='Select  digital  size  for this product')
   
     ratecard_sin_radio_id = fields.Many2one( 'ratecard.sin.radio',string='RateCard Type Singular',help='Select   RateCard  Type  Singular for this product')      
     ratecard_sin_tv_id = fields.Many2one( 'ratecard.sin.tv',string='RateCard Type Singular',help='Select   RateCard  Type  Singular for this product')      
     ratecard_sin_digital_id = fields.Many2one( 'ratecard.sin.digital',string='RateCard Type Singular',help='Select   RateCard  Type  Singular for this product')      
     ratecard_sin_print_id = fields.Many2one( 'ratecard.sin.print',string='RateCard Type Singular',help='Select   RateCard  Type  Singular for this product')      
     
-    ratecard_mul_id = fields.Many2one(
-                            'ratecard.mul',
-                            string='RateCard Type Multiple',
-                            help='Select   RateCard  Type  Multiple for this product'
-                        ) 
-    ad_type_id = fields.Many2one(
-                            'ad.type',
-                            string='Ad Type Singular',
-                            help='Select   Ad  Type   for this product'
-                        )      
-    vat_rate_id = fields.Many2one(
-                            'vat.rate',
-                            string='VAT  Rate ',
-                            help='Select   VAT RATE for this product'
-                        )
-    payment_terms_id = fields.Many2one(
-                            'payment.terms',
-                            string='PAYMENT  TERMS ',
-                            help='Select  PAYMENT  TERMS for this product'
-                        )  
-    rateclass_code_id = fields.Many2one(
-                            'rateclass.code',
-                            string='RATECLASS  CODE',
-                            help='Select  RATECLASS  CODE for this product'
-                        )
-    quote_stage_id = fields.Many2one(
-                            'quote.stage',
-                            string='QUOTE STAGE',
-                            help='Select   QUOTE  STAGE  for this product'
-                        )  
-    rate_id = fields.Many2one(
-                       'rate',
-                       string='RATE',
-                       help='Set RATE for this product'
-                   )      
+    ratecard_mul_id = fields.Many2one('ratecard.mul',string='RateCard Type Multiple',help='Select   RateCard  Type  Multiple for this product')
+    ad_type_id = fields.Many2one('ad.type', string='Ad Type Singular', help='Select   Ad  Type   for this product')
+    vat_rate_id = fields.Many2one('vat.rate', string='VAT  Rate ',help='Select   VAT RATE for this product')
+    payment_terms_id = fields.Many2one('payment.terms',string='PAYMENT  TERMS ', help='Select  PAYMENT  TERMS for this product' )
+    rateclass_code_id = fields.Many2one( 'rateclass.code',string='RATECLASS  CODE',help='Select  RATECLASS  CODE for this product')
+    quote_stage_id = fields.Many2one('quote.stage', string='QUOTE STAGE',help='Select   QUOTE  STAGE  for this product')
+    rate_id = fields.Many2one( 'rate',string='RATE',help='Set RATE for this product')
     _sql_constraints = [
            ('name_uniq','unique(name)','Outlet  Must Be Unique!'),
        ]    
-   
+    # @api.multi
+    # def  name_get(self):
+    #     result = []
+    #     for  record in  self:
+    #         if  record.name  and  record.id:
+    #             result.append((record.name ,record.id))
+    #         if  record.id:
+    #             result.append((record.name,record.id))
+    #
+    #
+    #     return result
+    @api.multi
+    def name_get(self):
+        res = super(res_partner, self).name_get()
+        res_dict = dict(res)
+        for record in self:
+            if record.name and record.id:
+                res_dict[record.id] = "%s / %s" % (record.name, res_dict[record.id])
+        return res_dict.items()
+
+    @api.model
+    def  name_search(self, name='', args=None, operator='ilike', limit=100):
+        args = args or  []
+        recs = self.browse()
+        if  name :
+            recs = self.search([('name' ,'=',name)] + args , limit=limit)
+        # if  id:
+        #     recs = self.search([('id' , '=' , id)] + args , limit=limit)
+        if  not  recs:
+            recs = self.search([('name' ,operator , name)] + args , limit=limit)
+        return recs.name_get()
 
 
 
 class ProductTemplate(models.Model):
     
     _inherit = 'product.template'
-    
+
+    name  = fields.Char('RATECARD')
+    singular_ratecards = fields.Boolean(string='SINGULARS RATECARDS')
+    multiple_ratecards = fields.Boolean(string='MULTIPLES RATECARDS')
+    CostPrice = fields.Float('Buy price')
+    ShippingCost = fields.Float('Shipping Cost')
+
     spot_length_id  =  fields.Many2one(comodel_name='spot.length', string='Spot Length')
     
     quo_mul_id  =  fields.Many2one(comodel_name='quo.mul', string='Multiple Quotation')
-    
-    outlet_id = fields.Many2one(
-        'outlet',
-        string='Outlet',
-        help='Select a outlet for this product'
-    )   
+
+    def on_change_price(self,cr,user,ids,CostPrice,ShippingCost,context=None):
+
+        #Calculate the total
+        total = CostPrice + ShippingCost
+        res = {
+                'value': {
+            #This sets the total price on the field standard_price.
+                    'standard_price': total
+              }
+        }
+        #Return the values to update it in the view.
+        return res
+
+    outlet_id = fields.Many2one('outlet',string='Outlet',help='Select a outlet for this product')
     ratecard_multiple_id = fields.Many2one('ratecard.multiple',string='MULTIPLE RATECARD')
     ratecard_multiples_id = fields.Many2one('ratecard.multiples',string='MULTIPLES RATECARD')
 
@@ -403,7 +387,7 @@ class  timeband(models.Model):
     _name= 'timeband'
     _description = 'Time Band'    
 
-    code  = fields.Char(string='TIMEBAND CODE',store=True)
+    code  = fields.Char(string='TIMEBAND CODE',store=True,readonly=True)
 
     _defaults = {
 
@@ -448,6 +432,7 @@ class  timeband(models.Model):
         for  record in  self:
             if  record.name  and  record.outlet_id:
                 result.append((record.id,record.name + '/' + record.code))
+
         return result
 
     @api.model
@@ -1756,9 +1741,27 @@ class  rate(models.Model):
     timeband_id = fields.Many2one('timeband', string='TIMEBAND',help='Select a timeband  for  this  rate if it exists',ondelete='cascade')
     rate_amount = fields.Float(string='RATE AMOUNT (Ksh::)' , required=True,store=True , digits_compute=dp.get_precision('RATE AMOUNT'), track_visibility='onchange' )
     description = fields.Text('Description',required=True, translate=True)
-    outlet_id = fields.Char(string='OUTLET' , store=True, track_visibility='onchange')
+    # outlet_id = fields.Char(string='OUTLET' , store=True, track_visibility='onchange')
+    outlet_id = fields.Many2one('outlet',string='Outlet', track_visibility='onchange' ,help='Select a brand for this Time  Band if it exists',ondelete='restrict')
+
     # outlet_id = fields.Many2one(comodel_name='outlet',string='OUTLET' , store=True, track_visibility='onchange')
     ratecard_sin_radio_id = fields.One2many(comodel_name='ratecard.sin.radio',inverse_name='rate_id',string='TIMEBAND RATE')
+
+    # def onchange_timeband(self,cr,uid,ids,timeband_id):
+    #     result = {'value':{'outlet_id':False}}
+    #     if timeband_id:
+    #         timeband = self.pool.get('timeband').browse(cr,uid,timeband_id)
+    #         print  timeband
+    #         result['value'] = {'outlet_id':timeband.outlet_id.id}
+    #         return result
+    #
+    def onchange_timeband(self,cr,uid,ids,timeband_id):
+        result = {'value':{'outlet_id':False}}
+        if  timeband_id:
+            timeband = self.pool.get('timeband').browse(cr,uid,timeband_id)
+            print  timeband
+            result['value'] = {'outlet_id':timeband.outlet_id.id}
+        return result
 
     _defaults = {
 
@@ -1816,13 +1819,7 @@ class  rate(models.Model):
     #     return {'domain':{'timeband_id':[('timeband_id','=',timeband_ids)]}}
     #
 
-    def onchange_timeband(self,cr,uid,ids,timeband_id):
-        result = {'value':{'outlet_id':False}}
-        if timeband_id:
-            timeband = self.pool.get('timeband').browse(cr,uid,timeband_id)
-            print  timeband
-            result['value'] = {'outlet_id':timeband.outlet_id.id}
-            return result
+
 
 
 

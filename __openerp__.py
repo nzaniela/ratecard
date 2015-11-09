@@ -12,6 +12,8 @@
     'depends': ['product','sale'],
     'data': [
         #Entry
+        'views/product_template.xml',
+        'views/res_partner.xml',
         'views/rag_defaults_outlet.xml',
         'views/rag_defaults_outlet_type.xml',
         'views/rag_defaults_singulars_quotations.xml',

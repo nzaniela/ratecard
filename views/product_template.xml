@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="view_product_form_ratecards_inherit" model="ir.ui.view">
+            <field name="name">product.template.common.form.inherit</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='sale_ok']" position="before">
+                    <!--<group name="group_top" col="2" colspan="2">-->
+                        <separator string="SINGULAR RATECARD" />
+                         <group name="group_left" rowspan="1" colspan="2" col="1">
+
+                        </group>
+                        <separator string="MULTIPLE RATECARD" />
+                          <group name="group_right" rowspan="1" colspan="2" col="1">
+
+                          </group>
+
+                <!--<field name="CostPrice" on_change="on_change_price(CostPrice,ShippingCost)"/>-->
+		        <!--<field name="ShippingCost" on_change="on_change_price(CostPrice,ShippingCost)"/>-->
+                    <!--</group>-->
+		</xpath>
+            </field>
+        </record>
+    </data>
+</openerp>
+
+    <!--<field name="singular_ratecards"/>-->

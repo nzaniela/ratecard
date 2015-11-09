@@ -268,18 +268,21 @@
                 </group>
             </field>
         </record>
+
         <record id="product_template_form_ratecard_sin_print_add" model="ir.ui.view">
             <field name="name">product.template.product.form</field>
             <field name="model">product.template</field>
-            <field name="inherit_id" ref="product.product_template_form_view" />
+            <field name="inherit_id" ref="view_product_form_ratecards_inherit"/>
             <field name="arch" type="xml">
-             <field name="name" position="after">
-                   <group>
-                        <field name="ratecard_sin_print_id" placeholder="RateCard Singular"/>
-                  </group>
-                </field>
+                 <!--<xpath expr="//separator[@string='SINGULAR RATECARD']" position="after">-->
+                <xpath expr="//group[@name='group_left']" position="after">
+                     <group>
+                         <field name="ratecard_sin_print_id"/>
+                     </group>
+                 </xpath>
             </field>
         </record>
+
         <record id="view_product_template_kanban_ratecard_sin_print" model="ir.ui.view">
             <field name="name">product kanban view: add ratecard_sin_print</field>
             <field name="model">product.template</field>
