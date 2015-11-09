@@ -240,6 +240,7 @@ class spot_length(models.Model):
     
 class outlet(models.Model):
     _name = 'outlet'
+    _inherit ='res.partner'
 
     name = fields.Char('Outlet Name', required=True)
     outlet_type_id = fields.Many2one(comodel_name='outlet.type', string='Outlet Type')
@@ -382,56 +383,20 @@ class ProductTemplate(models.Model):
     ad_size_id = fields.Many2one('ad.size',string='AD SIZE',help='Set AD SIZE for this product')
     outlet_type_id = fields.Many2one('outlet.type',string='Outlet  Type',help='Set Outlet  Type for this product')
     digital_location_id = fields.Many2one('digital.location',string='Digital  Location',help='Select  digital  location  for this product')
-    digital_type_id = fields.Many2one(
-                         'digital.type',
-                         string='Digital  Type',
-                         help='Select  digital  type  for this product'
-                     )  
-    digital_size_id = fields.Many2one(
-                         'digital.size',
-                         string='Digital  Size',
-                         help='Select  digital  size  for this product'
-                     ) 
-    ratecard_sin_radio_id = fields.Many2one('ratecard.sin.radio',string='RateCard Singular',help='Select   RateCard  Type  Singular for this product')  
-    ratecard_sin_digital_id = fields.Many2one('ratecard.sin.digital',string='RateCard Singular',help='Select   RateCard  Type  Singular for this product')  
-    ratecard_sin_print_id = fields.Many2one('ratecard.sin.print',string='RateCard Singular',help='Select   RateCard  Type  Singular for this product')  
-    ratecard_sin_tv_id = fields.Many2one('ratecard.sin.tv',string='RateCard Singular',help='Select   RateCard  Type  Singular for this product')  
+    digital_type_id = fields.Many2one('digital.type',string='Digital  Type',help='Select  digital  type  for this product')
+    digital_size_id = fields.Many2one('digital.size',string='Digital  Size',help='Select  digital  size  for this product')
+    ratecard_sin_radio_id = fields.Many2one('ratecard.sin.radio',string='RADIO SINGULAR RATECARD',help='Select   RADIO SINGULAR RATECARD for this product')
+    ratecard_sin_digital_id = fields.Many2one('ratecard.sin.digital',string='DIGITAL SINGULAR RATECARD',help='Select   DIGITAL SINGULAR RATECARD for this product')
+    ratecard_sin_print_id = fields.Many2one('ratecard.sin.print',string='PRINT SINGULAR RATECARD',help='Select PRINT SINGULAR RATECARD for this product')
+    ratecard_sin_tv_id = fields.Many2one('ratecard.sin.tv',string='TV SINGULAR RATECARD',help='Select TV SINGULAR RATECARD for this product')
     
-    multiple_ratecard_id = fields.Many2one(
-                            'ratecard.mul',
-                            string='RateCard Multiple',
-                            help='Select   RateCard Multiple for this product'
-                        ) 
-    ad_type_id = fields.Many2one(
-                            'ad.type',
-                            string='Ad Type Singular',
-                            help='Select   Ad  Type   for this product'
-                        )      
-    vat_rate_id = fields.Many2one(
-                            'vat.rate',
-                            string='VAT  Rate ',
-                            help='Select   VAT RATE for this product'
-                        )
-    payment_terms_id = fields.Many2one(
-                            'payment.terms',
-                            string='PAYMENT  TERMS ',
-                            help='Select  PAYMENT  TERMS for this product'
-                        )  
-    rateclass_code_id = fields.Many2one(
-                            'rateclass.code',
-                            string='RATECLASS  CODE',
-                            help='Select  RATECLASS  CODE for this product'
-                        )
-    quote_stage_id = fields.Many2one(
-                            'quote.stage',
-                            string='QUOTE STAGE',
-                            help='Select   QUOTE  STAGE  for this product'
-                        )
-    schedule_type_id = fields.Many2one(
-              'schedule.type',
-              string='Schedule',
-              help='Select a Schedule for this product'
-          )    
+    multiple_ratecard_id = fields.Many2one('ratecard.mul',string='RateCard Multiple',help='Select   RateCard Multiple for this product')
+    ad_type_id = fields.Many2one('ad.type',string='Ad Type Singular',help='Select   Ad  Type   for this product')
+    vat_rate_id = fields.Many2one('vat.rate',string='VAT  Rate ',help='Select   VAT RATE for this product')
+    payment_terms_id = fields.Many2one('payment.terms',string='PAYMENT  TERMS ',help='Select  PAYMENT  TERMS for this product')
+    rateclass_code_id = fields.Many2one('rateclass.code',string='RATECLASS  CODE',help='Select  RATECLASS  CODE for this product')
+    quote_stage_id = fields.Many2one('quote.stage',string='QUOTE STAGE',help='Select   QUOTE  STAGE  for this product')
+    schedule_type_id = fields.Many2one('schedule.type',string='Schedule',help='Select a Schedule for this product')
     
 
 class  timeband(models.Model):
@@ -960,7 +925,7 @@ class  ratecard_multiple(models.Model):
     fiscal_position_id = fields.Many2one('account.fiscal.position', oldname='fiscal_position', string='Fiscal Position')  
     #vat_rate  = fields.Many2one(comodel_name='vat.rate', string='TAX  RATE (%)',digits_compute=dp.get_precision('TAX RATE'), default=0.0)
     vat_rate  = fields.Float(string='TAX  RATE (%)',digits_compute=dp.get_precision('TAX RATE'), default=17, track_visibility='onchange'  )    
-    taxed_amount  = fields.Integer( string='TOTAL ',store=True, readonly=True, compute='_compute_taxedamount', track_visibility='always')
+    taxed_amount  = fields.Integer( string='TOTAL Ksh:',store=True, readonly=True, compute='_compute_taxedamount', track_visibility='always')
     multiple_ratecard_id  = fields.Many2many(comodel_name='ratecard.sin.radio', relation='ratecard_mul_ratecard_sin_rel', 
                                                 column1='ratecard_mul_id', 
                                                 column2='ratecard_sin_radio_id', 

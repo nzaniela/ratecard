@@ -57,7 +57,7 @@
         'views/rag_defaults_ratecard_tv.xml',
         
         #MUTIPLES
-        'views/rag_defaults_ratecard_mul.xml', 
+        # 'views/rag_defaults_ratecard_mul.xml',
         'views/rag_defaults_ratecard_multiple.xml', 
         'views/rag_defaults_ratecard_multiples.xml', 
         

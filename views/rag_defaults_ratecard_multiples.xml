@@ -259,8 +259,8 @@
             <field name="view_type">form</field>
             <field name="view_mode">kanban,form,tree</field>
         </record>
-        <menuitem id="timeorder_ratecard_multiples" name="MULTIPLES  RATECARD SELECTION   " sequence="7" parent ="timeorder_management_menu"/>
-        <menuitem  name="MULTIPLE PRODUCT RATECARD" id="menu_ratecard_multiples"  action="action_ratecard_multiples"  parent="timeorder_ratecard_multiples"/>
+        <menuitem id="timeorder_ratecard_multiples" name="MULTIPLES RATECARD SELECTION   " sequence="7" parent ="timeorder_management_menu"/>
+        <menuitem  name="MULTIPLES RATECARD PRODUCT" id="menu_ratecard_multiples"  action="action_ratecard_multiples"  parent="timeorder_ratecard_multiples"/>
 
     </data>
 </openerp>
