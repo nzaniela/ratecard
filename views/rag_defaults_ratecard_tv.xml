@@ -280,7 +280,7 @@
                  <!--<xpath expr="//separator[@string='SINGULAR RATECARD']" position="after">-->
                  <xpath expr="//group[@name='group_left']" position="after">
                         <group>
-                            <field name="ratecard_sin_tv_id"/>
+                            <field attrs="{'invisible':[('singular_ratecards','=',False)]}"  name="ratecard_sin_tv_id" />
                         </group>
                  </xpath>
             </field>

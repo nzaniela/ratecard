@@ -6,25 +6,37 @@
             <field name="model">product.template</field>
             <field name="inherit_id" ref="product.product_template_form_view"/>
             <field name="arch" type="xml">
-                <field name="name" position="before">
-                    <field name="singular_ratecards"/>
-                    <field name="multiple_ratecards"/>
-
+                <field name="name" position="after">
+                        <div class="oe_left" name="options">
+                                <div class="oe_grey">
+                                    <group>
+                                        <field  name="singular_ratecards" class="oe_inline" />
+                                    </group>
+                                </div>
+                              <div>
+                                  <group>
+                                        <field name="multiple_ratecards" class="oe_grey" />
+                                    </group>
+                              </div>
+                            </div>
                 </field>
                 <xpath expr="//field[@name='sale_ok']" position="before">
                     <!--<group name="group_top" col="2" colspan="2">-->
                         <separator string="SINGULAR RATECARD" />
                          <group name="group_left" rowspan="1" colspan="2" col="1">
-
+                             <!--singular ratecards are injected here -->
+                        </group>
+                        <group>
+                            <field  attrs="{'invisible':[('singular_ratecards','=',False)]}"   name="singular_ratecard_cost" on_change="on_change_singular_ratecard_cost(singular_ratecard_cost)" />
                         </group>
                         <separator string="MULTIPLE RATECARD" />
                           <group name="group_right" rowspan="1" colspan="2" col="1">
-
+                               <!-- multiple ratecards are injected  here -->
                           </group>
+                        <group>
+                              <field  attrs="{'invisible':[('multiple_ratecards','=',False)]}" name="multiple_ratecard_cost" on_change="on_change_multiple_ratecard_cost(multiple_ratecard_cost)"/>
+                        </group>
 
-                <!--<field name="CostPrice" on_change="on_change_price(CostPrice,ShippingCost)"/>-->
-		        <!--<field name="ShippingCost" on_change="on_change_price(CostPrice,ShippingCost)"/>-->
-                    <!--</group>-->
 		</xpath>
             </field>
         </record>
