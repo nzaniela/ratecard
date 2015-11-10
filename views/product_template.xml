@@ -6,6 +6,11 @@
             <field name="model">product.template</field>
             <field name="inherit_id" ref="product.product_template_form_view"/>
             <field name="arch" type="xml">
+                <field name="name" position="before">
+                    <field name="singular_ratecards"/>
+                    <field name="multiple_ratecards"/>
+
+                </field>
                 <xpath expr="//field[@name='sale_ok']" position="before">
                     <!--<group name="group_top" col="2" colspan="2">-->
                         <separator string="SINGULAR RATECARD" />
