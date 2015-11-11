@@ -33,9 +33,9 @@
                           <separator string="RADIO MULTIPLES RATECARD" />
                           <group col="1" colspan="1" rowspan="1">
                                      <div class="oe_inline">
-                                        <label for="radio_multiples_ratecards" />
+                                        <label for="radio_multiple_ratecards" />
                                     </div>
-                                    <field name="radio_multiples_ratecards" nolabel="1" />
+                                    <field name="radio_multiple_ratecards" nolabel="1" />
                           </group>
                            <!--</div>-->
                               <!--<div>-->
@@ -69,7 +69,7 @@
                                <!-- multiple ratecards are injected  here -->
                           </group>
                         <group>
-                            <field  attrs="{'invisible':[('radio_multiples_ratecards','=',False)]}" name="radio_multiples_ratecard_cost" />
+                            <field  attrs="{'invisible':[('radio_multiple_ratecards','=',False)]}" name="radio_multiple_ratecard_cost" />
 
                               <!--<field  attrs="{'invisible':[('radio_multiples_ratecards','=',False)]}" name="radio_multiples_ratecard_cost" on_change="on_change_radio_multiples_ratecard_cost(radio_multiples_ratecard_cost)"/>-->
                         </group>

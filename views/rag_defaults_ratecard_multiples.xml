@@ -216,7 +216,7 @@
                  <!--<xpath expr="//separator[@string='MULTIPLE RATECARD']" position="after">-->
                 <xpath expr="//group[@name='group_right']" position="after">
                         <group>
-                            <field attrs="{'invisible':[('radio_multiples_ratecards','=',False)]}"  name="ratecard_multiple_id"/>
+                            <field attrs="{'invisible':[('radio_multiple_ratecards','=',False)]}"  name="ratecard_multiple_id"/>
                         </group>
                  </xpath>
             </field>
