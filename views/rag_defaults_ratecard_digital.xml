@@ -9,6 +9,7 @@
             <field name="model">ratecard.sin.digital</field>
             <field name="arch" type="xml">
                 <search string="RateCard Type Singular">
+                    <field name='code'/>
                     <field name="name"/>
                     <field name="outlet_id" placeholder="OUTLET"/>
                     <field name="outlet_type_id" domain="[('outlet_id', '=' ,outlet_id)]" placeholder="OUTLET TYPE" />
@@ -45,6 +46,9 @@
             <field name="arch" type="xml">
                 <form string="RateCard Type Singular" version="7.0">
                     <sheet>
+                        <group>
+                            <field name="code"/>
+                        </group>
                         <field name="logo" widget="image" class="oe_avatar oe_left"/>
                         <div class="oe_title">
                             <div class="oe_edit_only">
@@ -277,7 +281,7 @@
                 <!--<xpath expr="//separator[@string='SINGULAR RATECARD']" position="after">-->
                 <xpath expr="//group[@name='group_left']" position="after">
                     <group>
-                        <field attrs="{'invisible':[('singular_ratecards','=',False)]}"  name="ratecard_sin_digital_id"/>
+                        <field attrs="{'invisible':[('digital_ratecards','=',False)]}"  name="ratecard_sin_digital_id"/>
                     </group>
                  </xpath>
             </field>
@@ -339,6 +343,22 @@
             <field name="view_type">form</field>
             <field name="view_mode">tree,form,kanban</field>
         </record>
+
+         <!-- Sequences for DIGITAL SINGULAR Ratecard -->
+        <record id="seq_digital_ratecard_singular_type" model="ir.sequence.type">
+            <field name="name">DIGITAL SINGULAR RATECARD CODE</field>
+            <field name="code">ratecard.sin.digital</field>
+        </record>
+
+        <record id="seq_digital_ratecard_singular_sequence" model="ir.sequence">
+            <field name="name">DIGITAL SINGULAR RATECARD CODE</field>
+            <field name="code">ratecard.sin.digital</field>
+            <field name="prefix">DIGITAL-SINGULAR-RATECARD/%(year)s/%(month)s/%(day)s/</field>
+            <field name="padding">5</field>
+        </record>
+
+
+
           <menuitem id="timeorder_ratecard_menu" name="RATE CARD   DEFAULTS" sequence="10" parent ="timeorder_management_menu"/>
 
         <menuitem  name="DIGITAL SINGULAR RATE CARD" id="menu_ratecard_sin_digital"  action="action_ratecard_sin_digital"  parent="timeorder_ratecard_menu"/>

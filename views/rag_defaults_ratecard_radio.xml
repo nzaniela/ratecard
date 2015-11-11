@@ -272,7 +272,7 @@
                  <!--<xpath expr="//separator[@string='SINGULAR RATECARD']/group[@name='group_left']" position="after">-->
                 <xpath expr="//group[@name='group_left']" position="after">
                         <group>
-                            <field attrs="{'invisible':[('singular_ratecards','=',False)]}" name="ratecard_sin_radio_id"/>
+                            <field attrs="{'invisible':[('radio_ratecards','=',False)]}" name="ratecard_sin_radio_id"/>
                         </group>
                  </xpath>
 
@@ -331,22 +331,22 @@
         </record>
 
         <record model="ir.actions.act_window" id="action_ratecard_sin_radio">
-            <field name="name">RADIO  SINGULAR RATECARD</field>
+            <field name="name">RADIO SINGULAR RATECARD</field>
             <field name="res_model">ratecard.sin.radio</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form,kanban</field>
         </record>
 
-        <!-- Sequences for SINGULAR Ratecard -->
-        <record id="seq__ratecard_singular_type" model="ir.sequence.type">
-            <field name="name">SINGULAR RATECARD CODE</field>
+        <!-- Sequences for RADIO SINGULAR Ratecard -->
+        <record id="seq_radio_ratecard_singular_type" model="ir.sequence.type">
+            <field name="name">RADIO SINGULAR RATECARD CODE</field>
             <field name="code">ratecard.sin.radio</field>
         </record>
 
-        <record id="seq_ratecard_singular_sequence" model="ir.sequence">
-            <field name="name">SINGULAR RATECARD CODE</field>
+        <record id="seq_radio_ratecard_singular_sequence" model="ir.sequence">
+            <field name="name">RADIO SINGULAR RATECARD CODE</field>
             <field name="code">ratecard.sin.radio</field>
-            <field name="prefix">SINGULAR-RATECARD/%(year)s/%(month)s/%(day)s/</field>
+            <field name="prefix">RADIO-SINGULAR-RATECARD/%(year)s/%(month)s/%(day)s/</field>
             <field name="padding">5</field>
         </record>
 

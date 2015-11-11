@@ -45,6 +45,9 @@
             <field name="arch" type="xml">
                 <form string="RateCard Type Singular" version="7.0">
                     <sheet>
+                        <group>
+                            <field name="code"/>
+                        </group>
                         <field name="logo" widget="image" class="oe_avatar oe_left"/>
                         <div class="oe_title">
                             <div class="oe_edit_only">
@@ -280,7 +283,7 @@
                  <!--<xpath expr="//separator[@string='SINGULAR RATECARD']" position="after">-->
                  <xpath expr="//group[@name='group_left']" position="after">
                         <group>
-                            <field attrs="{'invisible':[('singular_ratecards','=',False)]}"  name="ratecard_sin_tv_id" />
+                            <field attrs="{'invisible':[('tv_ratecards','=',False)]}"  name="ratecard_sin_tv_id" />
                         </group>
                  </xpath>
             </field>
@@ -342,6 +345,20 @@
             <field name="view_type">form</field>
             <field name="view_mode">tree,form,kanban</field>
         </record>
+
+          <!-- Sequences for TV SINGULAR Ratecard -->
+        <record id="seq_tv_ratecard_singular_type" model="ir.sequence.type">
+            <field name="name">TV SINGULAR RATECARD CODE</field>
+            <field name="code">ratecard.sin.tv</field>
+        </record>
+
+        <record id="seq_tv_ratecard_singular_sequence" model="ir.sequence">
+            <field name="name">TV SINGULAR RATECARD CODE</field>
+            <field name="code">ratecard.sin.tv</field>
+            <field name="prefix">TV-SINGULAR-RATECARD/%(year)s/%(month)s/%(day)s/</field>
+            <field name="padding">5</field>
+        </record>
+
           <menuitem id="timeorder_ratecard_menu" name="RATE CARD   DEFAULTS" sequence="10" parent ="timeorder_management_menu"/>
 
         <menuitem  name="TV SINGULAR RATE CARD" id="menu_ratecard_sin_tv"  action="action_ratecard_sin_tv"  parent="timeorder_ratecard_menu"/>
