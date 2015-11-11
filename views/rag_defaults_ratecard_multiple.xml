@@ -132,7 +132,7 @@
             <field name="view_mode">tree,form</field>
         </record>
 
-        <menuitem id="timeorder_ratecard_multiple" name="DEFAULTS MULTIPLE RATECARD  " sequence="6" parent ="timeorder_management_menu"/>
+        <menuitem id="timeorder_ratecard_multiple" name="DEFAULTS MULTIPLE RATECARD  " sequence="7" parent ="timeorder_management_menu"/>
 
         <menuitem  name="MULTIPLE RATECARD" id="menu_ratecard_multiple"  action="action_ratecard_multiple"  parent="timeorder_ratecard_multiple"/>
          </data>

@@ -14,7 +14,7 @@
                     <field name="outlet_type_id" domain="[('outlet_id', '=' ,outlet_id)]" placeholder="OUTLET TYPE" />
                     <field name="ad_type_id" placeholder="AD TYPE" />
                     <field name="schedule_type_id" placeholder="SCHEDULE TYPE"/>
-                    <field name="pages_id" placeholder="PAGES" />
+                    <!--<field name="pages_id" placeholder="PAGES" />-->
                     <!--<field name="digital_location_id" placeholder="DIGITAL AD  LOCATION" />-->
                     <!--<field name="digital_type_id" placeholder="DIGITAL TYPE" />-->
                     <!--<field name="digital_size_id" placeholder="DIGITAL AD SIZE" />-->
@@ -60,7 +60,7 @@
                                 <field name="ad_type_id" placeholder="AD TYPE" />
                                                     <field name="schedule_type_id" placeholder="SCHEDULE TYPE"/>
 
-                                <field name="pages_id" placeholder="PAGES" />
+                                <!--<field name="pages_id" placeholder="PAGES" />-->
                                 <!--<field name="digital_location_id" placeholder="DIGITAL AD  LOCATION" />-->
                                 <!--<field name="digital_type_id" placeholder="DIGITAL TYPE" />-->
                                 <!--<field name="digital_size_id" placeholder="DIGITAL AD SIZE" />-->
@@ -107,6 +107,9 @@
             <field name="arch" type="xml">
                 <form string="RateCard Singular" version="7.0">
                     <sheet>
+                        <group>
+                            <field name="code"/>
+                        </group>
                         <field name="logo" widget="image" class="oe_avatar oe_left"/>
                         <div class="oe_title">
                             <div class="oe_edit_only">
@@ -135,7 +138,7 @@
                                 <field name="ad_type_id" placeholder="AD TYPE" />
                                  <field name="schedule_type_id" placeholder="SCHEDULE TYPE"/>
 
-                                <field name="pages_id" placeholder="PAGES" />
+                                <!--<field name="pages_id" placeholder="PAGES" />-->
                                 <!--<field name="digital_location_id" placeholder="DIGITAL AD  LOCATION" />-->
                                 <!--<field name="digital_type_id" placeholder="DIGITAL TYPE" />-->
                                 <!--<field name="digital_size_id" placeholder="DIGITAL AD SIZE" />-->
@@ -145,6 +148,8 @@
                                 <field name="payment_terms_id" placeholder="PAYMENT  TERMS" />
                                 <field name="vat_rate_id" placeholder="VAT RATE " />
                                 <field name="quote_stage_id" placeholder="QUOTE  STAGE" />
+                                <field name="rate_id" placeholder="TIMEBAND RATE" />
+
 
 
                             </group>
@@ -161,6 +166,7 @@
             <field name="model">ratecard.sin.tv</field>
             <field name="arch" type="xml">
                 <tree string="ratecard_sin_tv">
+                    <field name='code'/>
                     <field name="name"/>
                     <field name="description"/>
                     <field name="outlet_id" placeholder="OUTLET"/>
@@ -168,7 +174,7 @@
                     <field name="ad_type_id" placeholder="AD TYPE" />
                                         <field name="schedule_type_id" placeholder="SCHEDULE TYPE"/>
 
-                    <field name="pages_id" placeholder="PAGES" />
+                    <!--<field name="pages_id" placeholder="PAGES" />-->
                     <!--<field name="digital_location_id" placeholder="DIGITAL AD  LOCATION" />-->
                     <!--<field name="digital_type_id" placeholder="DIGITAL TYPE" />-->
                     <!--<field name="digital_size_id" placeholder="DIGITAL AD SIZE" />-->
@@ -178,6 +184,8 @@
                     <field name="payment_terms_id" placeholder="PAYMENT  TERMS" />
                     <field name="vat_rate_id" placeholder="VAT RATE " />
                     <field name="quote_stage_id" placeholder="QUOTE  STAGE" />
+                    <field name="rate_id" placeholder="TIMEBAND RATE" />
+
 
                     <!--<field name="outlet_id"/>-->
                 </tree>
@@ -207,7 +215,7 @@
                                             <field name="ad_type_id" placeholder="AD TYPE" />
                                                                 <field name="schedule_type_id" placeholder="SCHEDULE TYPE"/>
 
-                                            <field name="pages_id" placeholder="PAGES" />
+                                            <!--<field name="pages_id" placeholder="PAGES" />-->
                                             <!--<field name="digital_location_id" placeholder="DIGITAL AD  LOCATION" />-->
                                             <!--<field name="digital_type_id" placeholder="DIGITAL TYPE" />-->
                                             <!--<field name="digital_size_id" placeholder="DIGITAL AD SIZE" />-->

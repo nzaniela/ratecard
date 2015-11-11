@@ -45,9 +45,12 @@
                                 <field name="products_count" string="Products" widget="statinfo" />
                             </button>
                         </div>
-                        <group>
+                         <div class="oe_subtotal_footer_separator oe_inline">
+                                    <label for="total_amount" />
+                                    <button name="button_dummy" states="draft,sent" string="(update)" type="object" class="oe_edit_only oe_link"/>
+                                </div>
+                                <field name="total_amount" nolabel="1" class="oe_subtotal_footer_separator" widget='monetary' options="{'currency_field': 'currency_id'}"/>
 
-                        </group>
                         <group string="Description">
                             <field name="description" nolabel="1"/>
                         </group>
@@ -68,6 +71,13 @@
             <field name="model">ratecard.multiples</field>
             <field name="arch" type="xml">
                 <form string="RateCard Multiple" version="7.0">
+                       <header>
+                            <button name="action_cancel" states="draft,sent,sale" type="object" string="Cancel"/>
+                            <button name="action_draft" states="cancel" type="object" string="Set to Quotation"/>
+                            <button name="action_done" type="object" string="Set to Done" states="sale"
+                                help="If a sale order is done, you cannot modify it manually anymore. However, you will still be able to invoice or deliver. This is used to freeze the sale order."/>
+                            <field name="state" widget="statusbar" statusbar_visible="draft,sent,sale,done"/>
+                        </header>
                     <sheet>
                         <field name="logo" widget="image" class="oe_avatar oe_left"/>
                         <div class="oe_title">
@@ -94,6 +104,15 @@
                                 </group>
                        <separator/>
                         <field name="ratecard_multiple_id"    placeholder="Multiple" />
+
+                         <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total">
+                                     <div class="oe_subtotal_footer_separator oe_inline">
+                                        <label for="total_amount" />
+                                        <button name="button_dummy" states="draft,sent" string="(update)" type="object" class="oe_edit_only oe_link"/>
+                                    </div>
+                                    <field name="total_amount" nolabel="1" class="oe_subtotal_footer_separator" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                         </group>
+
                         <group string="Description">
                             <field name="description" nolabel="1"/>
                         </group>
@@ -113,7 +132,7 @@
                         <field name='ratecard_multiple_id'  widget="many2many" />
                     <field name="description"/>
                     <field name="ratecard_multiple_id" widget="many2many" />
-                    <!--<field name="outlet_id"/>-->
+                    <field name="total_amount" sum="Total Tax Included" widget="monetary"/>
                 </tree>
             </field>
         </record>
@@ -259,7 +278,7 @@
             <field name="view_type">form</field>
             <field name="view_mode">tree,kanban,form</field>
         </record>
-        <menuitem id="timeorder_ratecard_multiples" name="MULTIPLES RATECARD SELECTION   " sequence="7" parent ="timeorder_management_menu"/>
+        <menuitem id="timeorder_ratecard_multiples" name="MULTIPLES RATECARD SELECTION   " sequence="6" parent ="timeorder_management_menu"/>
         <menuitem  name="MULTIPLES RATECARD PRODUCT" id="menu_ratecard_multiples"  action="action_ratecard_multiples"  parent="timeorder_ratecard_multiples"/>
 
     </data>

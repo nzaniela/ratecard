@@ -108,6 +108,9 @@
             <field name="arch" type="xml">
                 <form string="RateCard Singular" version="7.0">
                     <sheet>
+                        <group>
+                            <field name="code"/>
+                        </group>
                         <field name="logo" widget="image" class="oe_avatar oe_left"/>
                         <div class="oe_title">
                             <div class="oe_edit_only">
@@ -146,6 +149,8 @@
                                 <field name="payment_terms_id" placeholder="PAYMENT  TERMS" />
                                 <field name="vat_rate_id" placeholder="VAT RATE " />
                                 <field name="quote_stage_id" placeholder="QUOTE  STAGE" />
+                                <field name="rate_id" placeholder="TIMEBAND RATE" />
+
 
 
                             </group>
@@ -162,6 +167,7 @@
             <field name="model">ratecard.sin.digital</field>
             <field name="arch" type="xml">
                 <tree string="ratecard_sin_digital">
+                    <field name='code'/>
                     <field name="name"/>
                     <field name="description"/>
                     <field name="outlet_id" placeholder="OUTLET"/>
@@ -179,6 +185,8 @@
                     <field name="payment_terms_id" placeholder="PAYMENT  TERMS" />
                     <field name="vat_rate_id" placeholder="VAT RATE " />
                     <field name="quote_stage_id" placeholder="QUOTE  STAGE" />
+                    <field name="rate_id" placeholder="TIMEBAND RATE" />
+
 
                     <!--<field name="outlet_id"/>-->
                 </tree>
