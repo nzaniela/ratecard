@@ -10,7 +10,7 @@
             <field name="arch" type="xml">
                 <search string="Outlet">
                     <field name="name"/>
-                    <field name="company_id"/>
+                    <!--<field name="company_id"/>-->
                 </search>
             </field>
         </record>
@@ -46,9 +46,9 @@
                                 <field name="products_count" string="Products" widget="statinfo" />
                             </button>
                         </div>
-                        <group>
-                            <field name="company_id"/>
-                        </group>
+                        <!--<group>-->
+                            <!--<field name="company_id"/>-->
+                        <!--</group>-->
                         <group string="Description">
                             <field name="description" nolabel="1"/>
                         </group>
@@ -88,9 +88,9 @@
                                 <field name="products_count" string="Products" widget="statinfo" />
                             </button>
                         </div>
-                        <group>
-                            <field name="company_id"/>
-                        </group>
+                        <!--<group>-->
+                            <!--<field name="company_id"/>-->
+                        <!--</group>-->
                         <h3>
                             <group colspan="4" col="4">
                                 <field name="outlet_type_id"    placeholder="Outlet Type " />
@@ -111,7 +111,7 @@
                     <field name="name"/>
                     <field name="description"/>
                     <field name="outlet_type_id"/>
-                    <field name="company_id"/>
+                    <!--<field name="company_id"/>-->
                 </tree>
             </field>
         </record>

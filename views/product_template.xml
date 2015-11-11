@@ -7,18 +7,43 @@
             <field name="inherit_id" ref="product.product_template_form_view"/>
             <field name="arch" type="xml">
                 <field name="name" position="after">
-                        <div class="oe_left" name="options">
-                                <div class="oe_grey">
-                                    <group>
-                                        <field  name="singular_ratecards" class="oe_inline" />
-                                    </group>
-                                </div>
-                              <div>
-                                  <group>
-                                        <field name="multiple_ratecards" class="oe_grey" />
-                                    </group>
-                              </div>
-                            </div>
+                        <!--<div class="oe_left" name="options">-->
+                                <!--<div class="oe_grey">-->
+                          <group col="4" colspan="4" rowspan="1">
+                                    <div class="oe_inline">
+                                        <label for="radio_ratecards" />
+                                    </div>
+                                    <field name="radio_ratecards" nolabel="1" />
+
+                                    <div class="oe_inline">
+                                        <label for="digital_ratecards" />
+                                    </div>
+                                    <field name="digital_ratecards" nolabel="1" />
+
+                                    <div class="oe_inline">
+                                        <label for="print_ratecards" />
+                                    </div>
+                                    <field name="print_ratecards" nolabel="1" />
+
+                                    <div class="oe_inline">
+                                        <label for="tv_ratecards" />
+                                    </div>
+                                    <field name="tv_ratecards" nolabel="1" />
+                          </group>
+                          <separator string="RADIO MULTIPLES RATECARD" />
+                          <group col="1" colspan="1" rowspan="1">
+                                     <div class="oe_inline">
+                                        <label for="radio_multiples_ratecards" />
+                                    </div>
+                                    <field name="radio_multiples_ratecards" nolabel="1" />
+                          </group>
+                           <!--</div>-->
+                              <!--<div>-->
+                                  <!--<group>-->
+                                        <!--<field name="radio_multiples_ratecards" class="oe_grey" />-->
+                                    <!--</group>-->
+                              <!--</div>-->
+                            <!--</div>-->
                 </field>
                 <xpath expr="//field[@name='sale_ok']" position="before">
                     <!--<group name="group_top" col="2" colspan="2">-->
@@ -27,14 +52,26 @@
                              <!--singular ratecards are injected here -->
                         </group>
                         <group>
-                            <field  attrs="{'invisible':[('singular_ratecards','=',False)]}"   name="singular_ratecard_cost" on_change="on_change_singular_ratecard_cost(singular_ratecard_cost)" />
+                             <field  attrs="{'invisible':[('radio_ratecards','=',False) ]}"   name="radio_ratecard_cost"  />
+                            <field  attrs="{'invisible':[('digital_ratecards','=',False) ]}"   name="digital_ratecard_cost"  />
+                            <field  attrs="{'invisible':[('print_ratecards','=',False) ]}"   name="print_ratecard_cost"  />
+                            <field  attrs="{'invisible':[('tv_ratecards','=',False) ]}"   name="tv_ratecard_cost"  />
+
+
+                            <!--<field  attrs="{'invisible':[('radio_ratecards','=',False) ]}"   name="radio_ratecard_cost" on_change="on_change_radio_ratecard_cost(radio_ratecard_cost)" />-->
+                            <!--<field  attrs="{'invisible':[('digital_ratecards','=',False) ]}"   name="digital_ratecard_cost" on_change="on_change_digital_ratecard_cost(digital_ratecard_cost)" />-->
+                            <!--<field  attrs="{'invisible':[('print_ratecards','=',False) ]}"   name="print_ratecard_cost" on_change="on_change_print_ratecard_cost(print_ratecard_cost)" />-->
+                            <!--<field  attrs="{'invisible':[('tv_ratecards','=',False) ]}"   name="tv_ratecard_cost" on_change="on_change_tv_ratecard_cost(tv_ratecard_cost)" />-->
+
                         </group>
                         <separator string="MULTIPLE RATECARD" />
                           <group name="group_right" rowspan="1" colspan="2" col="1">
                                <!-- multiple ratecards are injected  here -->
                           </group>
                         <group>
-                              <field  attrs="{'invisible':[('multiple_ratecards','=',False)]}" name="multiple_ratecard_cost" on_change="on_change_multiple_ratecard_cost(multiple_ratecard_cost)"/>
+                            <field  attrs="{'invisible':[('radio_multiples_ratecards','=',False)]}" name="radio_multiples_ratecard_cost" />
+
+                              <!--<field  attrs="{'invisible':[('radio_multiples_ratecards','=',False)]}" name="radio_multiples_ratecard_cost" on_change="on_change_radio_multiples_ratecard_cost(radio_multiples_ratecard_cost)"/>-->
                         </group>
 
 		</xpath>
