@@ -232,28 +232,28 @@ class spot_length(models.Model):
         self.products_count = len(self.product_ids)    
 
 
-    
+
 class res_partner(models.Model):
     _inherit = 'res.partner'
 
-    is_branch = fields.Boolean('Is Branch?')
-    parent_root_id = fields.Many2one('res.partner', 'Main Partner', domain=[('is_company', '=', True), ('is_branch', '=', False)])
+    # is_branch = fields.Boolean('Is Branch?')
+    # parent_root_id = fields.Many2one('res.partner', 'Main Partner', domain=[('is_company', '=', True), ('is_branch', '=', False)])
     vat_no = fields.Integer(string='VAT NO:')
 
-    @api.multi
-    def name_get(self):
-        res = super(res_partner, self).name_get()
-        res_dict = dict(res)
-        for record in self:
-            if record.parent_root_id and record.is_branch:
-                res_dict[record.id] = "%s / %s" % (record.parent_root_id.name, res_dict[record.id])
-        return res_dict.items()
+    # @api.multi
+    # def name_get(self):
+    #     res = super(res_partner, self).name_get()
+    #     res_dict = dict(res)
+    #     for record in self:
+    #         if record.parent_root_id and record.is_branch:
+    #             res_dict[record.id] = "%s / %s" % (record.parent_root_id.name, res_dict[record.id])
+    #     return res_dict.items()
 
 class outlet(models.Model):
     _name = 'outlet'
 
     name  = fields.Many2one('res.partner',string='OUTLET NAME' ,required=True)
-    # name = fields.Char('Outlet Name', required=True)
+    #name = fields.Char('Outlet Name', required=True)
     outlet_type_id = fields.Many2one(comodel_name='outlet.type', string='Outlet Type')
     description = fields.Text('Description', translate=True)
     ratecard_sin_digital_id= fields.One2many(comodel_name='ratecard.sin.digital', inverse_name='outlet_id',string='RateCard Singular')
@@ -308,14 +308,14 @@ class outlet(models.Model):
     #
     #
     #     return result
-    @api.multi
-    def name_get(self):
-        res = super(res_partner, self).name_get()
-        res_dict = dict(res)
-        for record in self:
-            if record.name and record.id:
-                res_dict[record.id] = "%s / %s" % (record.name, res_dict[record.id])
-        return res_dict.items()
+    # @api.multi
+    # def name_get(self):
+    #     res = super(res_partner, self).name_get()
+    #     res_dict = dict(res)
+    #     for record in self:
+    #         if record.name and record.id:
+    #             res_dict[record.id] = "%s / %s" % (record.name, res_dict[record.id])
+    #     return res_dict.items()
 
     @api.model
     def  name_search(self, name='', args=None, operator='ilike', limit=100):
@@ -330,33 +330,12 @@ class outlet(models.Model):
         return recs.name_get()
 
 
-
 class ProductTemplate(models.Model):
     
     _inherit = 'product.template'
 
     name  = fields.Char('RATECARD')
-    singular_ratecards = fields.Boolean(string='SINGULARS RATECARDS')
-    multiple_ratecards = fields.Boolean(string='MULTIPLES RATECARDS')
-    CostPrice = fields.Float('Buy price')
-    ShippingCost = fields.Float('Shipping Cost')
 
-    spot_length_id  =  fields.Many2one(comodel_name='spot.length', string='Spot Length')
-    
-    quo_mul_id  =  fields.Many2one(comodel_name='quo.mul', string='Multiple Quotation')
-
-    def on_change_price(self,cr,user,ids,CostPrice,ShippingCost,context=None):
-
-        #Calculate the total
-        total = CostPrice + ShippingCost
-        res = {
-                'value': {
-            #This sets the total price on the field standard_price.
-                    'standard_price': total
-              }
-        }
-        #Return the values to update it in the view.
-        return res
 
     outlet_id = fields.Many2one('outlet',string='Outlet',help='Select a outlet for this product')
     ratecard_multiple_id = fields.Many2one('ratecard.multiple',string='MULTIPLE RATECARD')
@@ -373,7 +352,7 @@ class ProductTemplate(models.Model):
     ratecard_sin_digital_id = fields.Many2one('ratecard.sin.digital',string='DIGITAL SINGULAR RATECARD',help='Select   DIGITAL SINGULAR RATECARD for this product')
     ratecard_sin_print_id = fields.Many2one('ratecard.sin.print',string='PRINT SINGULAR RATECARD',help='Select PRINT SINGULAR RATECARD for this product')
     ratecard_sin_tv_id = fields.Many2one('ratecard.sin.tv',string='TV SINGULAR RATECARD',help='Select TV SINGULAR RATECARD for this product')
-    
+
     multiple_ratecard_id = fields.Many2one('ratecard.mul',string='RateCard Multiple',help='Select   RateCard Multiple for this product')
     ad_type_id = fields.Many2one('ad.type',string='Ad Type Singular',help='Select   Ad  Type   for this product')
     vat_rate_id = fields.Many2one('vat.rate',string='VAT  Rate ',help='Select   VAT RATE for this product')
@@ -381,6 +360,173 @@ class ProductTemplate(models.Model):
     rateclass_code_id = fields.Many2one('rateclass.code',string='RATECLASS  CODE',help='Select  RATECLASS  CODE for this product')
     quote_stage_id = fields.Many2one('quote.stage',string='QUOTE STAGE',help='Select   QUOTE  STAGE  for this product')
     schedule_type_id = fields.Many2one('schedule.type',string='Schedule',help='Select a Schedule for this product')
+    spot_length_id  =  fields.Many2one(comodel_name='spot.length', string='Spot Length')
+    quo_mul_id  =  fields.Many2one(comodel_name='quo.mul', string='Multiple Quotation')
+
+    radio_ratecards = fields.Boolean(string='RADIO RATECARDS')
+    digital_ratecards = fields.Boolean(string='DIGITAL RATECARDS')
+    print_ratecards = fields.Boolean(string='PRINT RATECARDS')
+    tv_ratecards = fields.Boolean(string='TV RATECARDS')
+
+    radio_ratecard_cost = fields.Float(string='RADIO RATE COST', store=True, readonly=True, compute='_get_radioratecard_rate', track_visibility='always')
+    digital_ratecard_cost = fields.Float('DIGITAL Ratecard Cost', store=True, readonly=True, compute='_get_digitalratecard_rate', track_visibility='always')
+    print_ratecard_cost = fields.Float('PRINT Ratecard Cost', store=True, readonly=True, compute='_get_printratecard_rate', track_visibility='always')
+    tv_ratecard_cost = fields.Float('TV Ratecard Cost', store=True, readonly=True, compute='_get_tvratecard_rate', track_visibility='always')
+
+
+    radio_multiple_ratecards = fields.Boolean(string='RADIO MULTIPLE RATECARDS')
+    radio_multiple_ratecard_cost = fields.Float('RADIO MULTIPLE RATECARD COST', compute='_get_radio_multiple_ratecard_rate', store=True, readonly=True, track_visibility='always')
+
+    _defaults = {
+        'company_id': lambda s,cr,uid,c: s.pool.get('res.company')._company_default_get(cr, uid, 'product.template', context=c),
+        'singular_ratecard_cost': 1,
+        'multiple_ratecard_cost': 0.0,
+        'radio_ratecards':0,
+        'digital_ratecards':0,
+        'print_ratecards':0,
+        'tv_ratecards':0,
+        'multiple_ratecards':0,
+        'active': True,
+    }
+    def copy(self, cr, uid, id, default=None, context=None):
+        if default is None:
+            default = {}
+        template = self.browse(cr, uid, id, context=context)
+        default['name'] = _("%s (copy)") % (template['name'])
+        return super(ProductTemplate, self).copy(cr, uid, id, default=default, context=context)
+
+
+    @api.one
+    @api.depends('ratecard_multiple_id')
+    def _get_radio_multiple_ratecard_rate(self):
+        for  order  in  self:
+            print  'INSIDE PRODUCT TEMPLATE ', order
+            print 'Can we  get  total_amount here'
+            name = ''
+            radio_multiple_ratecard_cost = 0.0
+            for  line  in  order.ratecard_multiple_id:
+                print 'ALLOCATE SCHEDULE  COUNT' , line.allocate_schedule_count
+                print 'SPOT TOTAL' , line.total_spot
+                # print 'VAT  RATE' ,line.ratecard_multiple_id.vat_rate_id.id
+                print 'RATE' ,line.rate_amount
+                radio_multiple_ratecard_cost += line.taxed_amount
+                print 'radio_multiple_ratecard_cost' , radio_multiple_ratecard_cost
+                print 'NAME OF RADIO RATECARD' , line.name
+                name = line.name
+
+            order.update({
+                    'radio_multiple_ratecard_cost':radio_multiple_ratecard_cost,
+                    'name':name,
+
+            })
+    @api.one
+    @api.depends('ratecard_sin_radio_id.rate_id')
+    def _get_radioratecard_rate(self):
+        for  order  in  self:
+            print  'order', order
+            print 'PRODUCT NAME ' , order.name
+            name = ''
+            radio_ratecard_cost = 0.0
+            for  line  in  order.ratecard_sin_radio_id:
+                print 'timeband' , line.timeband_id.id
+                print 'VAT  RATE' ,line.vat_rate_id.id
+                print 'NAME OF RADIO RATECARD' , line.name
+                name = line.name
+                radio_ratecard_cost += line.rate_id.rate_amount
+                print 'radio_ratecard_cost' , radio_ratecard_cost
+
+            order.update({
+                    'radio_ratecard_cost':radio_ratecard_cost,
+                     'name':name,
+
+            })
+
+
+    @api.one
+    @api.depends('ratecard_sin_digital_id.rate_id')
+    def _get_digitalratecard_rate(self):
+        for  order  in  self:
+            print  'order', order
+            name  = ''
+            digital_ratecard_cost = 0.0
+            for  line  in  order.ratecard_sin_digital_id:
+                print 'timeband' , line.timeband_id.id
+                # print 'VAT  RATE' ,line.vat_rate_id.id
+                digital_ratecard_cost += line.rate_id.rate_amount
+                print 'digital_ratecard_cost' , digital_ratecard_cost
+                print 'NAME OF RADIO RATECARD' , line.name
+                name = line.name
+            order.update({
+                    'digital_ratecard_cost':digital_ratecard_cost,
+                    'name':name,
+
+            })
+
+    @api.one
+    @api.depends('ratecard_sin_print_id.rate_id')
+    def _get_printratecard_rate(self):
+        for  order  in  self:
+            print  'order', order
+            name  = ''
+            print_ratecard_cost = 0.0
+            for  line  in  order.ratecard_sin_print_id:
+                print 'timeband' , line.timeband_id.id
+                print_ratecard_cost += line.rate_id.rate_amount
+                print 'print_ratecard_cost' , print_ratecard_cost
+                print 'NAME OF RADIO RATECARD' , line.name
+                name = line.name
+            order.update({
+                    'print_ratecard_cost':print_ratecard_cost,
+                    'name':name,
+
+            })
+    @api.one
+    @api.depends('ratecard_sin_tv_id.rate_id')
+    def _get_tvratecard_rate(self):
+        for  order  in  self:
+            print  'order', order
+            name = ''
+            tv_ratecard_cost = 0.0
+            for  line  in  order.ratecard_sin_tv_id:
+                print 'timeband' , line.timeband_id.id
+                # print 'VAT  RATE' ,line.vat_rate_id.id
+                tv_ratecard_cost += line.rate_id.rate_amount
+                print 'tv_ratecard_cost' , tv_ratecard_cost
+                print 'NAME OF RADIO RATECARD' , line.name
+                name = line.name
+
+            order.update({
+                    'tv_ratecard_cost':tv_ratecard_cost,
+                    'name':name,
+            })
+
+    @api.onchange('radio_ratecard_cost')
+    def on_change_radio_ratecard_cost(self):
+        print 'RADIO RATECARD COST' ,self.radio_ratecard_cost
+        self.list_price =self.radio_ratecard_cost
+        print 'RADIO ONCHANGE list_price ' , self.list_price
+
+
+    @api.onchange('digital_ratecard_cost')
+    def on_change_digital_ratecard_cost(self):
+        print 'DIGITAL RATECARD COST' ,self.digital_ratecard_cost
+        self.list_price = self.digital_ratecard_cost
+
+
+    @api.onchange('print_ratecard_cost')
+    def on_change_print_ratecard_cost(self):
+        self.list_price = self.print_ratecard_cost
+
+
+    @api.onchange('tv_ratecard_cost')
+    def on_change_tv_ratecard_cost(self):
+        self.list_price = self.tv_ratecard_cost
+
+    @api.onchange('radio_multiple_ratecard_cost')
+    def on_change_radio_multiple_ratecard_cost(self):
+       self.list_price =self.radio_multiple_ratecard_cost
+
+
     
 
 class  timeband(models.Model):
@@ -701,7 +847,7 @@ class  ratecard_sin_radio(models.Model):
     _name =  'ratecard.sin.radio'
     _description  = 'RATECARD SINGULAR RADIO  '
 
-    code  = fields.Char(string='SINGULAR RATECARD CODE',readonly=True)
+    code  = fields.Char(string='RADIO SINGULR RATECARD CODE',readonly=True)
     name  =   fields.Char(string='NAME')
     outlet_id = fields.Many2one(comodel_name='outlet', string='Outlet')
     timeband_id  = fields.Many2one(comodel_name='timeband', string='TimeBand')
@@ -717,28 +863,17 @@ class  ratecard_sin_radio(models.Model):
     description = fields.Text('Description', translate=True)          
     logo = fields.Binary('Logo File')
     ratecard_multiple_id = fields.Many2one(comodel_name='ratecard.multiple' , string='RADIO SINGULAR RATECARD')
+
     rate_id  = fields.Many2one(comodel_name='rate',string='TIMEBAND RATE')
 
     _defaults = {
 
-        'code':lambda obj,cr,uid,context:'SINGULAR/RATECARD/'
+        'code':lambda obj,cr,uid,context:'/RADIO/SINGULAR/RATECARD/'
     }
 
     def  create(self,cr,uid, vals,context=None):
         vals['code'] = self.pool.get('ir.sequence').get(cr,uid,'ratecard.sin.radio')
         return super(ratecard_sin_radio,self).create(cr,uid,vals,context=context)
-    
-    #def name_get(self,cr,uid,ids,context=None):
-            #result = {}
-            #for record in self.browse(cr,uid,ids,context=context):
-            
-                 # result[record.id] = record.name + " " + str(record.outlet_id) + " " + str(record.outlet_type_id) + " " + str(ad_type_id)  +" " + str(timeband_id)+ " " + str(schedule_type_id)+ " " + description
-
-                
-
-                #result[record.id] = record.name + " " + str(record.outlet_id) + " " + str(record.outlet_type_id) 
-        
-            #return result.items() 
         
     def onchange_outlet(self,cr,uid,ids,outlet_id):
         result = {'value':{'outlet_type_id':False}}
@@ -747,11 +882,7 @@ class  ratecard_sin_radio(models.Model):
             print  outlet 
             result['value'] = {'outlet_type_id':outlet.outlet_type_id.id}
         return result    
-    product_ids = fields.One2many(
-          'product.template',
-          'ratecard_sin_radio_id',
-          string='RateCard Type  Singular ',
-      )    
+    product_ids = fields.One2many('product.template','ratecard_sin_radio_id',string='RateCard Type  Singular ',)
     ratecard_mul_id = fields.Many2one( 'ratecard.mul',string='RateCard')      
     
     products_count = fields.Integer( string='Number of products',compute='_get_products_count',)
@@ -783,8 +914,35 @@ class  ratecard_multiples(models.Model):
     description = fields.Text('Description', translate=True)
     logo = fields.Binary('Logo File')
     product_ids = fields.One2many('product.template','ratecard_multiples_id', string='RateCard Multiple',)
-
     products_count = fields.Integer(string='Number of products',compute='_get_products_count',)
+    state = fields.Selection([
+        ('draft', 'Multiple RateCard  Draft'),
+        ('sent', 'Multiple RateCard READY'),
+        ('sale', 'MULTIPLE  RATECARD  FINAL'),
+        ('done', 'Done'),
+        ('cancel', 'Cancelled'),
+        ], string='Status', readonly=True, copy=False, index=True, track_visibility='onchange', default='draft')
+
+    total_amount= fields.Integer( string='TOTAL Ksh:',store=True, readonly=True, compute='_get_multiple_total_ratecard_amount_rate', track_visibility='always')
+
+    @api.one
+    @api.depends('ratecard_multiple_id.taxed_amount')
+    def _get_multiple_total_ratecard_amount_rate(self):
+        for  order  in  self:
+            print  'MULTIPLES RATECARD PRINT ', order
+            total_amount = 0.0
+            for  line  in  order.ratecard_multiple_id:
+                # print 'timeband' , line.timeband_id.id
+                # print 'VAT  RATE' ,line.vat_rate_id.id
+                print  'MULTIPLES RATECARD TAXED  AMOUNT' , line.taxed_amount
+                total_amount += line.taxed_amount
+
+                print 'radio_ratecard_cost' , total_amount
+
+            order.update({
+                    'total_amount':total_amount,
+
+            })
 
     @api.one
     @api.depends('product_ids')
@@ -798,16 +956,25 @@ class  ratecard_multiples(models.Model):
                     print  outlet
                     result['value'] = {'outlet_type_id':outlet.outlet_type_id.id}
                 return result
-    #sinmul_ratecard_id  = fields.Many2many(comodel_name='ratecard.sin.radio', relation='ratecard_sinmul_rel', 
-                                                #column1='ratecard_sinmul_id', 
-                                                #column2='ratecard_sin_radio_id', 
-                                                #string='RATECARDS')    
-    
+
+    @api.multi
+    def button_dummy(self):
+        return True
+    @api.multi
+    def action_draft(self):
+        self.filtered(lambda s: s.state in ['cancel', 'sent']).write({'state': 'draft'})
+
+    @api.multi
+    def action_cancel(self):
+        self.write({'state': 'cancel'})
+    @api.multi
+    def action_done(self):
+        self.write({'state': 'done'})
+
     
 class  ratecard_multiple(models.Model):
     #pudb.set_trace()
     _name = 'ratecard.multiple'
-    
     #_inherits = {'ratecard.sin.radio':'ratecard_sin_radio_id'}
    # _inherits = {'ratecard.sinmul':'ratecard_sinmul_id'}
     name = fields.Char(string='Multiple RateCard Product  Name ' ,required=True)
@@ -915,64 +1082,161 @@ class  ratecard_multiple(models.Model):
                                                 column1='ratecard_mul_id', 
                                                 column2='ratecard_sin_radio_id', 
                                                 string='RATECARDS')   
-    allocate_multiple_id  =  fields.Many2many(comodel_name='ratecard.mul' ,relation='ratecard_mul_ratecard_sin_rel', 
-                                              column1='multiple_ratecard_id' , column2='week_id' ,string='ALLOCATE RATECARD',required=True)
-   
+    # allocate_multiple_id  =  fields.Many2many(comodel_name='ratecard.mul' ,relation='ratecard_mul_ratecard_sin_rel',
+    #                                           column1='multiple_ratecard_id' , column2='week_id' ,string='ALLOCATE RATECARD',required=True)
+    #
     ratecard_sin_radio_id = fields.One2many(comodel_name='ratecard.sin.radio', 
                                               inverse_name='ratecard_multiple_id', 
-                                              string='RADIO  SINGULAR RATECARD',required=True) 
+                                              string='RADIO SINGULAR RATECARD',required=True)
     
     
     allocate_schedule = fields.Many2many(comodel_name='week', relation='ratecard_multiple_week_rel',
                                          column1='ratecard_multiple_id', column2='week_id',
                                          track_visibility='onchange', string='ALLOCATE SPOTS',required=True)
-
-    allocate_schedule_count = fields.Integer(string='WEEKS ALLOCATED',compute='_get_allocate_schedule_count', track_visibility='always' ,store=True)
-    multiple_ratecard_id_count = fields.Integer(string='SINGULAR RATECARDS SELECTED',compute='_get_multiple_ratecard_id_count_count', track_visibility='always' ,store=True)
-
+    #Updated  now  from _amount_all method
+    allocate_schedule_count = fields.Integer(string='WEEKS ALLOCATED',compute='_get_allocate_schedule_count', track_visibility='always' ,readonly=True , store=True)
 
     @api.one
-    @api.constrains('allocate_schedule_count','multiple_ratecard_id_count')
-    def _check_lineitems(self):
-        if  self.allocate_schedule_count > self.multiple_ratecard_id_count :
-            raise exceptions.ValidationError("WEEKS ALLOCATED MUST BE EQUAL TO SELECTED SINGULAR RATECARDS")
-        if  self.multiple_ratecard_id_count > self.allocate_schedule_count :
-            raise exceptions.ValidationError("SINGULAR RATECARDS SELECTED MUST BE EQUAL TO WEEKS ALLOCATED")
-
-
-
-
-
-
-
-    @api.one
-    @api.depends('allocate_schedule')
+    @api.depends('allocate_schedule_count', 'allocate_schedule')
     def _get_allocate_schedule_count(self):
-        self.allocate_schedule_count = len(self.allocate_schedule)
-        print 'allocate_schedule_counts' , self.allocate_schedule_count
+        for  order  in  self:
+            print  'order', order
+            allocate_schedule_count = 0
+            for  line  in  order.allocate_schedule:
+                print '_get_allocate_schedule_count ALLOCATE SCHEDULE COUNTS' , len(self.allocate_schedule)
+                allocate_schedule_count = len(self.allocate_schedule)
+                print '_get_allocate_schedule_count ALLOCATED SCHEDULE COUNTS ARE' , allocate_schedule_count
+                print '_get_allocate_schedule_count allocate_schedule_count' , allocate_schedule_count
 
-    @api.one
-    @api.depends('multiple_ratecard_id')
-    def _get_multiple_ratecard_id_count_count(self):
-        self.multiple_ratecard_id_count = len(self.multiple_ratecard_id)
-        print 'multiple_ratecard_id_count' , self.multiple_ratecard_id_count
+            order.update({
+                    'allocate_schedule_count':allocate_schedule_count,
 
-    # partner_id = fields.Many2one('res.partner', string='Customer', readonly=True, states={'draft': [('readonly', False)], 'sent': [('readonly', False)]}, required=True, change_default=True, index=True, track_visibility='always')
+            })
 
-    _defaults = {
-        'code':lambda obj,cr,uid,context:'/'
-    }
+    @api.onchange('allocate_schedule')
+    def _onchange_allocate_schedule(self):
+        print 'we entered the allocate_schedule count'
+        self.allocate_schedule = self.allocate_schedule
+    #     # for  order in  self:
+    #     #     print 'allocate_schedule count' , order
+    #     #     for line  in  order:
+    #     #         # line.name
+    #     #         print  'Count line  items' , line
+    #     #         print 'line.name' , line
 
+    multiple_ratecard_id_count = fields.Integer(string='SINGULAR RATECARDS SELECTED',compute='_get_multiple_ratecard_id_count_count', track_visibility='always' ,store=True)
 
     @api.onchange('multiple_ratecard_id')
     def _onchange_multiple_ratecard(self):
         print 'we entered the multiple ratecard many2many'
         for  order in  self:
-            print 'Order Name' , order.name
+            print 'Order Name' , order
             for line  in  order:
-                line.name
-                print 'line.name' , line.name
-                # print 'rate_amount' , line.rate_amount
+                # line.name
+                print 'line.name' , line
+
+    @api.onchange('allocate_schedule')
+    def _onchange_allocate_schedule(self):
+        print 'refreshed allocate_schedule'
+        for  order in  self:
+            print 'allocate_schedule' , order
+            for line  in  order:
+                print 'line.name' , line
+
+
+
+    # @api.one
+    # @api.depends('allocate_schedule' ,'allocate_schedule_count')
+    # def _get_allocate_schedule_count(self):
+    #     for  order in  self:
+    #         order.allocate_schedule_count = len(order.allocate_schedule)
+    #         print 'allocate_schedule_counts' , order.allocate_schedule_count
+    #     order.update({
+    #             'allocate_schedule_count':order.allocate_schedule_count,
+    #
+    #         })
+
+    @api.one
+    @api.depends('multiple_ratecard_id','multiple_ratecard_id_count')
+    def _get_multiple_ratecard_id_count_count(self):
+        for  order in  self:
+            order.multiple_ratecard_id_count = len(order.multiple_ratecard_id)
+            print 'multiple_ratecard_id_count' , order.multiple_ratecard_id_count
+        order.update({
+                'multiple_ratecard_id_count':order.multiple_ratecard_id_count,
+
+            })
+
+
+    # partner_id = fields.Many2one('res.partner', string='Customer', readonly=True, states={'draft': [('readonly', False)], 'sent': [('readonly', False)]}, required=True, change_default=True, index=True, track_visibility='always')
+    # @api.one
+    # @api.constrains('allocate_schedule_count','multiple_ratecard_id_count')
+    # def _check_lineitems(self):
+    #     for  line  in self:
+    #         if  line.allocate_schedule_count > line.multiple_ratecard_id_count :
+    #             print  'ALLOCATE  SCHEDULE  COUNT  IS  GREATER' ,  line.allocate_schedule_count ,line.multiple_ratecard_id_count
+    #             raise exceptions.ValidationError("WEEKS ALLOCATED MUST BE EQUAL TO SELECTED SINGULAR RATECARDS")
+    #         elif  line.allocate_schedule_count < line.multiple_ratecard_id_count:
+    #             print 'ALLOCATED SPOTS  GREATER THAN SINGULAR RATECARDS SELECTED' , line.multiple_ratecard_id_count , line.allocate_schedule_count
+    #             raise exceptions.ValidationError("ALLOCATED SPOTS  GREATER THAN SINGULAR RATECARDS SELECTED")
+    #         elif   line.multiple_ratecard_id_count > line.allocate_schedule_count :
+    #             print  'SINGULAR RATECARDS SELECTED ARE GREATER THAN  ALLOCATED SPOTS ' ,  line.allocate_schedule_count ,line.multiple_ratecard_id_count
+    #             raise exceptions.ValidationError("SINGULAR RATECARDS SELECTED ARE GREATER THAN  ALLOCATED SPOTS PLEASE CORRECT TO MATCH")
+    #         elif  line.multiple_ratecard_id_count < line.allocate_schedule_count:
+    #             print 'SINGULAR RATECARDS SELECTED ARE LESS THAN  ALLOCATED SPOTS' , line.multiple_ratecard_id_count , line.allocate_schedule_count
+    #             raise exceptions.ValidationError("SINGULAR RATECARDS SELECTED ARE LESS THAN  ALLOCATED SPOTS")
+    #         elif line.allocate_schedule_count == line.multiple_ratecard_id_count :
+    #             print  'SUCCESSFULL , THEY ARE  EQUAL' ,  line.allocate_schedule_count , line.multiple_ratecard_id_count
+    #             pass
+
+    @api.onchange('allocate_schedule_count', 'multiple_ratecard_id_count')
+    @api.multi
+    def _onchange_price(self):
+        error_message = 'SINGULAR RATECARDS LINES SELECTED MUST MATCH ALLOCATED SPOTS LINES '
+        res = {}
+        for line in  self:
+            print 'allocate_schedule_count VALUES' , line.allocate_schedule_count
+            print 'multiple_ratecard_id_count VALUES' , line.multiple_ratecard_id_count
+            if  (line.multiple_ratecard_id_count > 0) and (line.multiple_ratecard_id_count != line.allocate_schedule_count):
+                print 'line.multiple_ratecard_id_count > 0  ::: allocate_schedule_count VALUES' , line.allocate_schedule_count
+                print ' line.multiple_ratecard_id_count > 0 ::: multiple_ratecard_id_count VALUES' , line.multiple_ratecard_id_count
+                error_message = 'KINDLY ALLOCATE SPOT'
+                res = {'warning': {
+                'title': 'YOU HAVE ADDED A  SINGULAR RATECARD LINE' ,
+                'message': error_message,
+            }
+                }
+            elif (line.allocate_schedule_count > 0) and   (line.allocate_schedule_count != line.multiple_ratecard_id_count):
+                print 'line.allocate_schedule_count > 0  ::: allocate_schedule_count VALUES' , line.allocate_schedule_count
+                print ' line.allocate_schedule_count > 0 ::: multiple_ratecard_id_count VALUES' , line.multiple_ratecard_id_count
+                error_message = 'KINDLY ALLOCATE SINGULAR RATECARD'
+                res = {'warning': {
+                'title': 'YOU HAVE JUST ADDED AN ALLOCATION SPOT ' ,
+                'message': error_message,
+            }
+                }
+            elif line.allocate_schedule_count != line.multiple_ratecard_id_count:
+                print 'line.allocate_schedule_count != line.multiple_ratecard_id_count ::: allocate_schedule_count VALUES' , line.allocate_schedule_count
+                print ' line.allocate_schedule_count != line.multiple_ratecard_id_count  ::: multiple_ratecard_id_count VALUES' , line.multiple_ratecard_id_count
+                error_message = 'SINGULAR RATECARDS LINES SELECTED MUST MATCH ALLOCATED SPOTS LINES TO PROCEED'
+                res = {'warning': {
+                'title': 'SINGULAR RATECARDS LINES SELECTED MUST MATCH ALLOCATED SPOTS LINES' ,
+                'message': error_message,
+            }
+                }
+        return res
+        # Can optionally return a warning and domains
+        # return {
+        #     'warning': {
+        #         'title': 'SELECTED SINGULAR RATECARDS MUST  HAVE  CORRESPONDING ALLOCATED SPOTS AND  VICE VERSA' ,
+        #         'message': error_message,
+        #     }
+        # }
+
+    _defaults = {
+        'code':lambda obj,cr,uid,context:'/'
+    }
+
     rate_amount = fields.Float(string='RATES TOTAL Amount', store=True, readonly=True, compute='_getrate', track_visibility='always')
 
     @api.one
@@ -1027,7 +1291,7 @@ class  ratecard_multiple(models.Model):
         #created_hc  = []    self.update({'spot_total':total})  
         #for  id  in  
 
-    @api.depends('rate_amount','discount','allocate_schedule.spot_total')
+    @api.depends('allocate_schedule_count','rate_amount','discount','allocate_schedule.spot_total')
     def _amount_all(self):
         """
         Compute the total amounts of the Weeks  and  Rate.
@@ -1036,6 +1300,7 @@ class  ratecard_multiple(models.Model):
             print 'order' , order            
             amount_untaxed = amount_tax = 0.0
             total_spot = 0
+            allocate_schedule_count = 0
             print  'rate_amount ', order.rate_amount
             print 'amount  untaxed' , amount_untaxed
             for line in order.allocate_schedule:
@@ -1044,6 +1309,8 @@ class  ratecard_multiple(models.Model):
                 total_spot += line.spot_total 
                 print 'out  of  spot_total'
                 print 'ALLOCATE SCHEDULE COUNTS' , len(self.allocate_schedule)
+                allocate_schedule_count = len(self.allocate_schedule)
+                print 'ALLOCATED SCHEDULE COUNTS ARE' , allocate_schedule_count
                 print 'ORDER TIMES COUNTS' , len(order)
                 amount_untaxed += order.rate_amount * line.price_subtotal
                 print  'Amount  untaxed == ' , line.price_subtotal               
@@ -1055,6 +1322,7 @@ class  ratecard_multiple(models.Model):
                 #raise exceptions.ValidationError("Please  Update Discount ! must  be  greater  than  0.00 ") 
             order.update({
                 'total_spot':total_spot,
+                # 'allocate_schedule_count': allocate_schedule_count,
                 'amount_untaxed': amount_untaxed,
                 'amount_tax': amount_tax,
                 'amount_total': amount_untaxed + amount_tax,
@@ -1121,8 +1389,8 @@ class  ratecard_multiple(models.Model):
 #relation
 class  ratecard_mul_ratecard_sin_rel(models.Model):
     _name = 'ratecard.mul.ratecard.sin.rel'
-    week_id  = fields.Many2one(comodel='week')
-    
+    week_id  = fields.Many2one(comodel='week',string='NO OF WEEKS')
+
 class ratecard_multiple_week_rel(models.Model):
     _name = 'ratecard.multiple.week.rel'
     ratecard_multiple_id = fields.Many2one(comodel_name='ratecard.multiple' , string='NO OF WEEKS')
@@ -1138,7 +1406,7 @@ class ratecard_multiple_week_rel(models.Model):
     
 class  ratecard_sin_print(models.Model):
     _name =  'ratecard.sin.print'
-    _description  = 'RATE CARD SINGULAR PRINT  '
+    _description  = 'RATECARD SINGULAR PRINT  '
     
     name  =   fields.Char(string='NAME')
     outlet_id = fields.Many2one(comodel_name='outlet', string='Outlet')
@@ -1176,16 +1444,27 @@ class  ratecard_sin_print(models.Model):
     @api.depends('product_ids')
     def _get_products_count(self):
         self.products_count = len(self.product_ids)
-        
-    #def  on_change_outlet(self,cr,uid,ids,outlet_id,context=None):
-        #val = {}
-        #if  not  outlet_id:
-            #return {}
-        #outlet_obj = self.pool.get('outlet')
-        #outlet_data = outlet_obj.browse(cr,uid,outlet_id,context=context)
-        #val.update({'outlet_type_id': [ outlet_type_.id for  outlet_type_ in  outlet_data.outlet_types_ids]})
-        #return {'value': val}
 
+    code  = fields.Char(string='PRINT RATECARD CODE',readonly=True)
+
+    rate_id  = fields.Many2one(comodel_name='rate',string='TIMEBAND RATE')
+
+    _defaults = {
+
+        'code':lambda obj,cr,uid,context:'PRINT/RATECARD/'
+    }
+
+    def  create(self,cr,uid, vals,context=None):
+        vals['code'] = self.pool.get('ir.sequence').get(cr,uid,'ratecard.sin.print')
+        return super(ratecard_sin_print,self).create(cr,uid,vals,context=context)
+
+    def onchange_outlet(self,cr,uid,ids,outlet_id):
+        result = {'value':{'outlet_type_id':False}}
+        if  outlet_id:
+            outlet = self.pool.get('outlet').browse(cr,uid,outlet_id)
+            print  outlet
+            result['value'] = {'outlet_type_id':outlet.outlet_type_id.id}
+        return result
     
         
 class  ratecard_sin_digital(models.Model):
@@ -1218,13 +1497,29 @@ class  ratecard_sin_digital(models.Model):
     schedule_type_id=fields.Many2one(comodel_name='schedule.type', string='Schedule Type')
     description = fields.Text('Description', translate=True)          
     logo = fields.Binary('Logo File')
-    product_ids = fields.One2many(
-          'product.template',
-          'ratecard_sin_digital_id',
-          string='RateCard Type  Singular ',
-      )    
+
+    product_ids = fields.One2many('product.template','ratecard_sin_digital_id', string='RateCard Type  Singular ',)
     ratecard_mul_id = fields.Many2one( 'ratecard.mul',string='RateCard')      
-    
+    code  = fields.Char(string='DIGITAL RATECARD CODE',readonly=True)
+
+    rate_id  = fields.Many2one(comodel_name='rate',string='TIMEBAND RATE')
+
+    _defaults = {
+
+        'code':lambda obj,cr,uid,context:'DIGITAL/RATECARD/'
+    }
+
+    def  create(self,cr,uid, vals,context=None):
+        vals['code'] = self.pool.get('ir.sequence').get(cr,uid,'ratecard.sin.digital')
+        return super(ratecard_sin_digital,self).create(cr,uid,vals,context=context)
+
+    def onchange_outlet(self,cr,uid,ids,outlet_id):
+        result = {'value':{'outlet_type_id':False}}
+        if  outlet_id:
+            outlet = self.pool.get('outlet').browse(cr,uid,outlet_id)
+            print  outlet
+            result['value'] = {'outlet_type_id':outlet.outlet_type_id.id}
+        return result
     products_count = fields.Integer(
         string='Number of products',
         compute='_get_products_count',
@@ -1255,15 +1550,6 @@ class  ratecard_sin_tv(models.Model):
     timeband_id  = fields.Many2one(comodel_name='timeband', string='TimeBand')
     pages_id  =   fields.Many2one(comodel_name='pages', string='Pages')
     outlet_type_id  = fields.Many2one(comodel_name='outlet.type', string='Outlet Type')
-    
-    def onchange_outlet(self,cr,uid,ids,outlet_id):
-        result = {'value':{'outlet_type_id':False}}
-        if  outlet_id:
-            outlet = self.pool.get('outlet').browse(cr,uid,outlet_id)
-            print  outlet 
-            result['value'] = {'outlet_type_id':outlet.outlet_type_id.id}
-        return result
-    
     ad_type_id  = fields.Many2one(comodel_name='ad.type', string='Ad Type')
     vat_rate_id  = fields.Many2one(comodel_name='vat.rate', string='Vat Rate')
     payment_terms_id  = fields.Many2one(comodel_name='payment.terms', string='Payment Terms')
@@ -1290,14 +1576,26 @@ class  ratecard_sin_tv(models.Model):
     def _get_products_count(self):
         self.products_count = len(self.product_ids)
         
-    #def  on_change_outlet(self,cr,uid,ids,outlet_id,context=None):
-        #val = {}
-        #if  not  outlet_id:
-            #return {}
-        #outlet_obj = self.pool.get('outlet')
-        #outlet_data = outlet_obj.browse(cr,uid,outlet_id,context=context)
-        #val.update({'outlet_type_id': [ outlet_type_.id for  outlet_type_ in  outlet_data.outlet_types_ids]})
-        #return {'value': val}
+    code  = fields.Char(string='TV RATECARD CODE',readonly=True)
+
+    rate_id  = fields.Many2one(comodel_name='rate',string='TIMEBAND RATE')
+
+    _defaults = {
+
+        'code':lambda obj,cr,uid,context:'TV/RATECARD/'
+    }
+
+    def  create(self,cr,uid, vals,context=None):
+        vals['code'] = self.pool.get('ir.sequence').get(cr,uid,'ratecard.sin.tv')
+        return super(ratecard_sin_tv,self).create(cr,uid,vals,context=context)
+
+    def onchange_outlet(self,cr,uid,ids,outlet_id):
+        result = {'value':{'outlet_type_id':False}}
+        if  outlet_id:
+            outlet = self.pool.get('outlet').browse(cr,uid,outlet_id)
+            print  outlet
+            result['value'] = {'outlet_type_id':outlet.outlet_type_id.id}
+        return result
 
 class  ratecard_mul_rel(models.Model):
     _name  =  'ratecard.mul.rel'
@@ -1746,6 +2044,10 @@ class  rate(models.Model):
 
     # outlet_id = fields.Many2one(comodel_name='outlet',string='OUTLET' , store=True, track_visibility='onchange')
     ratecard_sin_radio_id = fields.One2many(comodel_name='ratecard.sin.radio',inverse_name='rate_id',string='TIMEBAND RATE')
+    ratecard_sin_digital_id = fields.One2many(comodel_name='ratecard.sin.digital',inverse_name='rate_id',string='TIMEBAND RATE')
+    ratecard_sin_print_id = fields.One2many(comodel_name='ratecard.sin.print',inverse_name='rate_id',string='TIMEBAND RATE')
+    ratecard_sin_tv_id = fields.One2many(comodel_name='ratecard.sin.tv',inverse_name='rate_id',string='TIMEBAND RATE')
+
 
     # def onchange_timeband(self,cr,uid,ids,timeband_id):
     #     result = {'value':{'outlet_id':False}}
@@ -1834,7 +2136,13 @@ class SaleOrderLine(models.Model):
     outlet_type = fields.Char( string='OUTLET TYPE' , readonly=True, states={'draft': [('readonly', False)]})
     allocate_spots_id = fields.Many2one(comodel_name='allocate.spots', string='Allocate Spots')
     allocate_mul_spots_id = fields.Many2one(comodel_name='allocate.mul.spots', string='Allocate Multiple Spots')
-    
+    saturday   = fields.Integer(string='SAT')
+    monday  = fields.Integer(string='MON')
+    tuesday   = fields.Integer(string='TUE')
+    wednesday   = fields.Integer(string='WED')
+    thursday   = fields.Integer(string='THUR')
+    friday   = fields.Integer(string='FRI')
+    sunday   = fields.Integer(string='SUN')
     #multiple_spots_id  = fields.Many2many(comodel_name='allocate.mul.spots', relation='sale_order_line_allocate_spots_rel', 
                                                 #column1='sale_order_line_id', 
                                                 #column2='allocate_spots_id', 
