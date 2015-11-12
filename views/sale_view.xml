@@ -11,7 +11,7 @@
               <field name="ad_type"/>
               <field name="outlet" />
             <field name="outlet_type"/>
-            <field name="schedule_type"/>    
+            <field name="schedule_type"/>
             <field  name="spot_length"/>
             <field name="timeband"/>
             <field name="rate"/>
@@ -29,15 +29,9 @@
               <field name="ad_type"/>
               <field name="outlet" />
             <field name="outlet_type"/>
-            <field name="schedule_type"/>    
-            <field  name="spot_length"/>
-            <field name="timeband"/>
-            <field name="rate"/>
-            <field name="noof_spots"/>
-            <field name="total_spots"/>
-            <field name="weeks"/>
-            
-                
+
+
+
                 </xpath>
     </field>
 </record>
@@ -50,8 +44,6 @@
                 <field name="partner_id" position="after">
                     <field name="partner_order_id" attrs="{'required': True, 'readonly': [('state', 'not in', ('draft', 'sent'))]}"/>
                                     <field name="product_name" />
-                                     <field name="is_template"/>    
-                                       <field  name="template_id"/>
                                     <field name="outlet" />
                                     <field name="outlet_type" />
                                     <field name="rate_card_type" />
@@ -64,8 +56,8 @@
 
                 </field>
             </field>
-        </record>   
- 
+        </record>
+
 
 </data>
 </openerp>

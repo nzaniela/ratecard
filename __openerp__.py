@@ -17,19 +17,14 @@
         'views/rag_defaults_outlet.xml',
         'views/rag_defaults_outlet_type.xml',
         'views/rag_defaults_singulars_quotations.xml',
-        'views/rag_defaults_multiples_quotations.xml',
+        # 'views/rag_defaults_multiples_quotations.xml',
         
         
-        'views/sale_view.xml',
+        # 'views/sale_view.xml',
 
         #NO OF SPOTS  WEEKLY MANAGEMENT
         # 'views/rag_defaults_week.xml',
 
-        
-        #
-       # 'views/rag_defaults_company.xml',
-       #'views/rag_defaults_singular_quotation.xml', #will  add  fields  and  functionality  directly  in  sale_view.xml
-       
         #
         'views/rag_defaults_timeband.xml',
         'views/rag_defaults_pages.xml',
