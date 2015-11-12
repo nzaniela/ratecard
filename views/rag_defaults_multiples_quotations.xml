@@ -1,49 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
     <data>
-
         <!-- Quotation Template Form View -->
         <record id="view_sale_order_multiple_template_form" model="ir.ui.view">
             <field name="name">sale.order.multiple_template.form</field>
-             <field name="model">sale.order</field>
+            <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale.view_order_form" />
             <field name="arch" type="xml">
-
                 <xpath expr="//field[@name='order_line']/form/group/group/field[@name='product_id']" position="after">
-             <field name="product_name"/>
-              <field name="ad_type"/>
-              <field name="outlet" />
-            <field name="outlet_type"/>
-            <field name="schedule_type"/>
-            <field  name="spot_length"/>
-            <field name="timeband"/>
-            <field name="rate"/>
-            <field name="noof_spots"/>
-            <field name="total_spots"/>
-            <field name="weeks"/>
-        </xpath>
-            <field name="product_name"/>
-                <field name="outlet"/>
-        <label for="product_uom_qty" position="before">
-            <field name="rag_qty" attrs="{'invisible': [('ragproduct', '=', False)], 'required': [('ragproduct', '=', True)]}"/>
-        </label>
-        <xpath   expr="//field[@name='order_line']/tree/field[@name='product_id']"  position="after">
-              <field name="product_name"/>
-              <field name="ad_type"/>
-              <field name="outlet" />
-            <field name="outlet_type"/>
-            <field name="schedule_type"/>
-            <field  name="spot_length"/>
-            <field name="timeband"/>
-            <field name="rate"/>
-            <field name="noof_spots"/>
-            <field name="total_spots"/>
-            <field name="weeks"/>
-
-
+                    <field name="product_name"/>
+                    <field name="ad_type"/>
+                    <field name="outlet" />
+                    <field name="outlet_type"/>
+                    <field name="schedule_type"/>
+                    <field  name="spot_length"/>
+                    <field name="timeband"/>
+                    <field name="rate"/>
+                    <field name="noof_spots"/>
+                    <field name="total_spots"/>
+                    <field name="weeks"/>
                 </xpath>
-    </field>
-</record>
+                <field name="product_name"/>
+                <field name="outlet"/>
+                <label for="product_uom_qty" position="before">
+                    <field name="rag_qty" attrs="{'invisible': [('ragproduct', '=', False)], 'required': [('ragproduct', '=', True)]}"/>
+                </label>
+                <xpath   expr="//field[@name='order_line']/tree/field[@name='product_id']"  position="after">
+                    <field name="product_name"/>
+                    <field name="ad_type"/>
+                    <field name="outlet" />
+                    <field name="outlet_type"/>
+                    <field name="schedule_type"/>
+                    <field  name="spot_length"/>
+                    <field name="timeband"/>
+                    <field name="rate"/>
+                    <field name="noof_spots"/>
+                    <field name="total_spots"/>
+                    <field name="weeks"/>
+                </xpath>
+            </field>
+        </record>
 
         <!-- Quotation Template Tree View -->
         <record id="view_sale_order_multiple_template_tree" model="ir.ui.view">
@@ -155,8 +151,7 @@
                 </p>
             </field>
         </record>
-        <!-- Quotation Template Menu -->
-                   
+        <!-- Quotation Template Menu -->                  
         <menuitem id="timeorder_multiples_quotations" name="MULTIPLE QUOTATIONS" sequence="2" parent ="timeorder_management_menu"/>
         <menuitem  name="MULTIPLE QUOTATION" id="multiples_quotations"  action="action_sale_order_multiple"  parent="timeorder_multiples_quotations"/>
 
