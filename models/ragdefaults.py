@@ -260,6 +260,7 @@ class outlet(models.Model):
     ratecard_sin_print_id = fields.One2many(comodel_name='ratecard.sin.print', inverse_name='outlet_id',string='RateCard Singular')
     ratecard_sin_radio_id = fields.One2many(comodel_name='ratecard.sin.radio', inverse_name='outlet_id',string='RateCard Singular')
     sale_order_line_id = fields.One2many(comodel_name='sale.order.line', inverse_name='outlet_id',string='Outlet')
+    sale_order_id = fields.One2many(comodel_name='sale.order', inverse_name='outlet_id',string='Outlet')
     ratecard_mul_id = fields.One2many(comodel_name='ratecard.mul', inverse_name='outlet_id',string='Outlet')
     ratecard_multiples_id = fields.One2many(comodel_name='ratecard.multiples', inverse_name='outlet_id',string='Outlet')
     rate  = fields.One2many(comodel_name='rate', inverse_name='outlet_id',string='Outlet')
@@ -766,6 +767,8 @@ class  outlet_type(models.Model):
     ratecard_sin_print_id  = fields.One2many(comodel_name='ratecard.sin.print', inverse_name='outlet_type_id', string='Outlet Type')
     ratecard_sin_digital_id  = fields.One2many(comodel_name='ratecard.sin.digital', inverse_name='outlet_type_id', string='Outlet Type')
     sale_order_line_id = fields.One2many(comodel_name='sale.order.line', inverse_name='outlet_type_id',string='Outlet Type')
+    sale_order_id = fields.One2many(comodel_name='sale.order', inverse_name='outlet_type_id',string='Outlet Type')
+
     ratecard_mul_id = fields.One2many(comodel_name='ratecard.mul', inverse_name='outlet_type_id',string='Outlet Type')
     ratecard_multiples_id = fields.One2many(comodel_name='ratecard.multiples', inverse_name='outlet_type_id',string='Outlet Type')
 
@@ -1019,13 +1022,14 @@ class  ratecard_multiples(models.Model):
             print  'MULTIPLES RATECARD PRINT ', order
             total_amount = 0.0
             for  line  in  order.ratecard_multiple_id:
-                # print 'timeband' , line.timeband_id.id
-                # print 'VAT  RATE' ,line.vat_rate_id.id
-                print  'MULTIPLES RATECARD TAXED  AMOUNT' , line.taxed_amount
-                total_amount += line.taxed_amount
+                for lineitems in  line:
+                     # print 'timeband' , line.timeband_id.id
+                    # print 'VAT  RATE' ,line.vat_rate_id.id
 
-                print 'radio_ratecard_cost' , total_amount
+                    print  'MULTIPLES RATECARD TAXED  AMOUNT' , lineitems.taxed_amount
+                    total_amount += lineitems.taxed_amount
 
+                    print 'radio_ratecard_cost' , total_amount
             order.update({
                     'total_amount':total_amount,
 
@@ -1336,7 +1340,7 @@ class  ratecard_multiple(models.Model):
                 print 'timeband' , line.timeband_id.id
                 print 'VAT  RATE' ,line.vat_rate_id.id
                 rate_amount += line.rate_id.rate_amount
-                print 'rate_amount' , rate_amount
+                print 'rate_amount >>> ' , rate_amount
 
             order.update({
                     'rate_amount':rate_amount,
@@ -2208,6 +2212,9 @@ class SaleOrder(models.Model):
     scheduled_start_date = fields.Date(string='SCHEDULED START DATE')
     multiple_noofweeks = fields.Integer(string='MULTIPLE NO OF WEEKS')
     multiple_scheduled_start_date = fields.Date(string='MULTIPLE SCHEDULED START DATE')
+    partner_id = fields.Many2one(comodel_name='res.partner' ,string='CLIENT CONTACT', domain=[('is_company', '=', False)])
+    outlet_id = fields.Many2one(comodel_name='outlet', string='Outlet')
+    outlet_type_id  = fields.Many2one(comodel_name='outlet.type', string='Outlet Type')
 
 
     _defaults = {
@@ -2227,7 +2234,7 @@ class SaleOrder(models.Model):
             return result    
 
 
-    partner_order_id = fields.Many2one('res.partner', 'Sale Order Creation Person', domain=[('is_company', '=', False)])
+    partner_order_id = fields.Many2one('res.partner', 'Sales Person', domain=[('is_company', '=', False)])
     
 
     @api.multi
@@ -2289,8 +2296,13 @@ class SaleOrderLine(models.Model):
         result = {}
         warning_msgs = ''
         product_obj = product_obj.browse(cr, uid, product, context=context_partner) # product_obj definition
-
-        result['outlet_id'] = product_obj.outlet_id # modification
+        #ADD  FIELDS HERE  IN PRODUCT TEMPLATE
+        result['outlet_id'] = product_obj.outlet_id
+        result['outlet_type_id'] = product_obj.outlet_type_id
+        result['ad_type_id'] = product_obj.ad_type_id
+        result['spot_length_id'] = product_obj.spot_length_id
+        result['timeband_id'] = product_obj.timeband_id
+        result['rate_id'] = product_obj.rate_id
 
         uom2 = False
         if uom:

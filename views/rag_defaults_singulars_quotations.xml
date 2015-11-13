@@ -34,24 +34,45 @@
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
-                <field name="partner_id" position="before">
-                    <separator string="RATECARD TYPE" />
-                          <group>
-                                       <field name="singular_ratecards" />
-                                       <field name="multiple_ratecards" />
-                          </group>
-                </field>
+
+                <xpath expr="//field[@name='partner_id']" position="replace">
+                     <group colspan="2">
+                         <field name="partner_id"/>
+                     </group>
+                </xpath>
+                <xpath expr="//field[@name='partner_id']" position="before">
+                      <group colspan="2">
+                           <field name="outlet_id" on_change="onchange_outlet(outlet_id)" placeholder="OUTLET"/>
+                          <field name="outlet_type_id" />
+                      </group>
+                </xpath>
 
                 <field name="partner_id" position="after">
-                    <field name="partner_order_id" attrs="{'required': True, 'readonly': [('state', 'not in', ('draft', 'sent'))]}"/>
-                     <separator string="SCHEDULING" />
                           <group>
-                                       <field attrs="{'invisible':[('singular_ratecards','=',False) ]}"  name="noofweeks" />
-                                       <field attrs="{'invisible':[('singular_ratecards','=',False) ]}"  name="scheduled_start_date" />
-                                       <field attrs="{'invisible':[('singular_ratecards','=',False) ]}"  name="multiple_noofweeks" />
-                                       <field attrs="{'invisible':[('singular_ratecards','=',False) ]}"  name="multiple_scheduled_start_date" />
+                                 <!--<field name="partner_order_id"/>-->
+                                       <field name="singular_ratecards" />
+                                       <field name="multiple_ratecards" />
+                                  <separator string="SHEDULING"/>
+                                   <newline/>
+                                        <!--<separator string="WEEKS TO RUN" />-->
+                                         <field attrs="{'invisible':[('singular_ratecards','=',False) ]}"  name="noofweeks" />
+                                       <field attrs="{'invisible':[('multiple_ratecards','=',False) ]}"  name="multiple_noofweeks" />
+                                <newline/>
+                                    <!--<separator string="SCHEDULING" />-->
+                                        <field attrs="{'invisible':[('singular_ratecards','=',False) ]}"  name="scheduled_start_date" />
+                                        <field attrs="{'invisible':[('multiple_ratecards','=',False) ]}"  name="multiple_scheduled_start_date" />
                           </group>
                 </field>
+                <!--<field name="partner_id" position="after">-->
+                     <!--&lt;!&ndash;<separator string="WEEKS TO RUN" />&ndash;&gt;-->
+                          <!--<group>-->
+                                      <!---->
+                          <!--</group>-->
+                     <!--<xpath expr="//field[@name='date_order']" position="after">-->
+                        <!--<separator string="SCHEDULING" />-->
+                    <!---->
+                    <!--</xpath>-->
+                <!--</field>-->
             </field>
         </record>
 
