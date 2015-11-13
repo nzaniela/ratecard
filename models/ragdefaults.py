@@ -339,6 +339,7 @@ class ProductTemplate(models.Model):
     outlet_id = fields.Many2one('outlet',string='Outlet',help='Select a outlet for this product')
     ratecard_multiple_id = fields.Many2one('ratecard.multiple',string='MULTIPLE RATECARD')
     ratecard_multiples_id = fields.Many2one('ratecard.multiples',string='MULTIPLES RATECARD')
+    rate_id = fields.Many2one(comodel_name='rate', string='RATE')
 
     timeband_id = fields.Many2one('timeband',string='Time Band',help='Select a time band for this product')
     pages_id = fields.Many2one('pages',string='Pages',help='Select a page for this product')
@@ -402,6 +403,12 @@ class ProductTemplate(models.Model):
             print  'INSIDE PRODUCT TEMPLATE ', order
             print 'Can we  get  total_amount here'
             name = ''
+            outlet_id = ''
+            outlet_type_id  =''
+            ad_type_id  =''
+            spot_length_id  =''
+            timeband_id = ''
+            rate_id  = ''
             radio_multiple_ratecard_cost = 0.0
             for  line  in  order.ratecard_multiple_id:
                 print 'ALLOCATE SCHEDULE  COUNT' , line.allocate_schedule_count
@@ -411,11 +418,18 @@ class ProductTemplate(models.Model):
                 radio_multiple_ratecard_cost += line.taxed_amount
                 print 'radio_multiple_ratecard_cost' , radio_multiple_ratecard_cost
                 print 'NAME OF RADIO RATECARD' , line.name
+
                 name = line.name
 
             order.update({
                     'radio_multiple_ratecard_cost':radio_multiple_ratecard_cost,
                     'name':name,
+                    'outlet_id':outlet_id,
+                    'outlet_type_id':outlet_type_id,
+                    'ad_type_id':ad_type_id,
+                    'spot_length_id':spot_length_id,
+                    'timeband_id':timeband_id,
+                    'rate_id':rate_id,
 
             })
     @api.one
@@ -425,18 +439,36 @@ class ProductTemplate(models.Model):
             print  'order', order
             print 'PRODUCT NAME ' , order.name
             name = ''
+            outlet_id = ''
+            outlet_type_id  =''
+            ad_type_id  =''
+            spot_length_id  =''
+            timeband_id = ''
+            rate_id  = ''
             radio_ratecard_cost = 0.0
             for  line  in  order.ratecard_sin_radio_id:
                 print 'timeband' , line.timeband_id.id
                 print 'VAT  RATE' ,line.vat_rate_id.id
                 print 'NAME OF RADIO RATECARD' , line.name
                 name = line.name
+                outlet_id = line.outlet_id
+                outlet_type_id  = line.outlet_type_id
+                ad_type_id  = line.ad_type_id
+                spot_length_id  =line.spot_length_id
+                timeband_id = line.timeband_id
+                rate_id  = line.rate_id
                 radio_ratecard_cost += line.rate_id.rate_amount
                 print 'radio_ratecard_cost' , radio_ratecard_cost
 
             order.update({
                     'radio_ratecard_cost':radio_ratecard_cost,
                      'name':name,
+                     'outlet_id':outlet_id,
+                     'outlet_type_id':outlet_type_id,
+                     'ad_type_id':ad_type_id,
+                     'spot_length_id':spot_length_id,
+                     'timeband_id':timeband_id,
+                     'rate_id':rate_id,
 
             })
 
@@ -447,6 +479,12 @@ class ProductTemplate(models.Model):
         for  order  in  self:
             print  'order', order
             name  = ''
+            outlet_id = ''
+            outlet_type_id  =''
+            ad_type_id  =''
+            spot_length_id  =''
+            timeband_id = ''
+            rate_id  = ''
             digital_ratecard_cost = 0.0
             for  line  in  order.ratecard_sin_digital_id:
                 print 'timeband' , line.timeband_id.id
@@ -455,9 +493,21 @@ class ProductTemplate(models.Model):
                 print 'digital_ratecard_cost' , digital_ratecard_cost
                 print 'NAME OF RADIO RATECARD' , line.name
                 name = line.name
+                outlet_id = line.outlet_id
+                outlet_type_id  = line.outlet_type_id
+                ad_type_id  = line.ad_type_id
+                spot_length_id  =line.spot_length_id
+                timeband_id = line.timeband_id
+                rate_id  = line.rate_id
             order.update({
                     'digital_ratecard_cost':digital_ratecard_cost,
                     'name':name,
+                    'outlet_id':outlet_id,
+                    'outlet_type_id':outlet_type_id,
+                    'ad_type_id':ad_type_id,
+                    'spot_length_id':spot_length_id,
+                    'timeband_id':timeband_id,
+                    'rate_id':rate_id,
 
             })
 
@@ -467,6 +517,12 @@ class ProductTemplate(models.Model):
         for  order  in  self:
             print  'order', order
             name  = ''
+            outlet_id = ''
+            outlet_type_id  =''
+            ad_type_id  =''
+            spot_length_id  =''
+            timeband_id = ''
+            rate_id  = ''
             print_ratecard_cost = 0.0
             for  line  in  order.ratecard_sin_print_id:
                 print 'timeband' , line.timeband_id.id
@@ -474,9 +530,21 @@ class ProductTemplate(models.Model):
                 print 'print_ratecard_cost' , print_ratecard_cost
                 print 'NAME OF RADIO RATECARD' , line.name
                 name = line.name
+                outlet_id = line.outlet_id
+                outlet_type_id  = line.outlet_type_id
+                ad_type_id  = line.ad_type_id
+                spot_length_id  =line.spot_length_id
+                timeband_id = line.timeband_id
+                rate_id  = line.rate_id
             order.update({
                     'print_ratecard_cost':print_ratecard_cost,
                     'name':name,
+                    'outlet_id':outlet_id,
+                    'outlet_type_id':outlet_type_id,
+                    'ad_type_id':ad_type_id,
+                    'spot_length_id':spot_length_id,
+                    'timeband_id':timeband_id,
+                    'rate_id':rate_id,
 
             })
     @api.one
@@ -485,6 +553,12 @@ class ProductTemplate(models.Model):
         for  order  in  self:
             print  'order', order
             name = ''
+            outlet_id = ''
+            outlet_type_id  =''
+            ad_type_id  =''
+            spot_length_id  =''
+            timeband_id = ''
+            rate_id  = ''
             tv_ratecard_cost = 0.0
             for  line  in  order.ratecard_sin_tv_id:
                 print 'timeband' , line.timeband_id.id
@@ -493,10 +567,22 @@ class ProductTemplate(models.Model):
                 print 'tv_ratecard_cost' , tv_ratecard_cost
                 print 'NAME OF RADIO RATECARD' , line.name
                 name = line.name
+                outlet_id = line.outlet_id
+                outlet_type_id  = line.outlet_type_id
+                ad_type_id  = line.ad_type_id
+                spot_length_id  =line.spot_length_id
+                timeband_id = line.timeband_id
+                rate_id  = line.rate_id
 
             order.update({
                     'tv_ratecard_cost':tv_ratecard_cost,
                     'name':name,
+                    'outlet_id':outlet_id,
+                    'outlet_type_id':outlet_type_id,
+                    'ad_type_id':ad_type_id,
+                    'spot_length_id':spot_length_id,
+                    'timeband_id':timeband_id,
+                    'rate_id':rate_id,
             })
 
     @api.onchange('radio_ratecard_cost')
@@ -2050,6 +2136,7 @@ class  rate(models.Model):
     ratecard_sin_print_id = fields.One2many(comodel_name='ratecard.sin.print',inverse_name='rate_id',string='TIMEBAND RATE')
     ratecard_sin_tv_id = fields.One2many(comodel_name='ratecard.sin.tv',inverse_name='rate_id',string='TIMEBAND RATE')
     sale_order_line_id = fields.One2many(comodel_name='sale.order.line', inverse_name='rate_id',string='TIMEBAND RATE')
+    product_ids = fields.One2many('product.template','rate_id',string='Outlet Products',)
 
 
 
@@ -2119,6 +2206,15 @@ class SaleOrder(models.Model):
     singular_ratecards = fields.Boolean(string='SINGULAR RATECARDS')
     multiple_ratecards = fields.Boolean(string='MULTIPLE RATECARDS')
     scheduled_start_date = fields.Date(string='SCHEDULED START DATE')
+    multiple_noofweeks = fields.Integer(string='MULTIPLE NO OF WEEKS')
+    multiple_scheduled_start_date = fields.Date(string='MULTIPLE SCHEDULED START DATE')
+
+
+    _defaults = {
+        'singular_ratecards':0,
+        'multiple_ratecards':0,
+        'active': True,
+    }
 
 
     
@@ -2166,6 +2262,115 @@ class SaleOrderLine(models.Model):
     thursday   = fields.Integer(string='THUR')
     friday   = fields.Integer(string='FRI')
     sunday   = fields.Integer(string='SUN')
+
+    def product_id_change(self, cr, uid, ids, pricelist, product, qty=0,
+            uom=False, qty_uos=0, uos=False, name='', partner_id=False,
+            lang=False, update_tax=True, date_order=False, packaging=False, fiscal_position=False, flag=False, context=None):
+        context = context or {}
+        lang = lang or context.get('lang',False)
+        if not  partner_id:
+            raise exceptions.Warning(_('No Customer Defined!'), _('Before choosing a product,\n select a customer in the sales form.'))
+        warning = {}
+        product_uom_obj = self.pool.get('product.uom')
+        partner_obj = self.pool.get('res.partner')
+        product_obj = self.pool.get('product.product')
+        context = {'lang': lang, 'partner_id': partner_id}
+        if partner_id:
+            lang = partner_obj.browse(cr, uid, partner_id).lang
+        context_partner = {'lang': lang, 'partner_id': partner_id}
+
+        if not product:
+            return {'value': {'th_weight': 0,
+                'product_uos_qty': qty}, 'domain': {'product_uom': [],
+                   'product_uos': []}}
+        if not date_order:
+            date_order = time.strftime(DEFAULT_SERVER_DATE_FORMAT)
+
+        result = {}
+        warning_msgs = ''
+        product_obj = product_obj.browse(cr, uid, product, context=context_partner) # product_obj definition
+
+        result['outlet_id'] = product_obj.outlet_id # modification
+
+        uom2 = False
+        if uom:
+            uom2 = product_uom_obj.browse(cr, uid, uom)
+            if product_obj.uom_id.category_id.id != uom2.category_id.id:
+                uom = False
+        if uos:
+            if product_obj.uos_id:
+                uos2 = product_uom_obj.browse(cr, uid, uos)
+                if product_obj.uos_id.category_id.id != uos2.category_id.id:
+                    uos = False
+            else:
+                uos = False
+        fpos = fiscal_position and self.pool.get('account.fiscal.position').browse(cr, uid, fiscal_position) or False
+        if update_tax: #The quantity only have changed
+            result['tax_id'] = self.pool.get('account.fiscal.position').map_tax(cr, uid, fpos, product_obj.taxes_id)
+
+        if not flag:
+            result['name'] = self.pool.get('product.product').name_get(cr, uid, [product_obj.id], context=context_partner)[0][1]
+            if product_obj.description_sale:
+                result['name'] += '\n'+product_obj.description_sale
+        domain = {}
+        if (not uom) and (not uos):
+            result['product_uom'] = product_obj.uom_id.id
+            if product_obj.uos_id:
+                result['product_uos'] = product_obj.uos_id.id
+                result['product_uos_qty'] = qty * product_obj.uos_coeff
+                uos_category_id = product_obj.uos_id.category_id.id
+            else:
+                result['product_uos'] = False
+                result['product_uos_qty'] = qty
+                uos_category_id = False
+            result['th_weight'] = qty * product_obj.weight
+            domain = {'product_uom':
+                        [('category_id', '=', product_obj.uom_id.category_id.id)],
+                        'product_uos':
+                        [('category_id', '=', uos_category_id)]}
+        elif uos and not uom: # only happens if uom is False
+            result['product_uom'] = product_obj.uom_id and product_obj.uom_id.id
+            result['product_uom_qty'] = qty_uos / product_obj.uos_coeff
+            result['th_weight'] = result['product_uom_qty'] * product_obj.weight
+        elif uom: # whether uos is set or not
+            default_uom = product_obj.uom_id and product_obj.uom_id.id
+            q = product_uom_obj._compute_qty(cr, uid, uom, qty, default_uom)
+            if product_obj.uos_id:
+                result['product_uos'] = product_obj.uos_id.id
+                result['product_uos_qty'] = qty * product_obj.uos_coeff
+            else:
+                result['product_uos'] = False
+                result['product_uos_qty'] = qty
+            result['th_weight'] = q * product_obj.weight        # Round the quantity up
+
+        if not uom2:
+            uom2 = product_obj.uom_id
+        # get unit price
+
+        if not pricelist:
+            warn_msg = _('You have to select a pricelist or a customer in the sales form !\n'
+                    'Please set one before choosing a product.')
+            warning_msgs += _("No Pricelist ! : ") + warn_msg +"\n\n"
+        else:
+            price = self.pool.get('product.pricelist').price_get(cr, uid, [pricelist],
+                    product, qty or 1.0, partner_id, {
+                        'uom': uom or result.get('product_uom'),
+                        'date': date_order,
+                        })[pricelist]
+            if price is False:
+                warn_msg = _("Cannot find a pricelist line matching this product and quantity.\n"
+                        "You have to change either the product, the quantity or the pricelist.")
+
+                warning_msgs += _("No valid pricelist line found ! :") + warn_msg +"\n\n"
+            else:
+                result.update({'price_unit': price})
+        if warning_msgs:
+            warning = {
+                       'title': _('Configuration Error!'),
+                       'message' : warning_msgs
+                    }
+        return {'value': result, 'domain': domain, 'warning': warning}
+
 
     def onchange_outlet(self,cr,uid,ids,outlet_id):
         result = {'value':{'outlet_type_id':False}}

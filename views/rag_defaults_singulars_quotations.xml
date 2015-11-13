@@ -46,8 +46,10 @@
                     <field name="partner_order_id" attrs="{'required': True, 'readonly': [('state', 'not in', ('draft', 'sent'))]}"/>
                      <separator string="SCHEDULING" />
                           <group>
-                                       <field name="noofweeks" />
-                                       <field name="scheduled_start_date" />
+                                       <field attrs="{'invisible':[('singular_ratecards','=',False) ]}"  name="noofweeks" />
+                                       <field attrs="{'invisible':[('singular_ratecards','=',False) ]}"  name="scheduled_start_date" />
+                                       <field attrs="{'invisible':[('singular_ratecards','=',False) ]}"  name="multiple_noofweeks" />
+                                       <field attrs="{'invisible':[('singular_ratecards','=',False) ]}"  name="multiple_scheduled_start_date" />
                           </group>
                 </field>
             </field>
