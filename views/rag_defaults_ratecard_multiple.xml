@@ -24,7 +24,7 @@
                                                     <field name="min_weeks"/>
                                                     <field name="max_weeks"/>
                                                     <field name="multiple_ratecard_id_count"/>
-                                                     <field name="allocate_schedule_count"/>
+                                                     <!--<field name="allocate_schedule_count"/>-->
                                                      <!--<field name='company_id'/>-->
                                                       </group>
                                                 <field name='multiple_ratecard_id' widget="many2many">
@@ -55,7 +55,7 @@
                                                                      <field name="noofweeks"/>
                                                                    <field name='allocate_subtotal'/>
                                                                    <field name="rates_total"/>
-                                                                  <field name="compute_total"/>
+                                                                  <field name="total_cost"/>
                                                 </tree>
                                               </field>
                                                    <!--<field name='allocate_multiple_id'/>-->
@@ -89,13 +89,14 @@
                                                     </div>
                                                     <field name="rate_amount" nolabel="1" class="oe_inline" widget='monetary' options="{'currency_field': 'currency_id'}"/>
 
+                                                   <field name="amount_untaxed" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+
                                                      <div class="oe_inline">
                                                         <label for="discount" />
                                                         <button name="button_dummy" states="draft,sent" string="(update)" type="object" class="oe_edit_only oe_link"/>
                                                     </div>
                                                     <field name="discount" nolabel="1" class="oe_inline" widget='monetary' options="{'currency_field': 'currency_id'}"/>
                                                     
-                                                    <field name="amount_untaxed" widget='monetary' options="{'currency_field': 'currency_id'}"/>
                                                     <field name="subtotal_discounted" widget='monetary' options="{'currency_field': 'currency_id'}"/>
                                                     
                                                    <div class="oe_inline">
@@ -106,7 +107,7 @@
                                                     
                                                 <!--<field name="tax_id" widget="many2many_tags" domain="[('type_tax_use','=','sale'),('company_id','=',parent.company_id)]"/>-->
                                                     <field name="amount_tax" widget='monetary' options="{'currency_field': 'currency_id'}"/>
-                                                     <!--<field name="taxed_amount" widget='monetary' options="{'currency_field': 'currency_id'}"/>-->
+                                                     <field name="aftertax" widget='monetary' options="{'currency_field': 'currency_id'}"/>
                                                     <div class="oe_subtotal_footer_separator oe_inline">
                                                         <label for="taxed_amount" />
                                                         <button name="button_dummy" states="draft,sent" string="(update)" type="object" class="oe_edit_only oe_link"/>
@@ -131,8 +132,9 @@
                         <field name='name'/>
                          <field name='code'/>
                            <field name="multiple_ratecard_id_count"/>
-                           <field name="allocate_schedule_count"/>
+                           <!--<field name="allocate_schedule_count"/>-->
                            <field name="total_spot" sum="Total Spot" widget="monetary"/>
+                           <field name="aftertax" widget="monetary"/>
                             <field name="taxed_amount" sum="Total Tax Included" widget="monetary"/>
 
                 </tree>

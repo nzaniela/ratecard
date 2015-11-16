@@ -8,7 +8,7 @@ from openerp import tools ,exceptions
 import logging
 import time
 import  re
-from datetime import date
+from datetime import date,datetime
 from dateutil.relativedelta import relativedelta
 from openerp.tools import DEFAULT_SERVER_DATE_FORMAT
 from datetime import datetime, timedelta
@@ -441,7 +441,7 @@ class ProductTemplate(models.Model):
             rate_id  = ''
             radio_multiple_ratecard_cost = 0.0
             for  line  in  order.ratecard_multiple_id:
-                print 'ALLOCATE SCHEDULE  COUNT' , line.allocate_schedule_count
+                # print 'ALLOCATE SCHEDULE  COUNT' , line.allocate_schedule_count
                 print 'SPOT TOTAL' , line.total_spot
                 # print 'VAT  RATE' ,line.ratecard_multiple_id.vat_rate_id.id
                 print 'RATE' ,line.rate_amount
@@ -997,6 +997,26 @@ class  ratecard_sin_radio(models.Model):
     #compute='_noofweeks',
     spot_total  = fields.Integer( compute='_compute_totalspots' , string='SPOTS' ,track_visibility='always' ,readonly=True ,  store=True)
     allocate_subtotal = fields.Integer(compute='_compute_spotrateweektotal', string='SPOTS WEEKS TOTAL', readonly=True, store=True)
+    #
+    # multiple_ratecard_id = fields.Many2one(comodel_name='ratecard.multiple',string='MULTIPLE RATECARD')
+    #
+    # @api.onchange('multiple_ratecard_id.scheduled_for','noofweeks' )
+    # def _onchange_scheduled_for_noofweeks(self):
+    #     self.multiple_ratecard_id.scheduled_for = 10
+    #     self.noofweeks = self.multiple_ratecard_id.scheduled_for
+    #     print 'self.multiple_ratecard_id.scheduled_for',self.multiple_ratecard_id.scheduled_for
+        # for line in self:
+        #     print 'I  HAVE  BEEN  CALLED '
+        #     print 'noofweeks ' , line.noofweeks
+        #     for  lineitems  in  line.multiple_ratecard_id:
+        #         line.noofweeks = lineitems.scheduled_for
+        #         print 'lineitems.scheduled_for' ,lineitems.scheduled_for
+        #         print 'line.noofweeks' , line.noofweeks
+        #
+
+
+
+
 
     @api.one
     @api.depends('sunday' , 'monday','tuesday' ,'wednesday'  , 'thursday'  ,'friday'  , 'saturday')
@@ -1014,41 +1034,42 @@ class  ratecard_sin_radio(models.Model):
                 week_spot_total  = line.sunday + line.monday + line.tuesday+ line.wednesday+line.thursday + line.friday + line.saturday
                 subtotal = week_spot_total *  line.noofweeks
             self.update({'allocate_subtotal':subtotal})
-    rates_total =  fields.Float(string='RATES TOTAL', compute='_getrate', store=True, readonly=True, track_visibility='always')
+    rates_total =  fields.Float(string='RATES', compute='_get_rate_total', store=True, readonly=True, track_visibility='always')
 
     @api.one
     @api.depends('rate_id.rate_amount')
-    def _getrate(self):
+    def _get_rate_total(self):
         for  order  in  self:
             print  'order', order
             rates_total = 0.0
-            for  line  in  order:
-                print 'rates_total' , line.rate_id.rate_amount
-                rates_total += line.rate_id.rate_amount
-                print 'rates_total >>> ' , rates_total
-
+            for  lineitems  in  order:
+                for  line  in  lineitems:
+                    print 'rates_total' , line.rate_id.rate_amount
+                    rates_total += line.rate_id.rate_amount
+                    print 'rates_total >>> ' , rates_total
             order.update({
                     'rates_total':rates_total,
 
             })
 
 
-    compute_total =  fields.Float(string='COMPUTE RATE ALLOCATION TOTAL', compute='_compute_rate', store=True, readonly=True, track_visibility='always')
+    total_cost =  fields.Float(string='TOTAL COST', compute='_compute_rate_total_cost', store=True, readonly=True, track_visibility='always')
 
     @api.one
     @api.depends('rate_id.rate_amount','allocate_subtotal')
-    def _compute_rate(self):
+    def _compute_rate_total_cost(self):
         for  order  in  self:
             print  'order', order
             compute_total = 0.0
             for  line  in  order:
-                print '>>>> rates_total >>>>> ' , line.rate_id.rate_amount
-                print '>>>> line.allocate_subtotal >>>> ',line.allocate_subtotal
-                compute_total += line.rate_id.rate_amount * line.allocate_subtotal
-                print '>>>>>> compute_total >>>>> ' , compute_total
+                for  lineitems  in  line:
+                    print '_compute_rate >>>> rates_total >>>>> ' , lineitems.rate_id.rate_amount
+                    print ' _compute_rate >>>> lineitems.allocate_subtotal >>>> ',lineitems.allocate_subtotal
+                    compute_total += (lineitems.rate_id.rate_amount * lineitems.allocate_subtotal)
+                    print '_compute_rate >>>>>> compute_total >>>>> ' , compute_total
 
             order.update({
-                    'compute_total':compute_total,
+                    'total_cost':compute_total,
 
             })
 
@@ -1167,8 +1188,8 @@ class  ratecard_multiple(models.Model):
    # _inherits = {'ratecard.sinmul':'ratecard_sinmul_id'}
     name = fields.Char(string='Multiple RateCard Product  Name ' ,required=True)
     code  = fields.Char(string='Multiple RateCard Code ',readonly=True)
-    scheduled_for  = fields.Integer(string='SCHEDULED FOR' , default=1)
-    min_weeks = fields.Integer(string="MINIMUM NO OF WEEKS" , default=1 )    
+    scheduled_for  = fields.Integer(string='SCHEDULED FOR',  compute='_compute_scheduled_for',default=1 ,track_visibility='always',store=True , readonly=True)
+    min_weeks = fields.Integer(string="MINIMUM NO OF WEEKS" , default=1 ,store=True)
     max_weeks = fields.Integer(string="Maximum NO OF WEEKS" , default=1, track_visibility='always' ,store=True)
 
     description = fields.Text('Description', translate=True)
@@ -1191,15 +1212,15 @@ class  ratecard_multiple(models.Model):
     def  _compute_maxweeks(self):
         self.max_weeks = False
         for  line  in  self:
-            mx  = line.scheduled_for * 1 
-        self.update({'max_weeks':mx})     
+            mx  = line.scheduled_for * 1
+        self.update({'max_weeks':mx})
 
     @api.one
     @api.constrains('min_weeks','max_weeks')
     def  _check_max_weeks(self):
         if  self.min_weeks > self.max_weeks :
-            raise exceptions.ValidationError("No Of Minimum  Weeks  cannot be  greater than Maximum  No of Weeks")   
-        
+            raise exceptions.ValidationError("No Of Minimum  Weeks  cannot be  greater than Maximum  No of Weeks")
+
     @api.one
     @api.constrains('scheduled_for','min_weeks')
     def  _check_min_weeks(self):
@@ -1216,39 +1237,37 @@ class  ratecard_multiple(models.Model):
         ('cancel', 'Cancelled'),
         ], string='Status', readonly=True, copy=False, index=True, track_visibility='onchange', default='draft')  
     
-    validity_date = fields.Date(string='Product Date', readonly=True, states={'draft': [('readonly', False)], 'sent': [('readonly', False)]},required=True)
-    
-    
-    
-        
+    validity_date = fields.Date(string='Product Date', readonly=True,default=datetime.today(), states={'draft': [('readonly', False)], 'sent': [('readonly', False)]},required=True)
+
     note = fields.Text('Terms and conditions', default=_default_note)
     
-    amount_untaxed = fields.Integer(string='Untaxed Amount', store=True, readonly=True, compute='_amount_all', track_visibility='always')
-    amount_tax = fields.Integer(string='Taxes', store=True, readonly=True, compute='_compute_taxedamount', track_visibility='always')
+    amount_untaxed = fields.Integer(string='BEFORE TAX', store=True, readonly=True, compute='_amount_all', track_visibility='always')
+    amount_tax = fields.Integer(string='TAXED', store=True, readonly=True, compute='_compute_taxedamount', track_visibility='always')
     tax_id = fields.Many2many('account.tax', string='Taxes')
-    discount = fields.Float(string='Discount (%)',store=True , digits_compute=dp.get_precision('Discount'), track_visibility='onchange' )    
- 
-    amount_total = fields.Integer(string='Total', store=True, readonly=True, compute='_amount_all', track_visibility='always')  
-    total_spot = fields.Integer(string='SPOT  TOTAL', store=True, readonly=True, compute='_amount_all', track_visibility='always')    
-    
-    
-    
+    discount = fields.Float(string='Discount (%)',store=True ,default = 10, digits_compute=dp.get_precision('Discount'), track_visibility='onchange' )
+    aftertax = fields.Integer(string='TOTAL AFTER TAX', store=True, readonly=True, compute='_amount_all', track_visibility='always')
+
+    amount_total = fields.Integer(string='TOTAL', store=True, readonly=True, compute='_amount_all', track_visibility='always')
+    total_spot = fields.Integer(string='SPOT  TOTAL', store=True, readonly=True, compute='_amount_all', track_visibility='always')
+
+
+    @api.one
     @api.depends('discount','allocate_schedule.price_subtotal')
     def _discount(self):
         """
         """
         for order in self:
             discount = 0
-            print 'order' , order            
+            print 'order' , order
             amount_untaxed = amount_tax = 0.0
             for line in order.allocate_schedule:
                 if  line.price_subtotal  ==False:
-                    raise exceptions.Warning("Kindly Update Discount ,Its  empty ") 
+                    raise exceptions.Warning("Kindly Update Discount ,Its  empty ")
                 elif  line.price_subtotal  !=False:
                     discount +=discount
             order.update({
                 'discount': discount,
-            })    
+            })
     
     #@api.onchange('discount','amount_untaxed')
     #def  discount_update_amount_untaxed(self):
@@ -1261,11 +1280,12 @@ class  ratecard_multiple(models.Model):
                 #order.amount_untaxed  -=  orderamount_untaxed* (1 - (order.discount ) / 100.0)                
             
     #company_id = fields.Many2one(comodel='res.company', string='Company', store=True, readonly=True)
-    subtotal_discounted = fields.Integer(string='Total After  Discount', store=True, readonly=True, compute='_compute_discountamount', track_visibility='always')
+
+    subtotal_discounted = fields.Integer(string='TOTAL AFTER DISCOUNT', store=True, readonly=True, compute='_compute_discountamount', track_visibility='always')
     fiscal_position_id = fields.Many2one('account.fiscal.position', oldname='fiscal_position', string='Fiscal Position')  
     #vat_rate  = fields.Many2one(comodel_name='vat.rate', string='TAX  RATE (%)',digits_compute=dp.get_precision('TAX RATE'), default=0.0)
-    vat_rate  = fields.Float(string='TAX  RATE (%)',digits_compute=dp.get_precision('TAX RATE'), default=17, track_visibility='onchange'  )    
-    taxed_amount  = fields.Integer( string='TOTAL Ksh:',store=True, readonly=True, compute='_compute_taxedamount', track_visibility='always')
+    vat_rate  = fields.Float(string='VAT RATE (%)',digits_compute=dp.get_precision('VAT RATE'), default=17, track_visibility='onchange'  )
+    taxed_amount  = fields.Integer( string='TOTAL KSH::',store=True, readonly=True, compute='_compute_taxedamount', track_visibility='always')
     multiple_ratecard_id  = fields.Many2many(comodel_name='ratecard.sin.radio', relation='ratecard_mul_ratecard_sin_rel', 
                                                 column1='ratecard_mul_id', 
                                                 column2='ratecard_sin_radio_id', 
@@ -1282,24 +1302,24 @@ class  ratecard_multiple(models.Model):
                                          column1='ratecard_multiple_id', column2='week_id',
                                          track_visibility='onchange', string='ALLOCATE SPOTS',required=True)
     #Updated  now  from _amount_all method
-    allocate_schedule_count = fields.Integer(string='WEEKS ALLOCATED',compute='_get_allocate_schedule_count', track_visibility='always' ,readonly=True , store=True)
-
-    @api.one
-    @api.depends('allocate_schedule_count', 'allocate_schedule')
-    def _get_allocate_schedule_count(self):
-        for  order  in  self:
-            print  'order', order
-            allocate_schedule_count = 0
-            for  line  in  order.allocate_schedule:
-                print '_get_allocate_schedule_count ALLOCATE SCHEDULE COUNTS' , len(self.allocate_schedule)
-                allocate_schedule_count = len(self.allocate_schedule)
-                print '_get_allocate_schedule_count ALLOCATED SCHEDULE COUNTS ARE' , allocate_schedule_count
-                print '_get_allocate_schedule_count allocate_schedule_count' , allocate_schedule_count
-
-            order.update({
-                    'allocate_schedule_count':allocate_schedule_count,
-
-            })
+    # allocate_schedule_count = fields.Integer(string='WEEKS ALLOCATED',compute='_get_allocate_schedule_count', track_visibility='always' ,readonly=True , store=True)
+    #
+    # @api.one
+    # @api.depends('allocate_schedule_count', 'allocate_schedule')
+    # def _get_allocate_schedule_count(self):
+    #     for  order  in  self:
+    #         print  'order', order
+    #         allocate_schedule_count = 0
+    #         for  line  in  order.allocate_schedule:
+    #             print '_get_allocate_schedule_count ALLOCATE SCHEDULE COUNTS' , len(self.allocate_schedule)
+    #             allocate_schedule_count = len(self.allocate_schedule)
+    #             print '_get_allocate_schedule_count ALLOCATED SCHEDULE COUNTS ARE' , allocate_schedule_count
+    #             print '_get_allocate_schedule_count allocate_schedule_count' , allocate_schedule_count
+    #
+    #         order.update({
+    #                 'allocate_schedule_count':allocate_schedule_count,
+    #
+    #         })
 
     @api.onchange('allocate_schedule')
     def _onchange_allocate_schedule(self):
@@ -1425,7 +1445,7 @@ class  ratecard_multiple(models.Model):
         'code':lambda obj,cr,uid,context:'/'
     }
 
-    rate_amount = fields.Float(string='RATES TOTAL Amount', store=True, readonly=True, compute='_amount_all', track_visibility='always')
+    rate_amount = fields.Float(string='SUBTOTAL', store=True, readonly=True, compute='_amount_all', track_visibility='always')
 
     # @api.one
     # @api.depends('multiple_ratecard_id.compute_total')
@@ -1452,24 +1472,29 @@ class  ratecard_multiple(models.Model):
     def _compute_taxedamount(self):
         for order in self:
             for  line  in  order:
+                print  '_compute_taxedamount subtotaldiscounted  ' , line.amount_untaxed
                 subtotaldiscounted= line.amount_untaxed* (1 - (line.discount or 0.0) / 100.0)   
-                subtotaltaxed  = subtotaldiscounted * (1- (line.vat_rate or 0.0)/100.0)
-                amount_tax  = subtotaldiscounted  - subtotaltaxed
-                aftertax  = subtotaldiscounted +amount_tax  
+                subtotaltaxed  = line.amount_untaxed * (1- (line.vat_rate or 0.0)/100.0)
+                print 'subtotaltaxed' , subtotaltaxed
+                amount_tax  = line.amount_untaxed  - subtotaltaxed
+                print  '_compute_taxedamount  amount taxed  >>>> ' , amount_tax
+                aftertax  = subtotaldiscounted +amount_tax
+                print  '_compute_taxedamount  taxed_amount  >>> '  , aftertax
                 
             line.update({
                 'subtotal_discounted':subtotaldiscounted,
                 'taxed_amount':aftertax,
                 'amount_tax':amount_tax,
+                'aftertax':aftertax,
             })         
     
     @api.one
-    @api.depends('amount_untaxed','discount' )    
+    @api.depends('amount_untaxed','discount' )
     def _compute_discountamount(self):
         for order in self:
             for  line  in  order:
-                subtotaldiscounted= line.amount_untaxed* (1 - (line.discount or 0.0) / 100.0)                
-            line.update({'subtotal_discounted':subtotaldiscounted})        
+                subtotaldiscounted= line.amount_untaxed* (1 - (line.discount or 0.0) / 100.0)
+            line.update({'subtotal_discounted':subtotaldiscounted})
     #_defaults = {
         #'code': lambda self,cr,uid,context={}: self.pool.get('ir.sequence').get(cr, uid, 'object.object'),
     #} 
@@ -1478,58 +1503,53 @@ class  ratecard_multiple(models.Model):
             #raise Exception('MISSING ALLOCATED  SPOTS ')
         #created_hc  = []    self.update({'spot_total':total})  
         #for  id  in
-    @api.multi
-    @api.depends('allocate_schedule_count','scheduled_for','rate_amount','discount','multiple_ratecard_id.noofweeks','multiple_ratecard_id.compute_total','multiple_ratecard_id.spot_total')
+    @api.depends('scheduled_for','multiple_ratecard_id.noofweeks')
+    def _compute_scheduled_for(self):
+        allocated_weeks  = 0
+        for order in self:
+            print '[][][] order.scheduled_for  ' , order.scheduled_for
+            for  line  in  order.multiple_ratecard_id:
+                for lineitems in  line:
+                    print  'WEEKS  LINE  ITEMS' , lineitems.noofweeks
+                    for  orderlines in  lineitems:
+                        allocated_weeks += orderlines.noofweeks
+                        print '>>>>Allocated Weeks Computation :::<<<<   ' , allocated_weeks
+                        print  'After line.scheduled_for autochange  lineitems.noofweeks == ' , orderlines.noofweeks
+            order.update({
+                'scheduled_for':allocated_weeks,
+            })
+    @api.one
+    @api.depends('rate_amount','discount','multiple_ratecard_id.noofweeks','multiple_ratecard_id.total_cost','multiple_ratecard_id.spot_total')
     def _amount_all(self):
         """
         Compute the total amounts of the Weeks  and  Rate.
         """
         for order in self:
             print 'order' , order            
-            amount_untaxed = amount_tax = 0.0
+            amount_untaxed = 0.0
             total_spot = 0
-            compute_total = 0
-            update_noofweeks = 0
-            allocate_schedule_count = 0
+            total_cost = 0
+            # allocate_schedule_count = 0
             print  'rate_amount ', order.rate_amount
             print 'amount  untaxed' , amount_untaxed
-            for  orderitems  in  order:
-                for lineitems in orderitems:
-                    for  line in  lineitems.multiple_ratecard_id:
-                        print '=======> order.scheduled_for =====> ' ,  order.scheduled_for
-                        print 'WEEKS', line.noofweeks
-                        if  order.scheduled_for !=0 :
-                            print 'order.scheduled_for' , order.scheduled_for
-                            update_noofweeks =  order.scheduled_for
-                            print  'update_noofweeks ' , update_noofweeks
-                        print 'line.noofweeks<><><><>>>' , update_noofweeks
-                        print 'spot_total'
-                        print  'order.spot_total == ' , line.spot_total
-                        total_spot += line.spot_total
-                        print 'out  of  spot_total'
-                        print 'ALLOCATE SCHEDULE COUNTS' , len(self.allocate_schedule)
-                        allocate_schedule_count = len(self.allocate_schedule)
-                        print 'ALLOCATED SCHEDULE COUNTS ARE' , allocate_schedule_count
-                        print 'ORDER TIMES COUNTS' , len(order)
-                        # amount_untaxed += order.rate_amount * line.compute_total
-                        compute_total +=line.compute_total
-                        print '>>>> Compute Total ==== ' ,compute_total
-                        amount_untaxed += line.compute_total
-                        print  'Amount  untaxed == ' , line.compute_total
-                        amount_tax = 1*1
-                        print  'amount_tax == ' , amount_tax
-                    if  (order.amount_untaxed >  (0 or  0.00))and  (order.discount == (0 or  0.00)):
-                        print  'untaxed' , order.amount_untaxed
-                #raise exceptions.ValidationError("Please  Update Discount ! must  be  greater  than  0.00 ") 
+            for lineitems in order.multiple_ratecard_id:
+                for  line in  lineitems:
+                    print 'spot_total'
+                    print  'line.spot_total == ' , line.spot_total
+                    total_spot += line.spot_total
+                    print 'out  of  spot_total'
+                    print 'ORDER TIMES COUNTS' , len(order)
+                    total_cost +=line.total_cost
+                    print '>>>> Compute Total ==== ' ,total_cost
+                    amount_untaxed += total_cost
+                    print  'Amount  untaxed == ' , total_cost
             order.update({
                 'total_spot':total_spot,
-                'rate_amount':compute_total,
-                'scheduled_for':update_noofweeks,
-                # 'allocate_schedule_count': allocate_schedule_count,
+                'rate_amount':total_cost,
                 'amount_untaxed': amount_untaxed,
-                'amount_tax': amount_tax,
-                'amount_total': amount_untaxed + amount_tax,
-            })    
+                'amount_total': amount_untaxed,
+            })
+
     @api.multi
     def button_dummy(self):
         return True   
