@@ -27,24 +27,54 @@
                                                      <field name="allocate_schedule_count"/>
                                                      <!--<field name='company_id'/>-->
                                                       </group>
-                                                   <field name='multiple_ratecard_id'/>
-                                                   <!--<field name='allocate_multiple_id'/>-->
-                                                   <field name="allocate_schedule"   widget="one2many_list">
-                                                                                            <tree  string="SPOTS" editable="bottom">
-                                                                                               <!--<field name='code'/>-->
-                                                                                                <!--<field name='multiple_rate'/>-->
-                                                                                                <field name='monday'/>
-                                                                                                <field name='tuesday'/>
-                                                                                                <field name='wednesday'/>
-                                                                                                <field name='thursday'/>
-                                                                                                <field name='friday'/>
-                                                                                                <field name='saturday'/>
-                                                                                                 <field name='sunday'/>
-                                                                                                 <field name="spot_total"/> 
-                                                                                                 <field name="noofweeks"/>
-                                                                                               <field name='price_subtotal'/>
-                                                                                             </tree>
+                                                <field name='multiple_ratecard_id' widget="many2many">
+                                                <tree  string="ALLOCATE SPOTS" editable="bottom">
+                                                                    <!--<field name="week_id" widget="one2many_list"/>-->
+                                                                   <field name="code"/>
+                                                                    <field name="name"/>
+                                                                    <field name="outlet_id" on_change="onchange_outlet(outlet_id)" placeholder="OUTLET"/>
+                                                                     <field name="outlet_type_id" domain="[('outlet_id', '=' ,outlet_id)]" placeholder="OUTLET TYPE" />
+                                                                    <field name="ad_type_id" placeholder="AD TYPE" />
+                                                                    <field name="schedule_type_id" placeholder="SCHEDULE TYPE"/>
+                                                                    <!--<field name="pages_id" placeholder="PAGES" />-->
+                                                                    <field name="timeband_id" placeholder="TIME BAND" />
+                                                                    <field name="spot_length_id" placeholder="Spot Length" />
+                                                                    <field name="rateclass_code_id" placeholder="RATECLASS CODE" />
+                                                                    <field name="payment_terms_id" placeholder="PAYMENT  TERMS" />
+                                                                    <!--<field name="vat_rate_id" placeholder="VAT RATE " />-->
+                                                                    <!--<field name="quote_stage_id" placeholder="QUOTE  STAGE" />-->
+                                                                    <field name="rate_id" placeholder="TIMEBAND RATE" />
+                                                                     <field name='monday'/>
+                                                                    <field name='tuesday'/>
+                                                                    <field name='wednesday'/>
+                                                                    <field name='thursday'/>
+                                                                    <field name='friday'/>
+                                                                    <field name='saturday'/>
+                                                                     <field name='sunday'/>
+                                                                     <field name="spot_total"/>
+                                                                     <field name="noofweeks"/>
+                                                                   <field name='allocate_subtotal'/>
+                                                                   <field name="rates_total"/>
+                                                                  <field name="compute_total"/>
+                                                </tree>
                                               </field>
+                                                   <!--<field name='allocate_multiple_id'/>-->
+                                                   <!--<field name="allocate_schedule"   widget="one2many_list">-->
+                                                                                            <!--<tree  string="SPOTS" editable="bottom">-->
+                                                                                               <!--&lt;!&ndash;<field name='code'/>&ndash;&gt;-->
+                                                                                                <!--&lt;!&ndash;<field name='multiple_rate'/>&ndash;&gt;-->
+                                                                                                <!--<field name='monday'/>-->
+                                                                                                <!--<field name='tuesday'/>-->
+                                                                                                <!--<field name='wednesday'/>-->
+                                                                                                <!--<field name='thursday'/>-->
+                                                                                                <!--<field name='friday'/>-->
+                                                                                                <!--<field name='saturday'/>-->
+                                                                                                 <!--<field name='sunday'/>-->
+                                                                                                 <!--<field name="spot_total"/> -->
+                                                                                                 <!--<field name="noofweeks"/>-->
+                                                                                               <!--<field name='price_subtotal'/>-->
+                                                                                             <!--</tree>-->
+                                              <!--</field>-->
                                               <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total">
                                               
                                                     <div class="oe_inline">

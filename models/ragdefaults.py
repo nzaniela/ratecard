@@ -47,6 +47,8 @@ class  week(models.Model):
     noofweeks = fields.Integer(string="WEEKS",default=1 , store=True,   track_visibility='always')
     #compute='_noofweeks',
     spot_total  = fields.Integer( compute='_compute_totalspots' , string='SPOTS TOTAL' ,readonly=True ,  store=True)
+
+    price_subtotal = fields.Integer(compute='_compute_spotrateweektotal', string='SUBTOTAL', readonly=True, store=True)
     state = fields.Selection([
             ('draft', 'DRAFT'),
             ('sent', 'READY'),
@@ -54,9 +56,8 @@ class  week(models.Model):
             ('done', 'Done'),
             ('cancel', 'Cancelled'),
             ], string='Status', readonly=True, copy=False, index=True, track_visibility='onchange', default='draft')  
-    validity_date = fields.Date(string='Expiration Date', readonly=True, states={'draft': [('readonly', False)], 'sent': [('readonly', False)]})    
-    
-    price_subtotal = fields.Integer(compute='_compute_spotrateweektotal', string='SUBTOTAL', readonly=True, store=True)
+    validity_date = fields.Date(string='Validity Date', readonly=True, states={'draft': [('readonly', False)], 'sent': [('readonly', False)]})
+
     price_tax = fields.Integer(default=0 ,string='Taxes', readonly=True, store=True)
     #weeks  = fields.Integer(string='WEEKS')  
     ratecard_mul_rel_id  = fields.One2many(comodel_name='ratecard.mul.rel', inverse_name='allocate_id', 
@@ -66,6 +67,34 @@ class  week(models.Model):
     allocate_mul_spots_id  = fields.One2many(comodel_name='allocate.mul.spots', inverse_name='week_id', string='ALLOCATED SPOTS')
     ratecard_multiple_id  = fields.Many2one(comodel_name='ratecard.multiple', string='ALLOCATED SPOTS')    
     ratecard_multi_id  = fields.One2many(comodel_name='ratecard.mul', inverse_name='week_id', string='ALLOCATED SPOTS')
+
+    ratecard_sin_radio_id  = fields.One2many(comodel_name='ratecard.sin.radio',inverse_name='week_id',string='RADIO RATECARD')
+    # @api.multi
+    # def  name_get(self):
+    #     result = []
+    #     for  record in  self:
+    #         print 'record name ' , record.rate_amount
+    #         # if  record.name  and  record.code:
+    #         #     result.append((record.id,record.name + '/' + record.code))
+    #         if  record.rate_amount  or  record.id:
+    #             result.append((record.id,record.name+ str('Ksh::')+str(record.rate_amount)))
+    #     return result
+    # monday  = fields.Integer(string='MON')
+    # tuesday   = fields.Integer(string='TUE')
+    # wednesday   = fields.Integer(string='WED')
+    # thursday   = fields.Integer(string='THUR')
+    # friday   = fields.Integer(string='FRI')
+    # saturday   = fields.Integer(string='SAT')
+    # sunday   = fields.Integer(string='SUN')
+    # @api.model
+    # def  name_search(self, name='', args=None, operator='ilike', limit=100):
+    #     args = args or  []
+    #     recs = self.browse()
+    #     if  name :
+    #         recs = self.search([('name' ,'=',name)] + args , limit=limit)
+    #     if  not  recs:
+    #         recs = self.search([('name' ,operator , name)] + args , limit=limit)
+    #     return recs.name_get()
     
     @api.one
     @api.depends('noofweeks','ratecard_multiple_id.scheduled_for')
@@ -953,8 +982,77 @@ class  ratecard_sin_radio(models.Model):
     description = fields.Text('Description', translate=True)          
     logo = fields.Binary('Logo File')
     ratecard_multiple_id = fields.Many2one(comodel_name='ratecard.multiple' , string='RADIO SINGULAR RATECARD')
-
     rate_id  = fields.Many2one(comodel_name='rate',string='TIMEBAND RATE')
+    week_id =fields.Many2one(comodel_name='week',string='TIMEBAND SPOTS')
+
+    week_count = fields.Integer('COUNT WEEK',track_visibility='always',  store=True)
+    monday  = fields.Integer(string='MON',track_visibility='always'  ,  store=True)
+    tuesday   = fields.Integer(string='TUE',track_visiility='always'  ,  store=True)
+    wednesday   = fields.Integer(string='WED',track_visibility='always'  ,  store=True)
+    thursday   = fields.Integer(string='THUR',track_visibility='always'  ,  store=True)
+    friday   = fields.Integer(string='FRI',track_visibility='always'  ,  store=True)
+    saturday   = fields.Integer(string='SAT',track_visibility='always'  ,  store=True)
+    sunday   = fields.Integer(string='SUN',track_visibility='always'  ,  store=True)
+    noofweeks = fields.Integer(string="WEEKS",default=1 , store=True,   track_visibility='always')
+    #compute='_noofweeks',
+    spot_total  = fields.Integer( compute='_compute_totalspots' , string='SPOTS' ,track_visibility='always' ,readonly=True ,  store=True)
+    allocate_subtotal = fields.Integer(compute='_compute_spotrateweektotal', string='SPOTS WEEKS TOTAL', readonly=True, store=True)
+
+    @api.one
+    @api.depends('sunday' , 'monday','tuesday' ,'wednesday'  , 'thursday'  ,'friday'  , 'saturday')
+    def _compute_totalspots(self):
+        for order in self:
+            for  line  in  order:
+                spottotal  = line.sunday + line.monday + line.tuesday+ line.wednesday+line.thursday + line.friday + line.saturday
+            self.update({'spot_total':spottotal})
+
+    @api.one
+    @api.depends('sunday' , 'monday','tuesday' ,'wednesday'  , 'thursday'  ,'friday'  , 'saturday', 'noofweeks')
+    def _compute_spotrateweektotal(self):
+        for order in self:
+            for  line  in  order:
+                week_spot_total  = line.sunday + line.monday + line.tuesday+ line.wednesday+line.thursday + line.friday + line.saturday
+                subtotal = week_spot_total *  line.noofweeks
+            self.update({'allocate_subtotal':subtotal})
+    rates_total =  fields.Float(string='RATES TOTAL', compute='_getrate', store=True, readonly=True, track_visibility='always')
+
+    @api.one
+    @api.depends('rate_id.rate_amount')
+    def _getrate(self):
+        for  order  in  self:
+            print  'order', order
+            rates_total = 0.0
+            for  line  in  order:
+                print 'rates_total' , line.rate_id.rate_amount
+                rates_total += line.rate_id.rate_amount
+                print 'rates_total >>> ' , rates_total
+
+            order.update({
+                    'rates_total':rates_total,
+
+            })
+
+
+    compute_total =  fields.Float(string='COMPUTE RATE ALLOCATION TOTAL', compute='_compute_rate', store=True, readonly=True, track_visibility='always')
+
+    @api.one
+    @api.depends('rate_id.rate_amount','allocate_subtotal')
+    def _compute_rate(self):
+        for  order  in  self:
+            print  'order', order
+            compute_total = 0.0
+            for  line  in  order:
+                print '>>>> rates_total >>>>> ' , line.rate_id.rate_amount
+                print '>>>> line.allocate_subtotal >>>> ',line.allocate_subtotal
+                compute_total += line.rate_id.rate_amount * line.allocate_subtotal
+                print '>>>>>> compute_total >>>>> ' , compute_total
+
+            order.update({
+                    'compute_total':compute_total,
+
+            })
+
+
 
     _defaults = {
 
@@ -990,7 +1088,6 @@ class  ratecard_sin_radio(models.Model):
         #outlet_data = outlet_obj.browse(cr,uid,outlet_id,context=context)
         #val.update({'outlet_type_id': [ outlet_type_.id for  outlet_type_ in  outlet_data.outlet_types_ids]})
         #return {'value': val}
-
 
 class  ratecard_multiples(models.Model):
     _name='ratecard.multiples'
@@ -1280,42 +1377,42 @@ class  ratecard_multiple(models.Model):
     #             print  'SUCCESSFULL , THEY ARE  EQUAL' ,  line.allocate_schedule_count , line.multiple_ratecard_id_count
     #             pass
 
-    @api.onchange('allocate_schedule_count', 'multiple_ratecard_id_count')
-    @api.multi
-    def _onchange_price(self):
-        error_message = 'SINGULAR RATECARDS LINES SELECTED MUST MATCH ALLOCATED SPOTS LINES '
-        res = {}
-        for line in  self:
-            print 'allocate_schedule_count VALUES' , line.allocate_schedule_count
-            print 'multiple_ratecard_id_count VALUES' , line.multiple_ratecard_id_count
-            if  (line.multiple_ratecard_id_count > 0) and (line.multiple_ratecard_id_count != line.allocate_schedule_count):
-                print 'line.multiple_ratecard_id_count > 0  ::: allocate_schedule_count VALUES' , line.allocate_schedule_count
-                print ' line.multiple_ratecard_id_count > 0 ::: multiple_ratecard_id_count VALUES' , line.multiple_ratecard_id_count
-                error_message = 'KINDLY ALLOCATE SPOT'
-                res = {'warning': {
-                'title': 'YOU HAVE ADDED A  SINGULAR RATECARD LINE' ,
-                'message': error_message,
-            }
-                }
-            elif (line.allocate_schedule_count > 0) and   (line.allocate_schedule_count != line.multiple_ratecard_id_count):
-                print 'line.allocate_schedule_count > 0  ::: allocate_schedule_count VALUES' , line.allocate_schedule_count
-                print ' line.allocate_schedule_count > 0 ::: multiple_ratecard_id_count VALUES' , line.multiple_ratecard_id_count
-                error_message = 'KINDLY ALLOCATE SINGULAR RATECARD'
-                res = {'warning': {
-                'title': 'YOU HAVE JUST ADDED AN ALLOCATION SPOT ' ,
-                'message': error_message,
-            }
-                }
-            elif line.allocate_schedule_count != line.multiple_ratecard_id_count:
-                print 'line.allocate_schedule_count != line.multiple_ratecard_id_count ::: allocate_schedule_count VALUES' , line.allocate_schedule_count
-                print ' line.allocate_schedule_count != line.multiple_ratecard_id_count  ::: multiple_ratecard_id_count VALUES' , line.multiple_ratecard_id_count
-                error_message = 'SINGULAR RATECARDS LINES SELECTED MUST MATCH ALLOCATED SPOTS LINES TO PROCEED'
-                res = {'warning': {
-                'title': 'SINGULAR RATECARDS LINES SELECTED MUST MATCH ALLOCATED SPOTS LINES' ,
-                'message': error_message,
-            }
-                }
-        return res
+    # @api.onchange('allocate_schedule_count', 'multiple_ratecard_id_count')
+    # @api.multi
+    # def _onchange_price(self):
+    #     error_message = 'SINGULAR RATECARDS LINES SELECTED MUST MATCH ALLOCATED SPOTS LINES '
+    #     res = {}
+    #     for line in  self:
+    #         print 'allocate_schedule_count VALUES' , line.allocate_schedule_count
+    #         print 'multiple_ratecard_id_count VALUES' , line.multiple_ratecard_id_count
+    #         if  (line.multiple_ratecard_id_count > 0) and (line.multiple_ratecard_id_count != line.allocate_schedule_count):
+    #             print 'line.multiple_ratecard_id_count > 0  ::: allocate_schedule_count VALUES' , line.allocate_schedule_count
+    #             print ' line.multiple_ratecard_id_count > 0 ::: multiple_ratecard_id_count VALUES' , line.multiple_ratecard_id_count
+    #             error_message = 'KINDLY ALLOCATE SPOT'
+    #             res = {'warning': {
+    #             'title': 'YOU HAVE ADDED A  SINGULAR RATECARD LINE' ,
+    #             'message': error_message,
+    #         }
+    #             }
+    #         elif (line.allocate_schedule_count > 0) and   (line.allocate_schedule_count != line.multiple_ratecard_id_count):
+    #             print 'line.allocate_schedule_count > 0  ::: allocate_schedule_count VALUES' , line.allocate_schedule_count
+    #             print ' line.allocate_schedule_count > 0 ::: multiple_ratecard_id_count VALUES' , line.multiple_ratecard_id_count
+    #             error_message = 'KINDLY ALLOCATE SINGULAR RATECARD'
+    #             res = {'warning': {
+    #             'title': 'YOU HAVE JUST ADDED AN ALLOCATION SPOT ' ,
+    #             'message': error_message,
+    #         }
+    #             }
+    #         elif line.allocate_schedule_count != line.multiple_ratecard_id_count:
+    #             print 'line.allocate_schedule_count != line.multiple_ratecard_id_count ::: allocate_schedule_count VALUES' , line.allocate_schedule_count
+    #             print ' line.allocate_schedule_count != line.multiple_ratecard_id_count  ::: multiple_ratecard_id_count VALUES' , line.multiple_ratecard_id_count
+    #             error_message = 'SINGULAR RATECARDS LINES SELECTED MUST MATCH ALLOCATED SPOTS LINES TO PROCEED'
+    #             res = {'warning': {
+    #             'title': 'SINGULAR RATECARDS LINES SELECTED MUST MATCH ALLOCATED SPOTS LINES' ,
+    #             'message': error_message,
+    #         }
+    #             }
+    #     return res
         # Can optionally return a warning and domains
         # return {
         #     'warning': {
@@ -1328,24 +1425,24 @@ class  ratecard_multiple(models.Model):
         'code':lambda obj,cr,uid,context:'/'
     }
 
-    rate_amount = fields.Float(string='RATES TOTAL Amount', store=True, readonly=True, compute='_getrate', track_visibility='always')
+    rate_amount = fields.Float(string='RATES TOTAL Amount', store=True, readonly=True, compute='_amount_all', track_visibility='always')
 
-    @api.one
-    @api.depends('multiple_ratecard_id.rate_id')
-    def _getrate(self):
-        for  order  in  self:
-            print  'order', order
-            rate_amount = 0.0
-            for  line  in  order.multiple_ratecard_id:
-                print 'timeband' , line.timeband_id.id
-                print 'VAT  RATE' ,line.vat_rate_id.id
-                rate_amount += line.rate_id.rate_amount
-                print 'rate_amount >>> ' , rate_amount
-
-            order.update({
-                    'rate_amount':rate_amount,
-
-            })
+    # @api.one
+    # @api.depends('multiple_ratecard_id.compute_total')
+    # def _getrate(self):
+    #     for  order  in  self:
+    #         print  'order', order
+    #         rate_amount = 0.0
+    #         for  lineitems in  order:
+    #             for line  in lineitems.multiple_ratecard_id:
+    #                     print '>>>>> line.timeband_id.id' , line.timeband_id.id
+    #                     print '>>>>> line.vat_rate_id.id' ,line.vat_rate_id.id
+    #                     rate_amount += line.compute_total
+    #                     print '>>>> multiple_ratecard_id.compute_total >>>>> ' , rate_amount
+    #         order.update({
+    #                 'rate_amount':rate_amount,
+    #
+    #         })
 
 
 
@@ -1380,9 +1477,9 @@ class  ratecard_multiple(models.Model):
         #if  not  vals['allocate_schedule'][0][2]:
             #raise Exception('MISSING ALLOCATED  SPOTS ')
         #created_hc  = []    self.update({'spot_total':total})  
-        #for  id  in  
-
-    @api.depends('allocate_schedule_count','rate_amount','discount','allocate_schedule.spot_total')
+        #for  id  in
+    @api.multi
+    @api.depends('allocate_schedule_count','scheduled_for','rate_amount','discount','multiple_ratecard_id.noofweeks','multiple_ratecard_id.compute_total','multiple_ratecard_id.spot_total')
     def _amount_all(self):
         """
         Compute the total amounts of the Weeks  and  Rate.
@@ -1391,28 +1488,43 @@ class  ratecard_multiple(models.Model):
             print 'order' , order            
             amount_untaxed = amount_tax = 0.0
             total_spot = 0
+            compute_total = 0
+            update_noofweeks = 0
             allocate_schedule_count = 0
             print  'rate_amount ', order.rate_amount
             print 'amount  untaxed' , amount_untaxed
-            for line in order.allocate_schedule:
-                print 'spot_total'
-                print  'order.spot_total == ' , line.spot_total
-                total_spot += line.spot_total 
-                print 'out  of  spot_total'
-                print 'ALLOCATE SCHEDULE COUNTS' , len(self.allocate_schedule)
-                allocate_schedule_count = len(self.allocate_schedule)
-                print 'ALLOCATED SCHEDULE COUNTS ARE' , allocate_schedule_count
-                print 'ORDER TIMES COUNTS' , len(order)
-                amount_untaxed += order.rate_amount * line.price_subtotal
-                print  'Amount  untaxed == ' , line.price_subtotal               
-                amount_tax += line.price_tax
-                
-                print  'amount_tax == ' , line.price_tax
-            if  (order.amount_untaxed >  (0 or  0.00))and  (order.discount == (0 or  0.00)):
-                print  'untaxed' , order.amount_untaxed 
+            for  orderitems  in  order:
+                for lineitems in orderitems:
+                    for  line in  lineitems.multiple_ratecard_id:
+                        print '=======> order.scheduled_for =====> ' ,  order.scheduled_for
+                        print 'WEEKS', line.noofweeks
+                        if  order.scheduled_for !=0 :
+                            print 'order.scheduled_for' , order.scheduled_for
+                            update_noofweeks =  order.scheduled_for
+                            print  'update_noofweeks ' , update_noofweeks
+                        print 'line.noofweeks<><><><>>>' , update_noofweeks
+                        print 'spot_total'
+                        print  'order.spot_total == ' , line.spot_total
+                        total_spot += line.spot_total
+                        print 'out  of  spot_total'
+                        print 'ALLOCATE SCHEDULE COUNTS' , len(self.allocate_schedule)
+                        allocate_schedule_count = len(self.allocate_schedule)
+                        print 'ALLOCATED SCHEDULE COUNTS ARE' , allocate_schedule_count
+                        print 'ORDER TIMES COUNTS' , len(order)
+                        # amount_untaxed += order.rate_amount * line.compute_total
+                        compute_total +=line.compute_total
+                        print '>>>> Compute Total ==== ' ,compute_total
+                        amount_untaxed += line.compute_total
+                        print  'Amount  untaxed == ' , line.compute_total
+                        amount_tax = 1*1
+                        print  'amount_tax == ' , amount_tax
+                    if  (order.amount_untaxed >  (0 or  0.00))and  (order.discount == (0 or  0.00)):
+                        print  'untaxed' , order.amount_untaxed
                 #raise exceptions.ValidationError("Please  Update Discount ! must  be  greater  than  0.00 ") 
             order.update({
                 'total_spot':total_spot,
+                'rate_amount':compute_total,
+                'scheduled_for':update_noofweeks,
                 # 'allocate_schedule_count': allocate_schedule_count,
                 'amount_untaxed': amount_untaxed,
                 'amount_tax': amount_tax,
