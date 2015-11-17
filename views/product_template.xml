@@ -79,6 +79,13 @@
                             <field name="spot_length_id" />
                             <field name="timeband_id" />
                             <field name="rate_id"/>
+                              <!-- MULTIPLE RATECARD-->
+                            <!--<field name='code'/>-->
+                            <!--<field name="validity_date"/>-->
+                            <!--<field name="scheduled_for"/>-->
+                            <!--<field name="min_weeks"/>-->
+                            <!--<field name="max_weeks"/>-->
+                            <!--<field name="multiple_ratecard_id_count"/>-->
                           </group>
                 </xpath>
             </field>

@@ -11,6 +11,7 @@
                 <search string="AD  SIZE">
                     <field name="name"/>
                     <field name="outlet_id"/>
+                    <field name="pages_id"/>
                 </search>
             </field>
         </record>
@@ -33,6 +34,7 @@
                             </div>
                             <h1>
                                 <field name="name"/>
+                                <field name="pages_id"/>
                                 <field name="column"/>
                                 <field name="inches"/>
 
@@ -91,6 +93,8 @@
                         </div>
                         <group>
                             <field name="outlet_id"/>
+                            <field name="pages_id"/>
+
                         </group>
                         <h3>
                             <group colspan="4" col="4">
@@ -111,6 +115,7 @@
             <field name="arch" type="xml">
                 <tree string="ad_size">
                     <field name="name"/>
+                    <field name="pages_id"/>
                     <field name="description"/>
                     <field name="column"/>
                     <field name="inches"/>
@@ -137,6 +142,7 @@
                                     <h4>
                                         <a type="open">
                                             <field name="name"/>
+                                            <field name="pages_id"/>
                                             <field name="column"/>
                                             <field name="inches"/>
                                         </a>

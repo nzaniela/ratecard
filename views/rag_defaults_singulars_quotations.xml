@@ -25,6 +25,11 @@
                                     <field name="timeband_id" />
                                     <field name="rate_id"/>
                 </xpath>
+                <!--<xpath expr="//field[@name='order_line']/tree/field[@name='outlet_id']"-->
+                    <!--position="after">-->
+                                 <!---->
+                                    <!--<field name="rate_id"/>-->
+                <!--</xpath>-->
 
     </field>
 </record>
@@ -37,7 +42,7 @@
 
                 <xpath expr="//field[@name='partner_id']" position="replace">
                      <group colspan="2">
-                         <field name="partner_id"/>
+                         <field name="partner_id" domain="[('customer','=',True)]"/>
                      </group>
                 </xpath>
                 <xpath expr="//field[@name='partner_id']" position="before">

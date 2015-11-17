@@ -371,6 +371,13 @@ class ProductTemplate(models.Model):
     ratecard_multiples_id = fields.Many2one('ratecard.multiples',string='MULTIPLES RATECARD')
     rate_id = fields.Many2one(comodel_name='rate', string='RATE')
 
+    #MULTIPLE RATECARD
+    code  = fields.Char(string='RateCard Code ',readonly=True)
+    scheduled_for  = fields.Integer(string='SCHEDULED FOR', default=1 ,track_visibility='always',store=True , readonly=True)
+    min_weeks = fields.Integer(string="MINIMUM NO OF WEEKS" , default=1 ,store=True)
+    max_weeks = fields.Integer(string="Maximum NO OF WEEKS" , default=1, track_visibility='always' ,store=True)
+
+
     timeband_id = fields.Many2one('timeband',string='Time Band',help='Select a time band for this product')
     pages_id = fields.Many2one('pages',string='Pages',help='Select a page for this product')
     ad_size_id = fields.Many2one('ad.size',string='AD SIZE',help='Set AD SIZE for this product')
@@ -440,16 +447,19 @@ class ProductTemplate(models.Model):
             timeband_id = ''
             rate_id  = ''
             radio_multiple_ratecard_cost = 0.0
-            for  line  in  order.ratecard_multiple_id:
-                # print 'ALLOCATE SCHEDULE  COUNT' , line.allocate_schedule_count
-                print 'SPOT TOTAL' , line.total_spot
-                # print 'VAT  RATE' ,line.ratecard_multiple_id.vat_rate_id.id
-                print 'RATE' ,line.rate_amount
-                radio_multiple_ratecard_cost += line.taxed_amount
-                print 'radio_multiple_ratecard_cost' , radio_multiple_ratecard_cost
-                print 'NAME OF RADIO RATECARD' , line.name
+            for  lineitems  in   order.ratecard_multiple_id:
+                for  line  in  lineitems:
+                    # print 'ALLOCATE SCHEDULE  COUNT' , line.allocate_schedule_count
+                    print 'SPOT TOTAL' , line.total_spot
+                    # print 'VAT  RATE' ,line.ratecard_multiple_id.vat_rate_id.id
+                    print 'RATE' ,line.rate_amount
+                    radio_multiple_ratecard_cost += line.taxed_amount
+                    print 'radio_multiple_ratecard_cost' , radio_multiple_ratecard_cost
+                    print 'NAME OF RADIO RATECARD' , line.name
+                    print  'RATECARD MULTIPLE SCHEDULED FOR ' , line.scheduled_for
+                    print  ''
 
-                name = line.name
+                    name = line.name
 
             order.update({
                     'radio_multiple_ratecard_cost':radio_multiple_ratecard_cost,
@@ -626,20 +636,24 @@ class ProductTemplate(models.Model):
     def on_change_digital_ratecard_cost(self):
         print 'DIGITAL RATECARD COST' ,self.digital_ratecard_cost
         self.list_price = self.digital_ratecard_cost
+        self.standard_price = self.digital_ratecard_cost
 
 
     @api.onchange('print_ratecard_cost')
     def on_change_print_ratecard_cost(self):
         self.list_price = self.print_ratecard_cost
+        self.standard_price = self.print_ratecard_cost
 
 
     @api.onchange('tv_ratecard_cost')
     def on_change_tv_ratecard_cost(self):
         self.list_price = self.tv_ratecard_cost
+        self.standard_price = self.tv_ratecard_cost
 
     @api.onchange('radio_multiple_ratecard_cost')
     def on_change_radio_multiple_ratecard_cost(self):
        self.list_price =self.radio_multiple_ratecard_cost
+       self.standard_price = self.radio_multiple_ratecard_cost
 
 
     
@@ -716,6 +730,8 @@ class  pages(models.Model):
     
     name  =  fields.Char(string='NAME' , size=64  , required=True )
     page  = fields.Selection(selection=page_no, string='PAGE')
+    ad_size_id = fields.One2many(comodel_name='ad.size',inverse_name='pages_id',string='AD SIZE',help='Set AD SIZE for this product')
+
     
     description = fields.Text('Description', translate=True)          
     logo = fields.Binary('Logo File')
@@ -747,39 +763,29 @@ class  pages(models.Model):
         )        
     
     
-    class  ad_size(models.Model):
-        _name  = 'ad.size'
-        _description = 'AD  SIZE'
-        
-        name  =  fields.Char(string='NAME')
-        column  = fields.Selection(selection=_ad_column, string='COLUMN')
-        inches  =  fields.Selection(selection=_ad_inches, string='INCHES')
-        
-        description = fields.Text('Description', translate=True)          
-        logo = fields.Binary('Logo File')
-        product_ids = fields.One2many(
-              'product.template',
-              'ad_size_id',
-              string='AD SIZE',
-          )    
-    
-        products_count = fields.Integer(
-            string='Number of products',
-            compute='_get_products_count',
-        )
-        
-        @api.one
-        @api.depends('product_ids')
-        def _get_products_count(self):
-            self.products_count = len(self.product_ids)
-    
-        
-        outlet_id = fields.Many2one(
-                'outlet',
-                string='Outlet',
-                help='Select a brand for this AD  SIZE if it exists',
-                ondelete='restrict'
-            )                
+class  ad_size(models.Model):
+    _name  = 'ad.size'
+    _description = 'AD  SIZE'
+
+    name  =  fields.Char(string='NAME')
+    column  = fields.Selection(selection=_ad_column, string='COLUMN')
+    inches  =  fields.Selection(selection=_ad_inches, string='INCHES')
+
+    description = fields.Text('Description', translate=True)
+    logo = fields.Binary('Logo File')
+    product_ids = fields.One2many('product.template','ad_size_id',string='AD SIZE',)
+
+    products_count = fields.Integer(string='Number of products',compute='_get_products_count',)
+
+    @api.one
+    @api.depends('product_ids')
+    def _get_products_count(self):
+        self.products_count = len(self.product_ids)
+
+
+    outlet_id = fields.Many2one('outlet',string='Outlet',help='Select a brand for this AD  SIZE if it exists',ondelete='restrict')
+    pages_id = fields.Many2one('pages',string='Pages',help='Select a page for this product')
+
 
 class  outlet_type(models.Model):
     _name  =  'outlet.type'
@@ -913,12 +919,7 @@ class  digital_type(models.Model):
         self.products_count = len(self.product_ids)
 
     
-    outlet_id = fields.Many2one(
-            'outlet',
-            string='Outlet',
-            help='Select a brand for this  Digital  Type if it exists',
-            ondelete='restrict'
-        )       
+    outlet_id = fields.Many2one('outlet',string='Outlet',help='Select a brand for this  Digital  Type if it exists', ondelete='restrict')
 
 
     
@@ -936,16 +937,9 @@ class  digital_size(models.Model):
     
     description = fields.Text('Description', translate=True)          
     logo = fields.Binary('Logo File')
-    product_ids = fields.One2many(
-          'product.template',
-          'digital_size_id',
-          string='Digital Size',
-      )    
+    product_ids = fields.One2many('product.template','digital_size_id',string='Digital Size', )
 
-    products_count = fields.Integer(
-        string='Number of products',
-        compute='_get_products_count',
-    )
+    products_count = fields.Integer( string='Number of products', compute='_get_products_count', )
     
     @api.one
     @api.depends('product_ids')
@@ -953,12 +947,7 @@ class  digital_size(models.Model):
         self.products_count = len(self.product_ids)
 
     
-    outlet_id = fields.Many2one(
-            'outlet',
-            string='Outlet',
-            help='Select a brand for this  Digital  Size if it exists',
-            ondelete='restrict'
-        )       
+    outlet_id = fields.Many2one('outlet',string='Outlet',help='Select a brand for this  Digital  Size if it exists', ondelete='restrict')
 
 
 
@@ -2344,7 +2333,7 @@ class SaleOrder(models.Model):
     scheduled_start_date = fields.Date(string='SCHEDULED START DATE')
     multiple_noofweeks = fields.Integer(string='MULTIPLE NO OF WEEKS')
     multiple_scheduled_start_date = fields.Date(string='MULTIPLE SCHEDULED START DATE')
-    partner_id = fields.Many2one(comodel_name='res.partner' ,string='CLIENT CONTACT', domain=[('is_company', '=', False)])
+    partner_id = fields.Many2one(comodel_name='res.partner' ,string='CLIENT CONTACT', domain="[('customer','=',True)]") #domain=[('is_company', '=', False)]
     outlet_id = fields.Many2one(comodel_name='outlet', string='Outlet')
     outlet_type_id  = fields.Many2one(comodel_name='outlet.type', string='Outlet Type')
 
@@ -2393,6 +2382,7 @@ class SaleOrderLine(models.Model):
     spot_length_id = fields.Many2one(comodel_name='spot.length', string='LENGTH')
     timeband_id = fields.Many2one(comodel_name='timeband', string='TIMEBAND')
     rate_id = fields.Many2one(comodel_name='rate', string='RATE')
+
 
     saturday   = fields.Integer(string='SAT')
     monday  = fields.Integer(string='MON')
