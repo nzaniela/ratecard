@@ -73,19 +73,17 @@
 		</xpath>
                 <xpath expr="//field[@name='sale_ok']" position="before">
                           <group colspan="4" col="4">
-                            <field name="outlet_id" />
-                            <field name="outlet_type_id" />
-                            <field name="ad_type_id" />
-                            <field name="spot_length_id" />
-                            <field name="timeband_id" />
-                            <field name="rate_id"/>
+                            <field attrs="{'invisible':[('radio_multiple_ratecards','=',True)]}" name="outlet_id" />
+                            <field attrs="{'invisible':[('radio_multiple_ratecards','=',True)]}" name="outlet_type_id" />
+                            <field attrs="{'invisible':[('radio_multiple_ratecards','=',True)]}" name="ad_type_id" />
+                            <field attrs="{'invisible':[('radio_multiple_ratecards','=',True)]}" name="spot_length_id" />
+                            <field attrs="{'invisible':[('radio_multiple_ratecards','=',True)]}" name="timeband_id" />
+                            <field attrs="{'invisible':[('radio_multiple_ratecards','=',True)]}" name="rate_id"/>
                               <!-- MULTIPLE RATECARD-->
-                            <!--<field name='code'/>-->
-                            <!--<field name="validity_date"/>-->
-                            <!--<field name="scheduled_for"/>-->
-                            <!--<field name="min_weeks"/>-->
-                            <!--<field name="max_weeks"/>-->
-                            <!--<field name="multiple_ratecard_id_count"/>-->
+                            <field attrs="{'invisible':[('radio_multiple_ratecards','=',False)]}"  name='code'  />
+                            <field attrs="{'invisible':[('radio_multiple_ratecards','=',False)]}" name="scheduled_for"/>
+                            <field attrs="{'invisible':[('radio_multiple_ratecards','=',False)]}" name="min_weeks"/>
+                            <field attrs="{'invisible':[('radio_multiple_ratecards','=',False)]}" name="max_weeks"/>
                           </group>
                 </xpath>
             </field>

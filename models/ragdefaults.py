@@ -437,15 +437,14 @@ class ProductTemplate(models.Model):
     @api.depends('ratecard_multiple_id')
     def _get_radio_multiple_ratecard_rate(self):
         for  order  in  self:
-            print  'INSIDE PRODUCT TEMPLATE ', order
+            print  'RATECARD MULTIPLE INSIDE PRODUCT TEMPLATE ', order
             print 'Can we  get  total_amount here'
             name = ''
-            outlet_id = ''
-            outlet_type_id  =''
-            ad_type_id  =''
-            spot_length_id  =''
-            timeband_id = ''
-            rate_id  = ''
+            code = ''
+            scheduled_for  =''
+            min_weeks  =''
+            max_weeks  =''
+
             radio_multiple_ratecard_cost = 0.0
             for  lineitems  in   order.ratecard_multiple_id:
                 for  line  in  lineitems:
@@ -460,17 +459,18 @@ class ProductTemplate(models.Model):
                     print  ''
 
                     name = line.name
+                    code  = line.code
+                    scheduled_for  = line.scheduled_for
+                    min_weeks = line.min_weeks
+                    max_weeks = line.max_weeks
 
             order.update({
                     'radio_multiple_ratecard_cost':radio_multiple_ratecard_cost,
                     'name':name,
-                    'outlet_id':outlet_id,
-                    'outlet_type_id':outlet_type_id,
-                    'ad_type_id':ad_type_id,
-                    'spot_length_id':spot_length_id,
-                    'timeband_id':timeband_id,
-                    'rate_id':rate_id,
-
+                    'code':code,
+                    'scheduled_for':scheduled_for,
+                    'min_weeks':min_weeks,
+                    'max_weeks':max_weeks,
             })
     @api.one
     @api.depends('ratecard_sin_radio_id.rate_id')
