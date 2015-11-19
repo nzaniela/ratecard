@@ -23,7 +23,7 @@
         # 'views/sale_view.xml',
 
         #NO OF SPOTS  WEEKLY MANAGEMENT
-        # 'views/rag_defaults_week.xml',
+        'views/rag_defaults_week.xml',
 
         #
         'views/rag_defaults_timeband.xml',

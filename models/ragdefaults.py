@@ -27,15 +27,15 @@ class  week(models.Model):
     _name='week'
     
     # multiple_rate  =  fields.Integer(string='RATE ')
-    # code  = fields.Char(string='ALLOCATION SPOTS CODE',readonly=True)
+    code  = fields.Char(string='ALLOCATION SPOTS CODE',readonly=True)
     #
-    # _defaults = {
-    #     'code':lambda obj,cr,uid,context:'/'
-    # }
-    #
-    # def  create(self,cr,uid, vals,context=None):
-    #     vals['code'] = self.pool.get('ir.sequence').get(cr,uid,'week')
-    #     return super(week,self).create(cr,uid,vals,context=context)
+    _defaults = {
+        'code':lambda obj,cr,uid,context:'/'
+    }
+
+    def  create(self,cr,uid, vals,context=None):
+        vals['code'] = self.pool.get('ir.sequence').get(cr,uid,'week')
+        return super(week,self).create(cr,uid,vals,context=context)
     week_count = fields.Integer('COUNT WEEK')
     monday  = fields.Integer(string='MON')
     tuesday   = fields.Integer(string='TUE')
@@ -972,7 +972,45 @@ class  ratecard_sin_radio(models.Model):
     logo = fields.Binary('Logo File')
     ratecard_multiple_id = fields.Many2one(comodel_name='ratecard.multiple' , string='RADIO SINGULAR RATECARD')
     rate_id  = fields.Many2one(comodel_name='rate',string='TIMEBAND RATE')
-    week_id =fields.Many2one(comodel_name='week',string='TIMEBAND SPOTS')
+    week_id =fields.Many2one(comodel_name='week',string='SCHEDULE SPOTS')
+
+    @api.multi
+    def scheduler(self):
+    	view_id = self.env.ref('ragtimeorder.view_week_form').id
+    #	context = self._context.copy()
+        return {
+                'name':_('SCHEDULE RATECARD'),
+                'view_type': 'form',
+                'view_mode': 'form',
+                'views': [(view_id, 'form'), ],
+                'res_model': 'week',
+               # 'context': self._context,
+                'type': 'ir.actions.act_window',
+                'target': 'new',
+                'flags': {'action_buttons': True},
+    }
+    # @api.multi
+    # def scheduler(self):
+    # 	view_id = self.env.ref('ragtimeorder.view_week_form').id
+    #   #  context = self._context.copy()
+    #     context = dict(self.env.context or {})
+    #     if context.get('ratecard_multiple_id'):
+    #         context['active_id'] = self.id
+    #     return {
+    #             'name':_('SCHEDULE RATECARD'),
+    #             'view_type': 'form',
+    #             'view_mode': 'form,tree',
+    #             'views': [(view_id, 'form'), ],
+    #             'res_model': 'week',
+    #            # 'res_id':self.id,
+    #             'res_id': self.env.context.get('ratecard_multiple_id'),
+    #
+    #            # 'context': self._context,
+    #             'type': 'ir.actions.act_window',
+    #             'target': 'new',
+    #            # 'flags': {'action_buttons': True},
+    # }
+
 
     week_count = fields.Integer('COUNT WEEK',track_visibility='always',  store=True)
     monday  = fields.Integer(string='MON',track_visibility='always'  ,  store=True)

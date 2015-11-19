@@ -107,6 +107,7 @@
                 <form string="RateCard Singular" version="7.0">
                     <sheet>
                         <group>
+                            <button name="scheduler" class="oe_highlight"  string="SCHEDULE" type="object"/>
                             <field name="code"/>
                         </group>
                         <field name="logo" widget="image" class="oe_avatar oe_left"/>

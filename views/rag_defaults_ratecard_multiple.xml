@@ -23,13 +23,17 @@
                                                     <field name="scheduled_for"/>
                                                     <field name="min_weeks"/>
                                                     <field name="max_weeks"/>
-                                                    <field name="multiple_ratecard_id_count"/>
+                                                    <!--<field name="multiple_ratecard_id_count"/>-->
+                                                    <field name="multiple_ratecard_id_count" widget="statinfo"/>
                                                      <!--<field name="allocate_schedule_count"/>-->
                                                      <!--<field name='company_id'/>-->
                                                       </group>
-                                                <field name='multiple_ratecard_id' widget="many2many">
+                                                <field name='multiple_ratecard_id' nolabel="1" options="{'reload_on_button': true}">  <!-- widget="many2many"-->
                                                 <tree  string="ALLOCATE SPOTS" editable="bottom">
                                                                     <!--<field name="week_id" widget="one2many_list"/>-->
+                                                    <!--<button type="action" icon="fa-pencil-square-o"  class="oe_stat_button">-->
+                                                                 <button name="scheduler" string="SCHEDULE" type="object" class="oe_highlight"/>
+                                                       <!--</button>-->
                                                                    <field name="code"/>
                                                                     <field name="name"/>
                                                                     <field name="outlet_id" on_change="onchange_outlet(outlet_id)" placeholder="OUTLET"/>
@@ -95,15 +99,16 @@
                                                         <label for="discount" />
                                                         <button name="button_dummy" states="draft,sent" string="(update)" type="object" class="oe_edit_only oe_link"/>
                                                     </div>
-                                                    <field name="discount" nolabel="1" class="oe_inline" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                                    <h2>
+                                                    <field name="discount" nolabel="1" class="oe_inline oe_edit_only" widget='monetary' options="{'currency_field': 'currency_id'}"/>% discount
                                                     
-                                                    <field name="subtotal_discounted" widget='monetary' options="{'currency_field': 'currency_id'}"/>
-                                                    
+                                                    <field name="subtotal_discounted" widget='monetary' options="{'currency_field': 'currency_id'}" class="oe_inline" />
+                                                    </h2>
                                                    <div class="oe_inline">
                                                         <label for="vat_rate" />
                                                         <button name="button_dummy" states="draft,sent" string="(update)" type="object" class="oe_edit_only oe_link"/>
                                                     </div>
-                                                    <field name="vat_rate" nolabel="1" class="oe_inline" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                                    <field name="vat_rate" nolabel="1" class="oe_inline" widget='monetary' options="{'currency_field': 'currency_id'}"/>%
                                                     
                                                 <!--<field name="tax_id" widget="many2many_tags" domain="[('type_tax_use','=','sale'),('company_id','=',parent.company_id)]"/>-->
                                                     <field name="amount_tax" widget='monetary' options="{'currency_field': 'currency_id'}"/>
