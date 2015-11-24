@@ -1020,7 +1020,7 @@ class  ratecard_sin_radio(models.Model):
                 'res_model': 'week',
                # 'context': self._context,
                 'type': 'ir.actions.act_window',
-           #     'target': 'new',
+                'target': 'new',
                 'flags': {'action_buttons': True},
     }
     # @api.multi
@@ -1704,9 +1704,117 @@ class ratecard_multiple_week_rel(models.Model):
             count = len(order.ratecard_multiple_id)
 
 
-class SelectUser(models.TransientModel):
-    _name = 'select.user'
+class ScheduleRatecards(models.TransientModel):
+    _name = 'schedule.ratecards'
     user_id = fields.Many2one('res.users', 'User')
+    scheduled = fields.Integer(string='SCHEDULED')
+    my_field = fields.Integer(string='VALUE PASSED')
+    from_date = fields.Date(
+        'From Date', required=True, default=lambda self: fields.Date.today())
+    to_date = fields.Date(
+        'To Date', required=True, default=lambda self: fields.Date.today())
+
+
+    monday  = fields.Integer(string='MON')
+    tuesday   = fields.Integer(string='TUE')
+    wednesday   = fields.Integer(string='WED')
+    thursday   = fields.Integer(string='THUR')
+    friday   = fields.Integer(string='FRI')
+    saturday   = fields.Integer(string='SAT')
+    sunday   = fields.Integer(string='SUN')
+    spot_total  = fields.Integer( compute='compute_totalspots' , string='SPOTS TOTAL' ,readonly=True ,  store=True)
+
+    price_subtotal = fields.Integer(compute='compute_spotrateweektotal', string='SUBTOTAL', readonly=True, store=True)
+
+    _monday  = fields.Integer(string='MON')
+    _tuesday   = fields.Integer(string='TUE')
+    _wednesday   = fields.Integer(string='WED')
+    _thursday   = fields.Integer(string='THUR')
+    _friday   = fields.Integer(string='FRI')
+    _saturday   = fields.Integer(string='SAT')
+    _sunday   = fields.Integer(string='SUN')
+
+    _spot_total  = fields.Integer( compute='_compute_totalspots' , string='SPOTS TOTAL' ,readonly=True ,  store=True)
+
+    _price_subtotal = fields.Integer(compute='_compute_spotrateweektotal', string='SUBTOTAL', readonly=True, store=True)
+
+
+
+    @api.one
+    @api.depends('sunday' , 'monday','tuesday' ,'wednesday'  , 'thursday'  ,'friday'  , 'saturday')
+    def compute_totalspots(self):
+        for order in self:
+            for  line  in  order:
+                spottotal  = line.sunday + line.monday + line.tuesday+ line.wednesday+line.thursday + line.friday + line.saturday
+            self.update({'spot_total':spottotal})
+
+    @api.one
+    @api.depends('sunday' , 'monday','tuesday' ,'wednesday'  , 'thursday'  ,'friday'  , 'saturday')
+    def compute_spotrateweektotal(self):
+        for order in self:
+            for  line  in  order:
+                week_spot_total  = line.sunday + line.monday + line.tuesday+ line.wednesday+line.thursday + line.friday + line.saturday
+                subtotal = week_spot_total *1
+            self.update({'price_subtotal':subtotal})
+
+
+
+
+    @api.one
+    @api.depends('_sunday' , '_monday','_tuesday' ,'_wednesday'  , '_thursday'  ,'_friday'  , '_saturday')
+    def _compute_totalspots(self):
+        for order in self:
+            for  line  in  order:
+                _spottotal  = line._sunday + line._monday + line._tuesday+ line._wednesday+line._thursday + line._friday + line._saturday
+            self.update({'_spot_total':_spottotal})
+
+    @api.one
+    @api.depends('_sunday' ,'_monday','_tuesday' ,'_wednesday'  , '_thursday'  ,'_friday'  , '_saturday')
+    def _compute_spotrateweektotal(self):
+        for order in self:
+            for  line  in  order:
+                week_spot_total  = line._sunday + line._monday + line._tuesday+ line._wednesday+line._thursday + line._friday + line._saturday
+                _subtotal = week_spot_total *  1
+            self.update({'_price_subtotal':_subtotal})
+
+
+
+
+    @api.one
+    @api.constrains('from_date', 'to_date')
+    def check_dates(self):
+        from_date = fields.Date.from_string(self.from_date)
+        to_date = fields.Date.from_string(self.to_date)
+        if to_date < from_date:
+            raise exceptions.ValidationError("From Date is not greater than To Date!")
+
+
+
+    def compute_scheduled_for(self, cr, uid, ids, context=None):
+        calve_obj = self.pool.get('ratecard.multiple')
+        if context is None:
+            context = {}
+        cnt = 0
+        for ac in calve_obj.browse(cr,uid,context.get('active_ids',[])):
+            print  'PRINT ID ' , ac.id
+            if ac.scheduled_for != 0:
+                print  'SCHEDULED_FOR ' , ac.scheduled_for
+                ac.scheduled_for = 10
+                print  'ALTERED SCHEDULED_FOR' ,ac.scheduled_for
+                continue
+            print  calve_obj.scheduled_for(cr,uid,[ac.id],context)
+            cnt+=1
+            print cnt,"ac..confirmed"
+        return cnt
+
+    def change_value(self, cr, uid, ids, context = None):
+        wizard = self.browse(cr, uid, ids[0], context = context)
+        my_field_value = wizard.scheduled
+        print  'my_field_value' , my_field_value
+
+
+    def write_boolean(self, cr, uid, ids, context=None):
+        return self.write(cr, uid, ids, {'checked': True})
 
     def call_another(self, cr, uid, ids, context=None):
         selection = self.read(cr, uid, ids, [], context=context)
@@ -1753,7 +1861,7 @@ class AnotherWizard(models.TransientModel):
     user_id  = fields.Integer('User ID'),
     something =  fields.Char('Value Changed', size=60)
 
-    
+
 class  ratecard_sin_print(models.Model):
     _name =  'ratecard.sin.print'
     _description  = 'RATECARD SINGULAR PRINT  '
