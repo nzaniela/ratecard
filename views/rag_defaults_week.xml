@@ -8,23 +8,87 @@
             <field name="model">week</field>
             <field name="arch" type="xml">
                 <form string="ALLOCATE SPOTS ON DAYS">
-
+                     <header>
+                            <button name="action_cancel"  type="object" string="Cancel" class="oe_highlight"/>
+                            <button name="action_draft"  type="object" string="Set Allocation" class="oe_highlight" />
+                            <button name="action_done" type="object" string="Set to Done" class="oe_highlight" />
+                        </header>
+                    <field name="week_scheduled_for" context="{'default_scheduled_for': active_id}"/>
+                    <separator string="ALLOCATE SPOTS" />
+                    <newline/>
+                    <separator string="SCHEDULE ALLOCATION WEEK 1 " />
                                    <group col="4" colspan="4">
                                                 <field name='code'/>
+                                                           <newline/>
+
                                                 <field name='monday'/>
                                                 <field name='tuesday'/>
                                                 <field name='wednesday'/>
                                                 <field name='thursday'/>
-                                       </group>
-                     <tree  string="SCHEDULE" editable="top">
-                     <group col="4" colspan="4">
                                                 <field name='friday'/>
                                                 <field name='saturday'/>
                                                  <field name='sunday'/>
                                                  <field name="spot_total"/>
                                                  <field name="noofweeks"/>
                                                <field name='price_subtotal'/>
-                                             </group>
+                                       </group>
+                    <separator string="SCHEDULE ALLOCATION WEEK 2 " />
+
+                     <tree  string="SCHEDULE" editable="top">
+                                             <group col="4" colspan="4">
+                                                <field name='code'/>
+                                                                     <newline/>
+
+                                                <field name='monday'/>
+                                                <field name='tuesday'/>
+                                                <field name='wednesday'/>
+                                                <field name='thursday'/>
+                                                <field name='friday'/>
+                                                <field name='saturday'/>
+                                                 <field name='sunday'/>
+                                                 <field name="spot_total"/>
+                                                 <field name="noofweeks"/>
+                                               <field name='price_subtotal'/>
+                                       </group>
+                    </tree>
+                     <separator string="SCHEDULE ALLOCATION WEEK 3 " />
+
+                     <tree  string="SCHEDULE" editable="top">
+                                             <group col="4" colspan="4">
+                                                <field name='code'/>
+                                                                     <newline/>
+
+                                                <field name='monday'/>
+                                                <field name='tuesday'/>
+                                                <field name='wednesday'/>
+                                                <field name='thursday'/>
+                                                <field name='friday'/>
+                                                <field name='saturday'/>
+                                                 <field name='sunday'/>
+                                                 <field name="spot_total"/>
+                                                 <field name="noofweeks"/>
+                                               <field name='price_subtotal'/>
+                                       </group>
+                    </tree>
+
+                     <separator string="SCHEDULE ALLOCATION WEEK 4 " />
+
+                     <tree  string="SCHEDULE" editable="top">
+                                             <group col="4" colspan="4">
+                                                <field name='code'/>
+                                                                     <newline/>
+
+                                                <field name='monday'/>
+                                                <field name='tuesday'/>
+                                                <field name='wednesday'/>
+                                                <field name='thursday'/>
+                                                <field name='friday'/>
+                                                <field name='saturday'/>
+                                                 <field name='sunday'/>
+                                                 <field name="spot_total"/>
+                                                 <field name="noofweeks"/>
+                                               <field name='price_subtotal'/>
+                                       </group>
                     </tree>
                 </form>
             </field>

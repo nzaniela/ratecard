@@ -24,6 +24,7 @@
 
         #NO OF SPOTS  WEEKLY MANAGEMENT
         'views/rag_defaults_week.xml',
+        'views/select_user.xml',
 
         #
         'views/rag_defaults_timeband.xml',

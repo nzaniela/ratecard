@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+                <!--   -->
+        <record id="view_select_user_form" model="ir.ui.view">
+            <field name="name">select.user</field>
+            <field name="model">select.user</field>
+            <field name="arch" type="xml">
+                <form string="SELECT USER">
+                    <header>
+                        <group>
+                            <button name="call_another"  type="object" string="INVOKE EVENT" class="oe_highlight"/>
+                            <button name="got_something" type="object" string="GOT SOMETHING" class="oe_highlight"/>
+                        </group>
+                    </header>
+                        <group col="4">
+
+                                           <field name="user_id"/>
+                        </group>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_select_user_tree" model="ir.ui.view">
+            <field name="name">select.user.tree</field>
+            <field name="model">select.user</field>
+            <field name="arch" type="xml">
+                <tree string="SELECT USER">
+                       <field name="user_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_select_user" model="ir.actions.act_window">
+            <field name="name">SELECT USER</field>
+            <field name="res_model">select.user</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+          <menuitem id="timeorder_selectUser_menu" name="SELECT USER DEFAULTS" sequence="17" parent ="timeorder_management_menu"/>
+        <menuitem  name="SELECT USER TYPES" id="menu_select_user"  action="action_select_user"  parent="timeorder_selectUser_menu"/>
+         </data>
+</openerp>

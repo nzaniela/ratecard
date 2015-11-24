@@ -16,7 +16,7 @@
                                             <field name='thursday'/>
                                             <field name='friday'/>
                                             <field name='saturday'/>
-                                             <field name="spot_total"/> 
+                                             <field name="spot_total"/>
                                              <field name="weeks"/>
                                              <field name="ratecard_mul_id" widget="x2many_2d_matrix" field_x_axis="monday" field_y_axis="tuesday" field_value="wednesday"/> />
                                              </group>
@@ -25,7 +25,7 @@
                 </form>
             </field>
         </record>
-        
+
         <record id="view_noof_spots_tree" model="ir.ui.view">
             <field name="name">noof.spots.tree</field>
             <field name="model">noof.spots</field>
@@ -44,14 +44,14 @@
                 </tree>
             </field>
         </record>
-        
+
         <record id="action_noof_spots" model="ir.actions.act_window">
             <field name="name">NO OF  SPOTS</field>
             <field name="res_model">noof.spots</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
         </record>
-        
+
           <menuitem id="timeorder_noofspots_menu" name="NO OF SPOT DEFAULTS" sequence="20" parent ="timeorder_management_menu"/>
         <menuitem  name="NO OF SPOTS TYPES" id="menu_noofspots"  action="action_noof_spots"  parent="timeorder_noofspots_menu"/>
          </data>

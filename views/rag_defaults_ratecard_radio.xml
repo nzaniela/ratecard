@@ -42,6 +42,8 @@
                      view_type="form"
                      view_mode="kanban,form,tree"
                      domain="[('ratecard_sin_radio_id', '=', active_id)]"/>
+
+
         <record id="view_ratecard_sin_radio_form" model="ir.ui.view">
             <field name="name">ratecard_sin_radio.form</field>
             <field name="model">ratecard.sin.radio</field>
@@ -92,6 +94,7 @@
                 </form>
             </field>
         </record>
+
         <act_window
             id="action_open_single_ratecard_sin_radio"
             name="RateCard Singular"
@@ -100,6 +103,8 @@
             view_mode="kanban,form,tree"
             target="current"
             domain="[('product_ids', 'in', active_id)]"/>
+
+
         <record id="view_ratecard_sin_radio_form" model="ir.ui.view">
             <field name="name">ratecard_sin_radio.form</field>
             <field name="model">ratecard.sin.radio</field>
@@ -107,7 +112,7 @@
                 <form string="RateCard Singular" version="7.0">
                     <sheet>
                         <group>
-                            <button name="scheduler" class="oe_highlight"  string="SCHEDULE" type="object"/>
+                            <button name="scheduler" string="SCHEDULE" type="object" class="oe_highlight"/>
                             <field name="code"/>
                         </group>
                         <field name="logo" widget="image" class="oe_avatar oe_left"/>

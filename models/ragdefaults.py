@@ -28,10 +28,42 @@ class  week(models.Model):
     
     # multiple_rate  =  fields.Integer(string='RATE ')
     code  = fields.Char(string='ALLOCATION SPOTS CODE',readonly=True)
+    week_scheduled_for  = fields.Integer(String='Scheduled For  Value')
     #
     _defaults = {
         'code':lambda obj,cr,uid,context:'/'
     }
+    def default_get(self, cr, uid, fields, context=None):
+        ratecard_multiple_obj = self.pool.get('ratecard.multiple')
+        record_ids = context and context.get('active_ids', []) or []
+        res = super(week, self).default_get(cr, uid, fields, context=context)
+
+        for get_week_scheduled_for in ratecard_multiple_obj.browse(cr, uid, record_ids, context=context):
+            if 'scheduled_for' in fields:
+                print  'get_scheduled_for.scheduled_for' , get_week_scheduled_for.scheduled_for
+
+                #in 'default_code' is a field name of that pop-up window
+                res.update({'scheduled_for': get_week_scheduled_for.scheduled_for})
+                print 'res' , res
+        return res
+
+    state = fields.Selection([
+        ('draft', 'Multiple RateCard  Draft'),
+        ('sent', 'Multiple RateCard READY'),
+        ('sale', 'MULTIPLE  RATECARD  FINAL'),
+        ('done', 'Done'),
+        ('cancel', 'Cancelled'),
+        ], string='Status', readonly=True, copy=False, index=True, track_visibility='onchange', default='draft')
+    @api.multi
+    def action_draft(self):
+        self.filtered(lambda s: s.state in ['cancel', 'sent']).write({'state': 'draft'})
+
+    @api.multi
+    def action_cancel(self):
+        self.write({'state': 'cancel'})
+    @api.multi
+    def action_done(self):
+        self.write({'state': 'done'})
 
     def  create(self,cr,uid, vals,context=None):
         vals['code'] = self.pool.get('ir.sequence').get(cr,uid,'week')
@@ -372,8 +404,8 @@ class ProductTemplate(models.Model):
     rate_id = fields.Many2one(comodel_name='rate', string='RATE')
 
     #MULTIPLE RATECARD
-    code  = fields.Char(string='RateCard Code ',readonly=True)
-    scheduled_for  = fields.Integer(string='SCHEDULED FOR', default=1 ,track_visibility='always',store=True , readonly=True)
+    code  = fields.Char(string='RateCard Code ', track_visibility='always' , store=True)
+    scheduled_for  = fields.Integer(string='SCHEDULED FOR',track_visibility='always', store=True )
     min_weeks = fields.Integer(string="MINIMUM NO OF WEEKS" , default=1 ,store=True)
     max_weeks = fields.Integer(string="Maximum NO OF WEEKS" , default=1, track_visibility='always' ,store=True)
 
@@ -560,7 +592,7 @@ class ProductTemplate(models.Model):
             outlet_id = ''
             outlet_type_id  =''
             ad_type_id  =''
-            spot_length_id  =''
+            # spot_length_id  =''
             timeband_id = ''
             rate_id  = ''
             print_ratecard_cost = 0.0
@@ -573,7 +605,7 @@ class ProductTemplate(models.Model):
                 outlet_id = line.outlet_id
                 outlet_type_id  = line.outlet_type_id
                 ad_type_id  = line.ad_type_id
-                spot_length_id  =line.spot_length_id
+                # spot_length_id  =line.spot_length_id
                 timeband_id = line.timeband_id
                 rate_id  = line.rate_id
             order.update({
@@ -582,7 +614,7 @@ class ProductTemplate(models.Model):
                     'outlet_id':outlet_id,
                     'outlet_type_id':outlet_type_id,
                     'ad_type_id':ad_type_id,
-                    'spot_length_id':spot_length_id,
+                    # 'spot_length_id':spot_length_id,
                     'timeband_id':timeband_id,
                     'rate_id':rate_id,
 
@@ -628,6 +660,7 @@ class ProductTemplate(models.Model):
     @api.onchange('radio_ratecard_cost')
     def on_change_radio_ratecard_cost(self):
         print 'RADIO RATECARD COST' ,self.radio_ratecard_cost
+        self.standard_price = self.radio_ratecard_cost
         self.list_price =self.radio_ratecard_cost
         print 'RADIO ONCHANGE list_price ' , self.list_price
 
@@ -653,7 +686,7 @@ class ProductTemplate(models.Model):
     @api.onchange('radio_multiple_ratecard_cost')
     def on_change_radio_multiple_ratecard_cost(self):
        self.list_price =self.radio_multiple_ratecard_cost
-       self.standard_price = self.radio_multiple_ratecard_cost
+       # self.standard_price = self.radio_multiple_ratecard_cost
 
 
     
@@ -974,6 +1007,7 @@ class  ratecard_sin_radio(models.Model):
     rate_id  = fields.Many2one(comodel_name='rate',string='TIMEBAND RATE')
     week_id =fields.Many2one(comodel_name='week',string='SCHEDULE SPOTS')
 
+
     @api.multi
     def scheduler(self):
     	view_id = self.env.ref('ragtimeorder.view_week_form').id
@@ -986,7 +1020,7 @@ class  ratecard_sin_radio(models.Model):
                 'res_model': 'week',
                # 'context': self._context,
                 'type': 'ir.actions.act_window',
-                'target': 'new',
+           #     'target': 'new',
                 'flags': {'action_buttons': True},
     }
     # @api.multi
@@ -1021,25 +1055,26 @@ class  ratecard_sin_radio(models.Model):
     saturday   = fields.Integer(string='SAT',track_visibility='always'  ,  store=True)
     sunday   = fields.Integer(string='SUN',track_visibility='always'  ,  store=True)
     noofweeks = fields.Integer(string="WEEKS",default=1 , store=True,   track_visibility='always')
+
     #compute='_noofweeks',
     spot_total  = fields.Integer( compute='_compute_totalspots' , string='SPOTS' ,track_visibility='always' ,readonly=True ,  store=True)
     allocate_subtotal = fields.Integer(compute='_compute_spotrateweektotal', string='SPOTS WEEKS TOTAL', readonly=True, store=True)
     #
     # multiple_ratecard_id = fields.Many2one(comodel_name='ratecard.multiple',string='MULTIPLE RATECARD')
     #
-    # @api.onchange('multiple_ratecard_id.scheduled_for','noofweeks' )
-    # def _onchange_scheduled_for_noofweeks(self):
-    #     self.multiple_ratecard_id.scheduled_for = 10
-    #     self.noofweeks = self.multiple_ratecard_id.scheduled_for
-    #     print 'self.multiple_ratecard_id.scheduled_for',self.multiple_ratecard_id.scheduled_for
-        # for line in self:
-        #     print 'I  HAVE  BEEN  CALLED '
-        #     print 'noofweeks ' , line.noofweeks
-        #     for  lineitems  in  line.multiple_ratecard_id:
-        #         line.noofweeks = lineitems.scheduled_for
-        #         print 'lineitems.scheduled_for' ,lineitems.scheduled_for
-        #         print 'line.noofweeks' , line.noofweeks
-        #
+    @api.onchange('multiple_ratecard_id.scheduled_for','noofweeks' )
+    def _onchange_scheduled_for_noofweeks(self):
+        self.multiple_ratecard_id.scheduled_for = 0
+        self.noofweeks = self.multiple_ratecard_id.scheduled_for
+        print 'self.multiple_ratecard_id.scheduled_for',self.multiple_ratecard_id.scheduled_for
+        for line in self:
+            print 'I  HAVE  BEEN  CALLED '
+            print 'noofweeks ' , line.noofweeks
+            for  lineitems  in  line.multiple_ratecard_id:
+                line.noofweeks = lineitems.scheduled_for
+                print 'lineitems.scheduled_for' ,lineitems.scheduled_for
+                print 'line.noofweeks' , line.noofweeks
+
 
 
 
@@ -1218,6 +1253,21 @@ class  ratecard_multiple(models.Model):
     scheduled_for  = fields.Integer(string='SCHEDULED FOR',  compute='_compute_scheduled_for',default=1 ,track_visibility='always',store=True , readonly=True)
     min_weeks = fields.Integer(string="MINIMUM NO OF WEEKS" , default=1 ,store=True)
     max_weeks = fields.Integer(string="Maximum NO OF WEEKS" , default=1, track_visibility='always' ,store=True)
+
+    # def default_get(self, cr, uid, fields, context=None):
+    #     ratecard_multiple_obj = self.pool.get('ratecard.multiple')
+    #     record_ids = context and context.get('active_ids', []) or []
+    #     res = super(ratecard_multiple, self).default_get(cr, uid, fields, context=context)
+    #
+    #     for get_week_scheduled_for in ratecard_multiple_obj.browse(cr, uid, record_ids, context=context):
+    #         if 'scheduled_for' in fields:
+    #             print  'get_scheduled_for.scheduled_for' , get_week_scheduled_for.scheduled_for
+    #
+    #             #in 'default_code' is a field name of that pop-up window
+    #             res.update({'scheduled_for': get_week_scheduled_for.scheduled_for})
+    #             print 'res' , res
+    #
+    #     return res
 
     description = fields.Text('Description', translate=True)
     logo = fields.Binary('Logo File')
@@ -1652,7 +1702,57 @@ class ratecard_multiple_week_rel(models.Model):
             print  'can  we  get order.ratecard_multiple_id'
             print len(order.ratecard_multiple_id)
             count = len(order.ratecard_multiple_id)
-    
+
+
+class SelectUser(models.TransientModel):
+    _name = 'select.user'
+    user_id = fields.Many2one('res.users', 'User')
+
+    def call_another(self, cr, uid, ids, context=None):
+        selection = self.read(cr, uid, ids, [], context=context)
+        selection = selection[0]
+        user_id = selection['user_id'][0]
+        return {
+               'type': 'ir.actions.act_window',
+               'res_model': 'another.wizard',
+               'view_mode': 'form',
+               'view_type': 'form',
+               'views': [(False, 'form')],
+               'target': 'new',
+               'context': context.update({'user_id': user_id})
+    }
+    @api.multi
+    def  got_something(self):
+        context = {}
+        context = context.get('user_id', True)
+        view_id = self.env.ref('ragtimeorder.view_week_form').id
+        print  'USER  ID ' , context
+        return {
+                'name':_('SCHEDULE RATECARD'),
+                'view_type': 'form',
+                'view_mode': 'form',
+                'views': [(view_id, 'form'), ],
+                'res_model': 'week',
+               'context': context,
+                'type': 'ir.actions.act_window',
+                'target': 'new',
+                'flags': {'action_buttons': True},
+        }
+
+
+class LoadToOtherWizard(models.TransientModel):
+    _name = 'loadother'
+    context = {}
+    got_something = fields.Char(String='GOT SOMETHING')
+    user_id  = context.get('user_id', False)
+
+
+
+class AnotherWizard(models.TransientModel):
+    _name = 'another.wizard'
+    user_id  = fields.Integer('User ID'),
+    something =  fields.Char('Value Changed', size=60)
+
     
 class  ratecard_sin_print(models.Model):
     _name =  'ratecard.sin.print'
@@ -1663,14 +1763,14 @@ class  ratecard_sin_print(models.Model):
     timeband_id  = fields.Many2one(comodel_name='timeband', string='TimeBand')
     pages_id  =   fields.Many2one(comodel_name='pages', string='Pages')
     outlet_type_id  = fields.Many2one(comodel_name='outlet.type', string='Outlet Type')
-    
-    def onchange_outlet(self,cr,uid,ids,outlet_id):
-        result = {'value':{'outlet_type_id':False}}
-        if  outlet_id:
-            outlet = self.pool.get('outlet').browse(cr,uid,outlet_id)
-            print  outlet 
-            result['value'] = {'outlet_type_id':outlet.outlet_type_id.id}
-        return result
+    #
+    # def onchange_outlet(self,cr,uid,ids,outlet_id):
+    #     result = {'value':{'outlet_type_id':False}}
+    #     if  outlet_id:
+    #         outlet = self.pool.get('outlet').browse(cr,uid,outlet_id)
+    #         print  outlet
+    #         result['value'] = {'outlet_type_id':outlet.outlet_type_id.id}
+    #     return result
     ad_type_id  = fields.Many2one(comodel_name='ad.type', string='Ad Type')
     payment_terms_id  = fields.Many2one(comodel_name='payment.terms', string='Payment Terms')
     rateclass_code_id  = fields.Many2one(comodel_name='rateclass.code', string='RateClass Code')
@@ -2421,6 +2521,11 @@ class SaleOrderLine(models.Model):
     timeband_id = fields.Many2one(comodel_name='timeband', string='TIMEBAND')
     rate_id = fields.Many2one(comodel_name='rate', string='RATE')
 
+    code  = fields.Char(string='RateCard Code ' ,track_visibility='onchange' )
+    scheduled_for  = fields.Integer(string='SCHEDULED FOR', default=1 ,track_visibility='onchange',store=True )
+    min_weeks = fields.Integer(string="MINIMUM NO OF WEEKS" , default=1 ,store=True)
+    max_weeks = fields.Integer(string="Maximum NO OF WEEKS" , default=1, track_visibility='always' ,store=True)
+
 
     saturday   = fields.Integer(string='SAT')
     monday  = fields.Integer(string='MON')
@@ -2429,120 +2534,147 @@ class SaleOrderLine(models.Model):
     thursday   = fields.Integer(string='THUR')
     friday   = fields.Integer(string='FRI')
     sunday   = fields.Integer(string='SUN')
+    #
+    # def product_id_change(self, cr, uid, ids, pricelist, product, qty=0,
+    #         uom=False, qty_uos=0, uos=False, name='', partner_id=False,
+    #         lang=False, update_tax=True, date_order=False, packaging=False, fiscal_position=False, flag=False, context=None):
+    #     context = context or {}
+    #     lang = lang or context.get('lang',False)
+    #     if not  partner_id:
+    #         raise exceptions.Warning(_('No Customer Defined!'), _('Before choosing a product,\n select a customer in the sales form.'))
+    #     warning = {}
+    #     product_uom_obj = self.pool.get('product.uom')
+    #     partner_obj = self.pool.get('res.partner')
+    #     product_obj = self.pool.get('product.product')
+    #     context = {'lang': lang, 'partner_id': partner_id}
+    #     if partner_id:
+    #         lang = partner_obj.browse(cr, uid, partner_id).lang
+    #     context_partner = {'lang': lang, 'partner_id': partner_id}
+    #
+    #     if not product:
+    #         return {'value': {'th_weight': 0,
+    #             'product_uos_qty': qty}, 'domain': {'product_uom': [],
+    #                'product_uos': []}}
+    #     if not date_order:
+    #         date_order = time.strftime(DEFAULT_SERVER_DATE_FORMAT)
+    #
+    #     result = {}
+    #     warning_msgs = ''
+    #     product_obj = product_obj.browse(cr, uid, product, context=context_partner) # product_obj definition
+    #     #ADD  FIELDS HERE  IN PRODUCT TEMPLATE
+    #     result['outlet_id'] = product_obj.outlet_id
+    #     result['outlet_type_id'] = product_obj.outlet_type_id
+    #     result['ad_type_id'] = product_obj.ad_type_id
+    #     result['spot_length_id'] = product_obj.spot_length_id
+    #     result['timeband_id'] = product_obj.timeband_id
+    #     result['rate_id'] = product_obj.rate_id
+    #
+    #     uom2 = False
+    #     if uom:
+    #         uom2 = product_uom_obj.browse(cr, uid, uom)
+    #         if product_obj.uom_id.category_id.id != uom2.category_id.id:
+    #             uom = False
+    #     if uos:
+    #         if product_obj.uos_id:
+    #             uos2 = product_uom_obj.browse(cr, uid, uos)
+    #             if product_obj.uos_id.category_id.id != uos2.category_id.id:
+    #                 uos = False
+    #         else:
+    #             uos = False
+    #     fpos = fiscal_position and self.pool.get('account.fiscal.position').browse(cr, uid, fiscal_position) or False
+    #     if update_tax: #The quantity only have changed
+    #         result['tax_id'] = self.pool.get('account.fiscal.position').map_tax(cr, uid, fpos, product_obj.taxes_id)
+    #
+    #     if not flag:
+    #         result['name'] = self.pool.get('product.product').name_get(cr, uid, [product_obj.id], context=context_partner)[0][1]
+    #         if product_obj.description_sale:
+    #             result['name'] += '\n'+product_obj.description_sale
+    #     domain = {}
+    #     if (not uom) and (not uos):
+    #         result['product_uom'] = product_obj.uom_id.id
+    #         if product_obj.uos_id:
+    #             result['product_uos'] = product_obj.uos_id.id
+    #             result['product_uos_qty'] = qty * product_obj.uos_coeff
+    #             uos_category_id = product_obj.uos_id.category_id.id
+    #         else:
+    #             result['product_uos'] = False
+    #             result['product_uos_qty'] = qty
+    #             uos_category_id = False
+    #         result['th_weight'] = qty * product_obj.weight
+    #         domain = {'product_uom':
+    #                     [('category_id', '=', product_obj.uom_id.category_id.id)],
+    #                     'product_uos':
+    #                     [('category_id', '=', uos_category_id)]}
+    #     elif uos and not uom: # only happens if uom is False
+    #         result['product_uom'] = product_obj.uom_id and product_obj.uom_id.id
+    #         result['product_uom_qty'] = qty_uos / product_obj.uos_coeff
+    #         result['th_weight'] = result['product_uom_qty'] * product_obj.weight
+    #     elif uom: # whether uos is set or not
+    #         default_uom = product_obj.uom_id and product_obj.uom_id.id
+    #         q = product_uom_obj._compute_qty(cr, uid, uom, qty, default_uom)
+    #         if product_obj.uos_id:
+    #             result['product_uos'] = product_obj.uos_id.id
+    #             result['product_uos_qty'] = qty * product_obj.uos_coeff
+    #         else:
+    #             result['product_uos'] = False
+    #             result['product_uos_qty'] = qty
+    #         result['th_weight'] = q * product_obj.weight        # Round the quantity up
+    #
+    #     if not uom2:
+    #         uom2 = product_obj.uom_id
+    #     # get unit price
+    #
+    #     if not pricelist:
+    #         warn_msg = _('You have to select a pricelist or a customer in the sales form !\n'
+    #                 'Please set one before choosing a product.')
+    #         warning_msgs += _("No Pricelist ! : ") + warn_msg +"\n\n"
+    #     else:
+    #         price = self.pool.get('product.pricelist').price_get(cr, uid, [pricelist],
+    #                 product, qty or 1.0, partner_id, {
+    #                     'uom': uom or result.get('product_uom'),
+    #                     'date': date_order,
+    #                     })[pricelist]
+    #         if price is False:
+    #             warn_msg = _("Cannot find a pricelist line matching this product and quantity.\n"
+    #                     "You have to change either the product, the quantity or the pricelist.")
+    #
+    #             warning_msgs += _("No valid pricelist line found ! :") + warn_msg +"\n\n"
+    #         else:
+    #             result.update({'price_unit': price})
+    #     if warning_msgs:
+    #         warning = {
+    #                    'title': _('Configuration Error!'),
+    #                    'message' : warning_msgs
+    #                 }
+    #     return {'value': result, 'domain': domain, 'warning': warning}
+    #
 
     def product_id_change(self, cr, uid, ids, pricelist, product, qty=0,
             uom=False, qty_uos=0, uos=False, name='', partner_id=False,
-            lang=False, update_tax=True, date_order=False, packaging=False, fiscal_position=False, flag=False, context=None):
+            lang=False, update_tax=True, date_order=False, packaging=False, fiscal_position=False, flag=False, order_line_label=False, context=None):
         context = context or {}
-        lang = lang or context.get('lang',False)
-        if not  partner_id:
-            raise exceptions.Warning(_('No Customer Defined!'), _('Before choosing a product,\n select a customer in the sales form.'))
-        warning = {}
-        product_uom_obj = self.pool.get('product.uom')
-        partner_obj = self.pool.get('res.partner')
-        product_obj = self.pool.get('product.product')
-        context = {'lang': lang, 'partner_id': partner_id}
-        if partner_id:
-            lang = partner_obj.browse(cr, uid, partner_id).lang
-        context_partner = {'lang': lang, 'partner_id': partner_id}
+        res = super(SaleOrderLine, self).product_id_change(cr, uid, ids, pricelist, product, qty=qty,
+            uom=uom, qty_uos=qty_uos, uos=uos, name=name, partner_id=partner_id,
+            lang=lang, update_tax=update_tax, date_order=date_order, packaging=packaging, fiscal_position=fiscal_position, flag=flag, context=context)
+        if product:
+            product_obj = self.pool.get('product.product').browse(cr, uid, product, context=context)
 
-        if not product:
-            return {'value': {'th_weight': 0,
-                'product_uos_qty': qty}, 'domain': {'product_uom': [],
-                   'product_uos': []}}
-        if not date_order:
-            date_order = time.strftime(DEFAULT_SERVER_DATE_FORMAT)
 
-        result = {}
-        warning_msgs = ''
-        product_obj = product_obj.browse(cr, uid, product, context=context_partner) # product_obj definition
-        #ADD  FIELDS HERE  IN PRODUCT TEMPLATE
-        result['outlet_id'] = product_obj.outlet_id
-        result['outlet_type_id'] = product_obj.outlet_type_id
-        result['ad_type_id'] = product_obj.ad_type_id
-        result['spot_length_id'] = product_obj.spot_length_id
-        result['timeband_id'] = product_obj.timeband_id
-        result['rate_id'] = product_obj.rate_id
+            res['value'].update({'outlet_id': product_obj.outlet_id.id or False})
+            res['value'].update({'outlet_type_id': product_obj.outlet_type_id.id or False})
+            res['value'].update({'ad_type_id': product_obj.ad_type_id.id or False})
+            res['value'].update({'spot_length_id': product_obj.spot_length_id.id or False})
+            res['value'].update({'timeband_id': product_obj.timeband_id.id or False})
+            res['value'].update({'rate_id': product_obj.rate_id.id or False})
+            res['value'].update({'code': product_obj.code or False})
+            res['value'].update({'scheduled_for': product_obj.scheduled_for or False})
+            res['value'].update({'min_weeks': product_obj.min_weeks or False})
+            res['value'].update({'max_weeks': product_obj.max_weeks or False})
 
-        uom2 = False
-        if uom:
-            uom2 = product_uom_obj.browse(cr, uid, uom)
-            if product_obj.uom_id.category_id.id != uom2.category_id.id:
-                uom = False
-        if uos:
-            if product_obj.uos_id:
-                uos2 = product_uom_obj.browse(cr, uid, uos)
-                if product_obj.uos_id.category_id.id != uos2.category_id.id:
-                    uos = False
-            else:
-                uos = False
-        fpos = fiscal_position and self.pool.get('account.fiscal.position').browse(cr, uid, fiscal_position) or False
-        if update_tax: #The quantity only have changed
-            result['tax_id'] = self.pool.get('account.fiscal.position').map_tax(cr, uid, fpos, product_obj.taxes_id)
 
-        if not flag:
-            result['name'] = self.pool.get('product.product').name_get(cr, uid, [product_obj.id], context=context_partner)[0][1]
-            if product_obj.description_sale:
-                result['name'] += '\n'+product_obj.description_sale
-        domain = {}
-        if (not uom) and (not uos):
-            result['product_uom'] = product_obj.uom_id.id
-            if product_obj.uos_id:
-                result['product_uos'] = product_obj.uos_id.id
-                result['product_uos_qty'] = qty * product_obj.uos_coeff
-                uos_category_id = product_obj.uos_id.category_id.id
-            else:
-                result['product_uos'] = False
-                result['product_uos_qty'] = qty
-                uos_category_id = False
-            result['th_weight'] = qty * product_obj.weight
-            domain = {'product_uom':
-                        [('category_id', '=', product_obj.uom_id.category_id.id)],
-                        'product_uos':
-                        [('category_id', '=', uos_category_id)]}
-        elif uos and not uom: # only happens if uom is False
-            result['product_uom'] = product_obj.uom_id and product_obj.uom_id.id
-            result['product_uom_qty'] = qty_uos / product_obj.uos_coeff
-            result['th_weight'] = result['product_uom_qty'] * product_obj.weight
-        elif uom: # whether uos is set or not
-            default_uom = product_obj.uom_id and product_obj.uom_id.id
-            q = product_uom_obj._compute_qty(cr, uid, uom, qty, default_uom)
-            if product_obj.uos_id:
-                result['product_uos'] = product_obj.uos_id.id
-                result['product_uos_qty'] = qty * product_obj.uos_coeff
-            else:
-                result['product_uos'] = False
-                result['product_uos_qty'] = qty
-            result['th_weight'] = q * product_obj.weight        # Round the quantity up
 
-        if not uom2:
-            uom2 = product_obj.uom_id
-        # get unit price
 
-        if not pricelist:
-            warn_msg = _('You have to select a pricelist or a customer in the sales form !\n'
-                    'Please set one before choosing a product.')
-            warning_msgs += _("No Pricelist ! : ") + warn_msg +"\n\n"
-        else:
-            price = self.pool.get('product.pricelist').price_get(cr, uid, [pricelist],
-                    product, qty or 1.0, partner_id, {
-                        'uom': uom or result.get('product_uom'),
-                        'date': date_order,
-                        })[pricelist]
-            if price is False:
-                warn_msg = _("Cannot find a pricelist line matching this product and quantity.\n"
-                        "You have to change either the product, the quantity or the pricelist.")
-
-                warning_msgs += _("No valid pricelist line found ! :") + warn_msg +"\n\n"
-            else:
-                result.update({'price_unit': price})
-        if warning_msgs:
-            warning = {
-                       'title': _('Configuration Error!'),
-                       'message' : warning_msgs
-                    }
-        return {'value': result, 'domain': domain, 'warning': warning}
-
+        return res
 
     def onchange_outlet(self,cr,uid,ids,outlet_id):
         result = {'value':{'outlet_type_id':False}}
@@ -2551,8 +2683,3 @@ class SaleOrderLine(models.Model):
             print  outlet
             result['value'] = {'outlet_type_id':outlet.outlet_type_id.id}
         return result
-
-
-
-
-
