@@ -21,10 +21,12 @@
         
         
         # 'views/sale_view.xml',
-
+        'views/ratecard_rnd.xml',
+        'views/generic_request.xml',
+        'views/opinion.xml',
         #NO OF SPOTS  WEEKLY MANAGEMENT
         'views/rag_defaults_week.xml',
-        'views/select_user.xml',
+        'views/schedule_ratecards.xml',
 
         #
         'views/rag_defaults_timeband.xml',

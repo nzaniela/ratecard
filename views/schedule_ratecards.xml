@@ -20,6 +20,9 @@
                         <!--</span>-->
 
                     <group col="4" colspan="4">
+                        <newline/>
+                        <field name="allocating_times"/>
+                        <newline/>
                         <field name="scheduled"/>
                         <newline/>
                         <field name="from_date" />

@@ -1,0 +1,44 @@
+<openerp>
+    <data>
+         <record id="view_opinion_wizard" model="ir.ui.view">
+            <field name="name">opinion_wizard.form</field>
+            <field name="model">opinion</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+            <!-- create a normal form view, with the fields you've created on your python file -->
+                <form string="OPINION" version="8.0">
+                                            <button  icon="gtk-ok" name="get_notes" string='SET VAL' type="object" />
+
+                    <group >
+                        <separator string="Please insert OPINION" colspan="2"/>
+                        <field name="opinion_emission" string="OPINION  EMISSION "/>
+                                                <field name="notes" string="NOTES"/>
+
+                        <newline/>
+                    </group>
+                    <div style="text-align:right">
+                        <button  icon="gtk-cancel" special="cancel" string="Cancel"/>
+                                                <button  icon="gtk-ok" name="save_it" string="SAVE  INFO" type="object" />
+                                                <button  icon="gtk-ok" name="get_notes" string="GET NOTES" type="object" />
+
+                        <button  icon="gtk-ok" name="get_opinion" string="GET  OPINION" type="object" />
+
+                    </div>
+
+               </form>
+            </field>
+        </record>
+        <!-- your action window refers to the view_id you've just created -->
+        <record id="action_opinion" model="ir.actions.act_window">
+            <field name="name">OPINION</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">opinion</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_opinion_wizard"/>
+            <field name="target">new</field>
+         </record>
+                <menuitem  name="OPINION" id="menu_opinion"  action="action_opinion"  parent="timeorder_ratecard_rnd_menu"/>
+
+    </data>
+</openerp>

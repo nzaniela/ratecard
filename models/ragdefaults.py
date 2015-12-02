@@ -15,6 +15,7 @@ from datetime import datetime, timedelta
 from openerp import SUPERUSER_ID
 from openerp import api, fields, models, _
 import openerp.addons.decimal_precision as dp
+from  lxml  import  etree
 from openerp.tools import float_is_zero, float_compare, DEFAULT_SERVER_DATETIME_FORMAT
 from  ragconstants import  year_week_no , days ,payment_type , schedule_types ,payment_duration, seconds , minutes  ,list_position , hour_from , hour_to , page_no ,_ad_column , _ad_inches , outlettype_
 import  pudb
@@ -92,13 +93,10 @@ class  week(models.Model):
 
     price_tax = fields.Integer(default=0 ,string='Taxes', readonly=True, store=True)
     #weeks  = fields.Integer(string='WEEKS')  
-    ratecard_mul_rel_id  = fields.One2many(comodel_name='ratecard.mul.rel', inverse_name='allocate_id', 
-                                   string='ALLOCATED SPOTS')
-    
-    
-    allocate_mul_spots_id  = fields.One2many(comodel_name='allocate.mul.spots', inverse_name='week_id', string='ALLOCATED SPOTS')
+
+
+    # allocate_mul_spots_id  = fields.One2many(comodel_name='allocate.mul.spots', inverse_name='week_id', string='ALLOCATED SPOTS')
     ratecard_multiple_id  = fields.Many2one(comodel_name='ratecard.multiple', string='ALLOCATED SPOTS')    
-    ratecard_multi_id  = fields.One2many(comodel_name='ratecard.mul', inverse_name='week_id', string='ALLOCATED SPOTS')
 
     ratecard_sin_radio_id  = fields.One2many(comodel_name='ratecard.sin.radio',inverse_name='week_id',string='RADIO RATECARD')
     # @api.multi
@@ -322,7 +320,6 @@ class outlet(models.Model):
     ratecard_sin_radio_id = fields.One2many(comodel_name='ratecard.sin.radio', inverse_name='outlet_id',string='RateCard Singular')
     sale_order_line_id = fields.One2many(comodel_name='sale.order.line', inverse_name='outlet_id',string='Outlet')
     sale_order_id = fields.One2many(comodel_name='sale.order', inverse_name='outlet_id',string='Outlet')
-    ratecard_mul_id = fields.One2many(comodel_name='ratecard.mul', inverse_name='outlet_id',string='Outlet')
     ratecard_multiples_id = fields.One2many(comodel_name='ratecard.multiples', inverse_name='outlet_id',string='Outlet')
     rate  = fields.One2many(comodel_name='rate', inverse_name='outlet_id',string='Outlet')
     company_id = fields.Many2one('res.company',string='Company',help='Select a company for this outlet if it exists',ondelete='restrict')
@@ -348,7 +345,6 @@ class outlet(models.Model):
     ratecard_sin_digital_id = fields.Many2one( 'ratecard.sin.digital',string='RateCard Type Singular',help='Select   RateCard  Type  Singular for this product')      
     ratecard_sin_print_id = fields.Many2one( 'ratecard.sin.print',string='RateCard Type Singular',help='Select   RateCard  Type  Singular for this product')      
     
-    ratecard_mul_id = fields.Many2one('ratecard.mul',string='RateCard Type Multiple',help='Select   RateCard  Type  Multiple for this product')
     ad_type_id = fields.Many2one('ad.type', string='Ad Type Singular', help='Select   Ad  Type   for this product')
     vat_rate_id = fields.Many2one('vat.rate', string='VAT  Rate ',help='Select   VAT RATE for this product')
     payment_terms_id = fields.Many2one('payment.terms',string='PAYMENT  TERMS ', help='Select  PAYMENT  TERMS for this product' )
@@ -422,7 +418,6 @@ class ProductTemplate(models.Model):
     ratecard_sin_print_id = fields.Many2one('ratecard.sin.print',string='PRINT SINGULAR RATECARD',help='Select PRINT SINGULAR RATECARD for this product')
     ratecard_sin_tv_id = fields.Many2one('ratecard.sin.tv',string='TV SINGULAR RATECARD',help='Select TV SINGULAR RATECARD for this product')
 
-    multiple_ratecard_id = fields.Many2one('ratecard.mul',string='RateCard Multiple',help='Select   RateCard Multiple for this product')
     ad_type_id = fields.Many2one('ad.type',string='Ad Type Singular',help='Select   Ad  Type   for this product')
     vat_rate_id = fields.Many2one('vat.rate',string='VAT  Rate ',help='Select   VAT RATE for this product')
     payment_terms_id = fields.Many2one('payment.terms',string='PAYMENT  TERMS ',help='Select  PAYMENT  TERMS for this product')
@@ -837,7 +832,6 @@ class  outlet_type(models.Model):
     sale_order_line_id = fields.One2many(comodel_name='sale.order.line', inverse_name='outlet_type_id',string='Outlet Type')
     sale_order_id = fields.One2many(comodel_name='sale.order', inverse_name='outlet_type_id',string='Outlet Type')
 
-    ratecard_mul_id = fields.One2many(comodel_name='ratecard.mul', inverse_name='outlet_type_id',string='Outlet Type')
     ratecard_multiples_id = fields.One2many(comodel_name='ratecard.multiples', inverse_name='outlet_type_id',string='Outlet Type')
 
     
@@ -1154,8 +1148,7 @@ class  ratecard_sin_radio(models.Model):
             result['value'] = {'outlet_type_id':outlet.outlet_type_id.id}
         return result    
     product_ids = fields.One2many('product.template','ratecard_sin_radio_id',string='RateCard Type  Singular ',)
-    ratecard_mul_id = fields.Many2one( 'ratecard.mul',string='RateCard')      
-    
+
     products_count = fields.Integer( string='Number of products',compute='_get_products_count',)
     
     @api.one
@@ -1363,13 +1356,12 @@ class  ratecard_multiple(models.Model):
     #vat_rate  = fields.Many2one(comodel_name='vat.rate', string='TAX  RATE (%)',digits_compute=dp.get_precision('TAX RATE'), default=0.0)
     vat_rate  = fields.Float(string='VAT RATE (%)',digits_compute=dp.get_precision('VAT RATE'), default=17, track_visibility='onchange'  )
     taxed_amount  = fields.Integer( string='TOTAL KSH::',store=True, readonly=True, compute='_compute_taxedamount', track_visibility='always')
-    multiple_ratecard_id  = fields.Many2many(comodel_name='ratecard.sin.radio', relation='ratecard_mul_ratecard_sin_rel', 
-                                                column1='ratecard_mul_id', 
+    multiple_ratecard_id  = fields.Many2many(comodel_name='ratecard.sin.radio', relation='ratecard_multiple_singular_rel',
+                                                column1='ratecard_multiple_id',
                                                 column2='ratecard_sin_radio_id', 
                                                 string='RATECARDS')   
-    # allocate_multiple_id  =  fields.Many2many(comodel_name='ratecard.mul' ,relation='ratecard_mul_ratecard_sin_rel',
-    #                                           column1='multiple_ratecard_id' , column2='week_id' ,string='ALLOCATE RATECARD',required=True)
-    #
+
+
     ratecard_sin_radio_id = fields.One2many(comodel_name='ratecard.sin.radio', 
                                               inverse_name='ratecard_multiple_id', 
                                               string='RADIO SINGULAR RATECARD',required=True)
@@ -1685,11 +1677,7 @@ class  ratecard_multiple(models.Model):
             #result[record.id] = record.name + " " + str(record.ratecard_sin_radio_id.id)
     
         #return result.items()    
-        
-#relation
-class  ratecard_mul_ratecard_sin_rel(models.Model):
-    _name = 'ratecard.mul.ratecard.sin.rel'
-    week_id  = fields.Many2one(comodel='week',string='NO OF WEEKS')
+
 
 class ratecard_multiple_week_rel(models.Model):
     _name = 'ratecard.multiple.week.rel'
@@ -1703,6 +1691,164 @@ class ratecard_multiple_week_rel(models.Model):
             print len(order.ratecard_multiple_id)
             count = len(order.ratecard_multiple_id)
 
+class ratecard_rnd(models.Model):
+    _name = 'ratecard.rnd'
+
+    field_a  = fields.Char(string='FIELD A ')
+    field_b  = fields.Char(string='FIELD B')
+    # field_c = fields.Boolean(string='FIELD C', readonly=True, copy=False)
+
+
+    _defaults = {
+        'field_c': lambda *a: True,
+    }
+
+    @api.multi
+    def scheduler(self):
+    	view_id = self.env.ref('ragtimeorder.view_week_form').id
+    #	context = self._context.copy()
+        return {
+                'name':_('SCHEDULE RATECARD'),
+                'view_type': 'form',
+                'view_mode': 'form',
+                'views': [(view_id, 'form'), ],
+                'res_model': 'week',
+               # 'context': self._context,
+                'type': 'ir.actions.act_window',
+                'target': 'new',
+                'flags': {'action_buttons': True},
+    }
+    #
+    @api.model
+    def fields_view_get(self, view_id=None, view_type='form', context=None, toolbar=False,submenu=False):
+        result = super(ratecard_rnd,self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar, submenu=submenu)
+        active_id = self.env.context.get('active_id', False)
+        passed = self.env['ratecard.rnd'].browse(active_id).field_b
+        from lxml import etree
+        doc = etree.XML(result['arch'])
+        if passed:
+            for node in doc.xpath("//field[@name='field_a']"):
+                node.set('string', passed)
+        result['arch'] = etree.tostring(doc)
+
+
+
+
+
+    # @api.model
+    # def fields_view_get(self,view_id=None, view_type='form', context=None, toolbar=False, submenu=False):
+    #     """ Changes the view dynamically
+    #     @param self: The object pointer.
+    #     @param cr: A database cursor
+    #     @param uid: ID of the user currently logged in
+    #     @param context: A standard dictionary
+    #     @return: New arch of view.
+    #     """
+    #     if context is None:
+    #         context = {}
+    #     res = super(ratecard_rnd, self).fields_view_get(view_id=view_id, view_type=view_type, context=context, toolbar=toolbar,submenu=False)
+    #     record_id = context and context.get('active_id', False) or False
+    #     active_model = context.get('active_model')
+    #
+    #     if not record_id or (active_model and active_model != 'rate.default'):
+    #         return res
+    #
+    #     schedule_ratecard_order = self.env['rate.default'].browse(record_id, context=context)
+    #     print 'schedule_ratecard_order.allocating_times' , schedule_ratecard_order.allocating_times
+    #     if  schedule_ratecard_order.allocating_times:
+    #         res['arch'] = """
+    #             <form string="RATE DEFAULT" version="8.0">
+    #                 <header>
+    #                     <button name="scheduler" string="_Yes" type="object" class="btn-primary"/>
+    #                     <button string="Cancel" class="btn-default" special="cancel"/>
+    #                 </header>
+    #                 <label string="Do you want to continue?"/>
+    #             </form>
+    #         """
+    #     return res
+
+
+class  rate_default(models.Model):
+    _name = 'rate.default'
+    allocating_times = fields.Boolean('ALLOCATING TIMES',  copy=False)
+
+
+    _defaults = {
+        'allocating_times': lambda *a: False,
+    }
+
+class opinion(models.TransientModel):
+    _name='opinion'
+    opinion_emission   = fields.Text(string='OPINION EMISSION')
+    notes = fields.Text(string='Additional Notes')
+
+
+    defaults={
+        'opinion_emission': lambda self : self.get_opinion(self),
+        'notes': lambda self : self.get_notes(self),
+
+    }
+    def  save_it(self, cr, uid,ids , context=None):
+        # context = dict(self._context or  {} )
+        if context is None: context = {}
+
+        active_id  = context.get('active_id',False)
+        print  'active_id' , active_id
+        if  active_id :
+            # op = self.env['opinion'].browse(active_id)
+            info =  self.browse(cr,uid,ids)
+            self.pool.get('opinion').write(cr,uid,context['active_id'],{'opinion_emission': info[0].opinion_emission,'notes': info[0].notes})
+        return {
+            'type': 'ir.actions.act_window_close',
+         }
+
+
+    #functions that get the info stored in db
+    @api.one
+    def get_opinion(self):
+        ids=self._ids
+        cr = self._cr
+        uid = self._uid
+        context = self._context
+        if context is None: context = {}
+        active_id  = context.get('active_id',False)
+        print  'active_id' , active_id
+        if  active_id :
+
+            return self.env['opinion'].browse(cr, uid, context['active_id'], context).opinion_emission
+
+
+    @api.one
+    def get_notes(self,records=None):
+        ids=self._ids
+        cr = self._cr
+        uid = self._uid
+        context = self._context
+        if context is None: context = {}
+        model_name=context.get('active_model')
+        print  model_name #gives  NONE  why  ?
+        active_id  = context.get('active_id',False)
+        print  'active_id' , active_id
+        if  active_id :
+            print  'output',self.env['opinion'].browse(cr, uid, context['active_id'], context)[0].notes
+            return self.env['opinion'].browse(cr, uid, context['active_id'], context)[0].notes
+
+
+
+class generic_request(models.TransientModel):
+
+    #create a table in osv_memory, with the columns you need in to fill in your wizard
+    _name='generic.request'
+    reformulation_info =fields.Text('Reformulation instructions', help='Instructions for the requestor justification the reformulation needs')
+
+    # create a function that will save the info from your wizard into your model (active_id is the id of the record you called the wizard from, so you will save the info entered in wizard is that record)
+    def save_info(self, cr, uid, ids, context=None):
+        if 'active_id' in context:
+            info=self.browse(cr,uid,ids)[0].reformulation_info
+            self.pool.get('generic.request').write(cr,uid,context['active_id'],{'reformulation_info' : info, 'needs_reformulation': 1})
+        return {
+                'type': 'ir.actions.act_window_close',
+         }
 
 class ScheduleRatecards(models.TransientModel):
     _name = 'schedule.ratecards'
@@ -1714,6 +1860,12 @@ class ScheduleRatecards(models.TransientModel):
     to_date = fields.Date(
         'To Date', required=True, default=lambda self: fields.Date.today())
 
+    allocating_times = fields.Boolean('ALLOCATING TIMES',  copy=False)
+
+
+    _defaults = {
+        'allocating_times': lambda *a: False,
+    }
 
     monday  = fields.Integer(string='MON')
     tuesday   = fields.Integer(string='TUE')
@@ -1738,6 +1890,127 @@ class ScheduleRatecards(models.TransientModel):
 
     _price_subtotal = fields.Integer(compute='_compute_spotrateweektotal', string='SUBTOTAL', readonly=True, store=True)
 
+
+    # def fields_view_get(self, cr, uid, view_id=None, view_type='form', context=None, toolbar=False,submenu=False):
+    #     result = super(ScheduleRatecards, self).fields_view_get(cr, uid, view_id, view_type, context, toolbar,submenu)
+    #     schedule_obj = self.pool.get('schedule.ratecards')
+    #     active_id = context.get('active_id', False)
+    #     label_value = "RATECARD Information"\
+    #     if schedule_obj.browse(cr,uid,active_id).scheduled else "WEEK 3 RATECARD Information"
+    #
+    #     result['arch'] = '''<form string="Information">
+    #                         <separator string="%s" colspan="4" />
+    #                         <group colspan="4" col="2">
+    #                         <field name="name" />
+    #                         <field name="account_no" />
+    #                         </group>
+    #                         <group colspan="4" col="1">
+    #                         <button special="cancel" string="_Close" icon="gtk-cancel"/>
+    #                         </group>
+    #                         </form>'''% (label_value)
+    #     return result
+
+    # def view_init(self, cr, uid, fields_list, context=None):
+    #     """
+    #      Creates view dynamically and adding fields at runtime.
+    #      @param self: The object pointer.
+    #      @param cr: A database cursor
+    #      @param uid: ID of the user currently logged in
+    #      @param context: A standard dictionary
+    #      @return: New arch of view with new columns.
+    #     """
+    #     res = super(ScheduleRatecards, self).view_init(cr, uid, fields_list, context=context)
+    #     order_obj=self.pool.get('schedule.ratecards')
+    #     if context is None:
+    #         context={}
+    #
+    #     active_ids=context.get('active_ids')
+    #     for order in order_obj.browse(cr, uid, active_ids, context=context):
+    #         for line in order.lines:
+    #             if 'return%s'%(line.id) not in self._columns:
+    #                 self._columns['return%s'%(line.id)] = fields.float("Quantity")
+    #
+    #     return res
+
+    # @api.model
+    # def fields_view_get(self, view_id=None, view_type='form', toolbar=False,
+    #                     submenu=False):
+    #     res = super(res_partner, self).fields_view_get(
+    #         view_id=view_id, view_type=view_type, toolbar=toolbar,
+    #         submenu=submenu)
+    #     my_group_gid = self.env.ref(
+    #         'my_module.my_group').id
+    #     current_user_gids = self.env.user.groups_id.mapped('id')
+    #     if view_type == 'form':
+    #         if my_group_gid in current_user_gids:
+    #             doc = etree.XML(res['arch'])
+    #             the_fields = doc.xpath("//field[@name='my_field']")
+    #             the_field = the_fields[0] if the_fields \
+    #                 else False
+    #             the_field.set('readonly', '1')
+    #             res['arch'] = etree.tostring(doc)
+    #     return res
+
+    # def fields_view_get(self, cr, uid, view_id=None, view_type='form', context=None, toolbar=False,submenu=False):
+    #
+    #     """
+    #          Changes the view dynamically
+    #
+    #          @param self: The object pointer.
+    #          @param cr: A database cursor
+    #          @param uid: ID of the user currently logged in
+    #          @param context: A standard dictionary
+    #
+    #          @return: New arch of view.
+    #
+    #     """
+    #     result = super(ScheduleRatecards, self).fields_view_get(cr, uid, view_id, view_type, context, toolbar,submenu)
+    #     if context is None:
+    #         context={}
+    #     active_model = context.get('active_model')
+    #     if not active_model and active_model != 'schedule.ratecards':
+    #         print  'active_model' , active_model
+    #         return result
+    #     order_obj = self.pool.get('schedule.ratecards')
+    #     active_id = context.get('active_id', False)
+    #     if active_id:
+    #         _moves_arch_lst="""<?xml version="1.0"?>
+    #                         <form string="Return lines">
+    #                         <label string="Quantities you enter, match to products that will return to the stock." colspan="4"/>"""
+    #         _line_fields = result['fields']
+    #         order=order_obj.browse(cr, uid, active_id, context=context)
+    #         for line in order.lines:
+    #             print  line
+    #             print  'ratecard multiple  fields_view get'
+    #
+    #             quantity=line.qty
+    #             _line_fields.update({
+    #                 'return%s'%(line.id) : {
+    #                     'string': line.id.name,
+    #                     'type' : 'float',
+    #                     'required': True,
+    #                     'default':quantity
+    #                 },
+    #             })
+    #             _moves_arch_lst += """
+    #                     <field name="return%s"/>
+    #                      <newline/>
+    #             """%(line.id)
+    #
+    #         _moves_arch_lst+="""
+    #                 <newline/>
+    #                 <separator colspan="4"/>
+    #                <button icon='gtk-cancel' special="cancel"
+    #                            string="Cancel" />
+    #                                <button icon='gtk-ok' name= "create_returns"
+    #                    string="Return with Exchange" type="object"/>
+    #                                <button icon='gtk-ok' name="create_returns2"
+    #                     string="Refund Without Exchange" type="object"/>
+    #             </form>"""
+    #
+    #         result['arch'] = _moves_arch_lst
+    #         result['fields'] = _line_fields
+    #     return result
 
 
     @api.one
@@ -1891,8 +2164,7 @@ class  ratecard_sin_print(models.Model):
           'ratecard_sin_print_id',
           string='RateCard Type  Singular ',
       )    
-    ratecard_mul_id = fields.Many2one( 'ratecard.mul',string='RateCard')      
-    
+
     products_count = fields.Integer(
         string='Number of products',
         compute='_get_products_count',
@@ -1957,7 +2229,6 @@ class  ratecard_sin_digital(models.Model):
     logo = fields.Binary('Logo File')
 
     product_ids = fields.One2many('product.template','ratecard_sin_digital_id', string='RateCard Type  Singular ',)
-    ratecard_mul_id = fields.Many2one( 'ratecard.mul',string='RateCard')      
     code  = fields.Char(string='DIGITAL RATECARD CODE',readonly=True)
 
     rate_id  = fields.Many2one(comodel_name='rate',string='TIMEBAND RATE')
@@ -2022,8 +2293,7 @@ class  ratecard_sin_tv(models.Model):
           'ratecard_sin_tv_id',
           string='RateCard Type  Singular ',
       )    
-    ratecard_mul_id = fields.Many2one( 'ratecard.mul',string='RateCard')      
-    
+
     products_count = fields.Integer(
         string='Number of products',
         compute='_get_products_count',
@@ -2054,132 +2324,6 @@ class  ratecard_sin_tv(models.Model):
             print  outlet
             result['value'] = {'outlet_type_id':outlet.outlet_type_id.id}
         return result
-
-class  ratecard_mul_rel(models.Model):
-    _name  =  'ratecard.mul.rel'
-    
-    ratecard_left_id  = fields.Many2one('ratecard.mul')
-    ratecard_right_id = fields.Many2one('ratecard.mul','Relation')
-    allocate_id  = fields.Many2one(comodel_name='week', string='ALLOCATE SPOTS')
-    week_ids = fields.Many2many(comodel_name='week', relation='ratecard_mul_rel_week_rel', column1='ratecard_mul.rel_id', column2='week_id', string='ALLOCATE SPOTS')    
-    code_left_right = fields.Integer(string="CODE")
-         
-    
-    
-    
-
-    
-class  ratecard_mul(models.Model):
-    _name = 'ratecard.mul'
-    _description = 'RATECARD TYPE  MULTIPLE'
-    
-    m2m_right2left = fields.Many2many('ratecard.mul','ratecard_mul_rel','ratecard_right_id','ratecard_left_id')
-    m2m_left2right  = fields.Many2many('ratecard.mul','ratecard_mul_rel' , 'ratecard_left_id', 'ratecard_right_id')
-    o2m_left_ids = fields.One2many('ratecard.mul.rel','ratecard_left_id')
-    name  =  fields.Char(string='RATECARD MULTIPLE')
-    ratecard_sin_radio_id  =  fields.One2many(comodel_name='ratecard.sin.radio',inverse_name='ratecard_mul_id',
-                                string='MULTIPLES')
-    multiple_ratecard_id  = fields.Many2many(comodel_name='ratecard.sin.radio', relation='ratecard_mul_ratecard_sin_rel', 
-                                            column1='ratecard_mul_id', 
-                                            column2='ratecard_sin_radio_id', 
-                                            string='RATECARDS')
-    # sale_order_id = fields.One2many(comodel_name='sale.order', inverse_name='ratecard_mul_id',string='MULTIPLE RATECARD')
-    outlet_id = fields.Many2one(comodel_name='outlet', string='Outlet')
-    outlet_type_id  = fields.Many2one(comodel_name='outlet.type', string='Outlet Type')    
-    scheduled_for  = fields.Integer(string='SCHEDULED FOR' , default=1)
-    min_weeks = fields.Integer(string="MINIMUM NO OF WEEKS" , default=1 )    
-    max_weeks = fields.Integer(string="Maximum NO OF WEEKS" , default=1)    #compute='_compute_max_weeks' , store=True
-    total = fields.Char(string="TOTAL" )     
-    x = fields.Char(string="x" )     
-    y = fields.Char(string="y" )     
-    test_day = fields.Char(string='Test Day')
-    noof_spots_id = fields.Many2one(comodel_name='noof.spots', string='NO  OF  SPOTS')
-    week_id  = fields.Many2one(comodel_name='week', string='ALLOCATE SPOTS')
-    
-    week_ids = fields.Many2many(comodel_name='week', relation='ratecard_mul_week_rel', column1='ratecard_mul_id', column2='week_id', string='ALLOCATE SPOTS')
-    spot = fields.Integer(string='SPOTS',default='0')  
-    from_date  = fields.Date(string="FROM DATE")
-    order_month  = fields.Char(string='MONTH')
-    order_day  = fields.Char(string='DAY')
-    order_year  = fields.Char(string='YEAR')
-    compute_weeks = fields.Integer(string='ALLOCATED WEEKS')
-    
-    
-    to_date  = fields.Date(string="TO DATE")
-    
-    _defaults={
-        
-        'order_month' : lambda *a: time.strftime('%m'),
-        'order_day' : lambda *a: time.strftime('%d'),
-        'order_year' : lambda *a: time.strftime('%Y'),            
-    
-    }
-    
-    #@api.one
-    #@api.depends('from_date','to_date','compute_weeks')
-    #def  _compute_weeks(self):
-        #self.compute_weeks =False
-        #for  line  in  self:
-            #cal_weeks  = 
-            
-   
-    
-    @api.one
-    @api.depends('sunday' , 'monday','tuesday' ,'wednesday'  , 'thursday'  ,'friday'  , 'saturday')    
-    def _compute_spots(self):
-        self.spot_total = False
-        for  line  in  self:
-            total  = line.sunday + line.monday + line.tuesday+ line.wednesday+line.thursday + line.friday + line.saturday
-        self.update({'spot_total':total})    
-        
-    @api.one
-    @api.depends('scheduled_for')
-    def  _compute_max_weeks(self):
-        self.max_weeks = False
-        for  line  in  self:
-            mx  = line.scheduled_for * 1 
-        self.update({'max_weeks':mx})
-        
-        
-    @api.one
-    @api.constrains('min_weeks','max_weeks')
-    def  _check_max_weeks(self):
-        if  self.min_weeks > self.max_weeks :
-            raise exceptions.ValidationError("No Of Minimum  Weeks  cannot be  greater than Maximum  No of Weeks")    
-        
-    @api.one
-    @api.constrains('scheduled_for','min_weeks')
-    def  _check_min_weeks(self):
-        if  self.scheduled_for > self.min_weeks :
-            raise exceptions.ValidationError("Minimum  must  be  greater or  equal to  Scheduled  For ")
-    
-    
-    description = fields.Text('Description', translate=True)          
-    logo = fields.Binary('Logo File')
-    product_ids = fields.One2many(
-          'product.template',
-          'multiple_ratecard_id',
-          string='RateCard Type Multiple',
-      )    
-
-    products_count = fields.Integer(
-        string='Number of products',
-        compute='_get_products_count',
-    )
-    @api.one
-    @api.depends('product_ids')
-    def _get_products_count(self):
-        self.products_count = len(self.product_ids)
-
-    
-    def onchange_outlet(self,cr,uid,ids,outlet_id):
-                result = {'value':{'outlet_type_id':False}}
-                if  outlet_id:
-                    outlet = self.pool.get('outlet').browse(cr,uid,outlet_id)
-                    print  outlet 
-                    result['value'] = {'outlet_type_id':outlet.outlet_type_id.id}
-                return result       
-    
 
      
 
@@ -2451,8 +2595,7 @@ class  noof_spots(models.Model):
     weeks  = fields.Integer(string='WEEKS')    
     
     description = fields.Text('Description', translate=True) 
-    ratecard_mul_id  = fields.One2many(comodel_name='ratecard.mul', inverse_name='noof_spots_id', string='WEEK')
-    
+
     
     #@api.one
     #@api.depends('sunday' , 'monday','tuesday' ,'wednesday'  , 'thursday'  ,'friday'  , 'saturday')

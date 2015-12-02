@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <!-- create a view with a unique id -->
+        <record id="view_reformulate_generic_request_wizard" model="ir.ui.view">
+            <field name="name">reformulate_generic_request_wizard.form</field>
+            <field name="model">generic.request</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+            <!-- create a normal form view, with the fields you've created on your python file -->
+                <form string="Insert reformulation info" version="7.0">
+                    <group >
+                        <separator string="Please insert instruction for the reformulation of this request" colspan="2"/>
+                        <field name="reformulation_info" string="Reformulation info"/>
+                        <newline/>
+                    </group>
+                    <div style="text-align:right">
+                        <button  icon="gtk-cancel" special="cancel" string="Cancel"/>
+                        <button  icon="gtk-ok" name="save_info" string="Send to reformulation" type="object" />
+                    </div>
+
+               </form>
+            </field>
+        </record>
+        <!-- your action window refers to the view_id you've just created -->
+        <record id="action_reformulate_generic_request" model="ir.actions.act_window">
+            <field name="name">Reformulate Request</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">generic.request</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_reformulate_generic_request_wizard"/>
+            <field name="target">new</field>
+         </record>
+
+
+        <menuitem  name="GENERIC REQUEST" id="menu_reformulate_generic_request"  action="action_reformulate_generic_request"  parent="timeorder_ratecard_rnd_menu"/>
+ </data>
+</openerp>

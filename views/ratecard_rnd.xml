@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+                <!--   -->
+        <record id="view_ratecard_rnd_form" model="ir.ui.view">
+            <field name="name">ratecard.rnd</field>
+            <field name="model">ratecard.rnd</field>
+            <field name="arch" type="xml">
+                <form string="RND RATECARD">
+                    <group>
+                        <field name="field_a"/>
+                        <field name="field_b"/>
+                    </group>
+                        <!--<field name="field_c"/>-->
+                </form>
+            </field>
+        </record>
+
+        <record id="view_ratecard_rnd_tree" model="ir.ui.view">
+            <field name="name">ratecard.rnd.tree</field>
+            <field name="model">ratecard.rnd</field>
+            <field name="arch" type="xml">
+                <tree string="RND RATECARD">
+                       <field name="field_a"/>
+                        <field name="field_b"/>
+                        <!--<field name="field_c" />-->
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_ratecard_rnd" model="ir.actions.act_window">
+            <field name="name">RND RATECARD</field>
+            <field name="res_model">ratecard.rnd</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+          <menuitem id="timeorder_ratecard_rnd_menu" name="RESEARCH AND DEVELOPMENT" sequence="17" parent ="timeorder_management_menu"/>
+        <menuitem  name="RND RATECARDS" id="menu_ratecard_rnd"  action="action_ratecard_rnd"  parent="timeorder_ratecard_rnd_menu"/>
+         </data>
+</openerp>
