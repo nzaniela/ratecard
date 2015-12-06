@@ -26,7 +26,7 @@ import  pudb
     #codes = fields.Char(string="Code")
 class  week(models.Model):
     _name='week'
-    
+
     # multiple_rate  =  fields.Integer(string='RATE ')
     code  = fields.Char(string='ALLOCATION SPOTS CODE',readonly=True)
     week_scheduled_for  = fields.Integer(String='Scheduled For  Value')
@@ -88,15 +88,15 @@ class  week(models.Model):
             ('sale', 'FINAL'),
             ('done', 'Done'),
             ('cancel', 'Cancelled'),
-            ], string='Status', readonly=True, copy=False, index=True, track_visibility='onchange', default='draft')  
+            ], string='Status', readonly=True, copy=False, index=True, track_visibility='onchange', default='draft')
     validity_date = fields.Date(string='Validity Date', readonly=True, states={'draft': [('readonly', False)], 'sent': [('readonly', False)]})
 
     price_tax = fields.Integer(default=0 ,string='Taxes', readonly=True, store=True)
-    #weeks  = fields.Integer(string='WEEKS')  
+    #weeks  = fields.Integer(string='WEEKS')
 
 
     # allocate_mul_spots_id  = fields.One2many(comodel_name='allocate.mul.spots', inverse_name='week_id', string='ALLOCATED SPOTS')
-    ratecard_multiple_id  = fields.Many2one(comodel_name='ratecard.multiple', string='ALLOCATED SPOTS')    
+    ratecard_multiple_id  = fields.Many2one(comodel_name='ratecard.multiple', string='ALLOCATED SPOTS')
 
     ratecard_sin_radio_id  = fields.One2many(comodel_name='ratecard.sin.radio',inverse_name='week_id',string='RADIO RATECARD')
     # @api.multi
@@ -125,7 +125,7 @@ class  week(models.Model):
     #     if  not  recs:
     #         recs = self.search([('name' ,operator , name)] + args , limit=limit)
     #     return recs.name_get()
-    
+
     @api.one
     @api.depends('noofweeks','ratecard_multiple_id.scheduled_for')
     def _noofweeks(self):
@@ -135,18 +135,18 @@ class  week(models.Model):
         for order in self:
             for line in order.ratecard_multiple_id:
                 print  'line.scheduled_for== ' , line.scheduled_for
-                s = line.scheduled_for *1 
-                
-            order.update({'noofweeks': s })            
-    
+                s = line.scheduled_for *1
+
+            order.update({'noofweeks': s })
+
     @api.one
-    @api.depends('sunday' , 'monday','tuesday' ,'wednesday'  , 'thursday'  ,'friday'  , 'saturday')    
+    @api.depends('sunday' , 'monday','tuesday' ,'wednesday'  , 'thursday'  ,'friday'  , 'saturday')
     def _compute_totalspots(self):
         for order in self:
             for  line  in  order:
                 spottotal  = line.sunday + line.monday + line.tuesday+ line.wednesday+line.thursday + line.friday + line.saturday
-            self.update({'spot_total':spottotal})    
-        
+            self.update({'spot_total':spottotal})
+
     @api.one
     @api.depends('sunday' , 'monday','tuesday' ,'wednesday'  , 'thursday'  ,'friday'  , 'saturday', 'noofweeks')
     def _compute_spotrateweektotal(self):
@@ -154,13 +154,13 @@ class  week(models.Model):
             for  line  in  order:
                 week_spot_total  = line.sunday + line.monday + line.tuesday+ line.wednesday+line.thursday + line.friday + line.saturday
                 subtotal = week_spot_total *  line.noofweeks
-            self.update({'price_subtotal':subtotal})    
- 
-    
-    
+            self.update({'price_subtotal':subtotal})
+
+
+
 class  allocate_spots(models.Model):
     _name= 'allocate.spots'
-    
+
     #dayofweek=fields.Selection([('0','Monday'),('1','Tuesday'),('2','Wednesday'),('3','Thursday'),('4','Friday'),('5','Saturday'),('6','Sunday')], string='Day of Week', required=True, select=True)
     name = fields.Integer(string='NO OF WEEKS')
     monday  = fields.Integer(string='MON')
@@ -169,27 +169,27 @@ class  allocate_spots(models.Model):
     thursday   = fields.Integer(string='THUR')
     friday   = fields.Integer(string='FRI')
     saturday   = fields.Integer(string='SAT')
-    sunday   = fields.Integer(string='SUN')    
-    
+    sunday   = fields.Integer(string='SUN')
+
     spot_total  = fields.Integer(string='TOTAL SPOTS= ' , compute='_compute_spots' , store=True)
     weeks  = fields.Integer(string='WEEKS')
     # sale_order_id  = fields.One2many(comodel_name='sale.order', inverse_name='allocate_spots_id',string='Allocate Spots')
     # sale_order_line_id = fields.One2many(comodel_name='sale.order.line', inverse_name='allocate_spots_id',string='Allocate Spots')
     @api.one
-    @api.depends('sunday' , 'monday','tuesday' ,'wednesday'  , 'thursday'  ,'friday'  , 'saturday')    
+    @api.depends('sunday' , 'monday','tuesday' ,'wednesday'  , 'thursday'  ,'friday'  , 'saturday')
     def _compute_spots(self):
         self.spot_total = False
         for  line  in  self:
             total  = line.sunday + line.monday + line.tuesday+ line.wednesday+line.thursday + line.friday + line.saturday
         self.update({'spot_total':total})
-            
-            
+
+
 class  allocate_mul_spots(models.Model):
     _name= 'allocate.mul.spots'
-    
-    week_id = fields.Many2one( 'week',string='WEEK')  
+
+    week_id = fields.Many2one( 'week',string='WEEK')
     # sale_order_line_id = fields.One2many(comodel_name='sale.order.line', inverse_name='allocate_mul_spots_id',string='Allocate Multiple Spots')
-    
+
     #dayofweek=fields.Selection([('0','Monday'),('1','Tuesday'),('2','Wednesday'),('3','Thursday'),('4','Friday'),('5','Saturday'),('6','Sunday')], string='Day of Week', required=True, select=True)
     #monday  = fields.Integer(string='MON')
     #tuesday   = fields.Integer(string='TUE')
@@ -197,14 +197,14 @@ class  allocate_mul_spots(models.Model):
     #thursday   = fields.Integer(string='THUR')
     #friday   = fields.Integer(string='FRI')
     #saturday   = fields.Integer(string='SAT')
-    #sunday   = fields.Integer(string='SUN')    
-    
+    #sunday   = fields.Integer(string='SUN')
+
     #spot_total  = fields.Integer(string='TOTAL SPOTS= ' , compute='_compute_spots' , store=True)
     #weeks  = fields.Integer(string='WEEKS')
-    #sale_order_id  = fields.One2many(comodel_name='sale.order', inverse_name='allocate_spots_id', 
+    #sale_order_id  = fields.One2many(comodel_name='sale.order', inverse_name='allocate_spots_id',
                                     #string='Allocate Spots')
-    
-    #sale_order_line_id = fields.Many2one( 'sale.order.line',string='ALLOCATE MULTIPLE SPOTS')  
+
+    #sale_order_line_id = fields.Many2one( 'sale.order.line',string='ALLOCATE MULTIPLE SPOTS')
     def _set_requested_date(self, cr, uid, ids, context=None):
         requested_date = (date.today() + timedelta(days=28)).strftime(DEFAULT_SERVER_DATE_FORMAT),
         day = date.today()
@@ -213,36 +213,36 @@ class  allocate_mul_spots(models.Model):
         if day.isoweekday() == 7:
             requested_date = (date.today() + timedelta(days=29)).strftime(DEFAULT_SERVER_DATE_FORMAT),
         return requested_date
-    
+
     _defaults = {
         'mon': _set_requested_date,
-    }    
+    }
     @api.one
-    @api.depends('sunday' , 'monday','tuesday' ,'wednesday'  , 'thursday'  ,'friday'  , 'saturday')    
+    @api.depends('sunday' , 'monday','tuesday' ,'wednesday'  , 'thursday'  ,'friday'  , 'saturday')
     def _compute_spots(self):
         self.spot_total = False
         for  line  in  self:
             total  = line.sunday + line.monday + line.tuesday+ line.wednesday+line.thursday + line.friday + line.saturday
         self.update({'spot_total':total})
-            
-            
-    
+
+
+
 class  quo_mul(models.Model):
     _name= 'quo.mul'
-    _description = 'Multiple Quotation'    
-    
+    _description = 'Multiple Quotation'
+
     name   = fields.Char(string='Name' , size=64  ,  required=True)
-    description = fields.Text('Description', translate=True)  
+    description = fields.Text('Description', translate=True)
     outlet = fields.Char(string="Outlet")
-    
-   
-    logo = fields.Binary('Logo File')  
-    
+
+
+    logo = fields.Binary('Logo File')
+
     product_ids = fields.One2many(
           'product.template',
           'quo_mul_id',
           string='Multiple Quotation',
-      )    
+      )
 
     products_count = fields.Integer(
         string='Number of products',
@@ -254,15 +254,15 @@ class  quo_mul(models.Model):
     def _get_products_count(self):
         self.products_count = len(self.product_ids)
 
-    
+
     outlet_id = fields.Many2one(
             'outlet',
             string='Outlet',
             help='Select a brand for this Time  Band if it exists',
             ondelete='restrict'
-        )    
-  
-        
+        )
+
+
 class spot_length(models.Model):
     _name = 'spot.length'
     name = fields.Char(string='NAME')
@@ -272,22 +272,22 @@ class spot_length(models.Model):
     sale_order_line_id = fields.One2many(comodel_name='sale.order.line', inverse_name='spot_length_id',string='Spot Length')
 
     logo = fields.Binary('Logo File')
-    description = fields.Text('Description', translate=True)     
-    
+    description = fields.Text('Description', translate=True)
+
     product_ids = fields.One2many(
         'product.template',
         'spot_length_id',
         string='Spot  Length',
-    )   
+    )
     products_count = fields.Integer(
             string='Number of products',
             compute='_get_products_count',
     )
-    
+
     @api.one
     @api.depends('product_ids')
     def _get_products_count(self):
-        self.products_count = len(self.product_ids)    
+        self.products_count = len(self.product_ids)
 
 
 
@@ -339,12 +339,12 @@ class outlet(models.Model):
                       help='Select  digital  location  for this product')
     digital_type_id = fields.Many2one('digital.type',string='Digital  Type',help='Select  digital  type  for this product')
     digital_size_id = fields.Many2one('digital.size', string='Digital  Size',help='Select  digital  size  for this product')
-  
-    ratecard_sin_radio_id = fields.Many2one( 'ratecard.sin.radio',string='RateCard Type Singular',help='Select   RateCard  Type  Singular for this product')      
-    ratecard_sin_tv_id = fields.Many2one( 'ratecard.sin.tv',string='RateCard Type Singular',help='Select   RateCard  Type  Singular for this product')      
-    ratecard_sin_digital_id = fields.Many2one( 'ratecard.sin.digital',string='RateCard Type Singular',help='Select   RateCard  Type  Singular for this product')      
-    ratecard_sin_print_id = fields.Many2one( 'ratecard.sin.print',string='RateCard Type Singular',help='Select   RateCard  Type  Singular for this product')      
-    
+
+    ratecard_sin_radio_id = fields.Many2one( 'ratecard.sin.radio',string='RateCard Type Singular',help='Select   RateCard  Type  Singular for this product')
+    ratecard_sin_tv_id = fields.Many2one( 'ratecard.sin.tv',string='RateCard Type Singular',help='Select   RateCard  Type  Singular for this product')
+    ratecard_sin_digital_id = fields.Many2one( 'ratecard.sin.digital',string='RateCard Type Singular',help='Select   RateCard  Type  Singular for this product')
+    ratecard_sin_print_id = fields.Many2one( 'ratecard.sin.print',string='RateCard Type Singular',help='Select   RateCard  Type  Singular for this product')
+
     ad_type_id = fields.Many2one('ad.type', string='Ad Type Singular', help='Select   Ad  Type   for this product')
     vat_rate_id = fields.Many2one('vat.rate', string='VAT  Rate ',help='Select   VAT RATE for this product')
     payment_terms_id = fields.Many2one('payment.terms',string='PAYMENT  TERMS ', help='Select  PAYMENT  TERMS for this product' )
@@ -353,7 +353,7 @@ class outlet(models.Model):
     rate_id = fields.Many2one( 'rate',string='RATE',help='Set RATE for this product')
     _sql_constraints = [
            ('name_uniq','unique(name)','Outlet  Must Be Unique!'),
-       ]    
+       ]
     # @api.multi
     # def  name_get(self):
     #     result = []
@@ -388,7 +388,7 @@ class outlet(models.Model):
 
 
 class ProductTemplate(models.Model):
-    
+
     _inherit = 'product.template'
 
     name  = fields.Char('RATECARD')
@@ -684,11 +684,11 @@ class ProductTemplate(models.Model):
        # self.standard_price = self.radio_multiple_ratecard_cost
 
 
-    
+
 
 class  timeband(models.Model):
     _name= 'timeband'
-    _description = 'Time Band'    
+    _description = 'Time Band'
 
     code  = fields.Char(string='TIMEBAND CODE',store=True,readonly=True)
 
@@ -702,7 +702,7 @@ class  timeband(models.Model):
         return super(timeband,self).create(cr,uid,vals,context=context)
 
     name   = fields.Char(string='Name' , size=64  ,  required=True)
-    description = fields.Text('Description', translate=True)  
+    description = fields.Text('Description', translate=True)
     hour_from  =  fields.Selection(selection=hour_from, string='HOUR FROM')
    # hour_from  = fields.date(string=' HOUR  FROM' , default=lambda self,cr,uid,context=None: fields.date.context_today(self,cr,uid,context) + " 09:00:00")
     hour_to  =  fields.Selection(selection=hour_to, string='HOUR TO')
@@ -711,11 +711,11 @@ class  timeband(models.Model):
     sale_order_line_id = fields.One2many(comodel_name='sale.order.line', inverse_name='timeband_id',string='Timeband')
 
 
-    
-   
+
+
     logo = fields.Binary('Logo File')
-    
-    rate_id  = fields.One2many(comodel_name='rate', inverse_name='timeband_id', 
+
+    rate_id  = fields.One2many(comodel_name='rate', inverse_name='timeband_id',
                               string='RATE')
     ratecard_sin_radio_id = fields.One2many(comodel_name='ratecard.sin.radio', inverse_name='timeband_id', string='Time Bands')
     ratecard_sin_digital_id = fields.One2many(comodel_name='ratecard.sin.digital', inverse_name='timeband_id', string='Time Bands')
@@ -751,46 +751,46 @@ class  timeband(models.Model):
         return recs.name_get()
 
 
-    
+
 class  pages(models.Model):
     _name  = 'pages'
     _description = 'Pages'
-    
+
     name  =  fields.Char(string='NAME' , size=64  , required=True )
     page  = fields.Selection(selection=page_no, string='PAGE')
     ad_size_id = fields.One2many(comodel_name='ad.size',inverse_name='pages_id',string='AD SIZE',help='Set AD SIZE for this product')
 
-    
-    description = fields.Text('Description', translate=True)          
+
+    description = fields.Text('Description', translate=True)
     logo = fields.Binary('Logo File')
-    ratecard_sin_digital_id = fields.One2many(comodel_name='ratecard.sin.digital', inverse_name='pages_id', 
+    ratecard_sin_digital_id = fields.One2many(comodel_name='ratecard.sin.digital', inverse_name='pages_id',
                                   string='Pages')
-    
+
     product_ids = fields.One2many(
           'product.template',
           'pages_id',
           string='Pages',
-      )    
+      )
 
     products_count = fields.Integer(
         string='Number of products',
         compute='_get_products_count',
     )
-    
+
     @api.one
     @api.depends('product_ids')
     def _get_products_count(self):
         self.products_count = len(self.product_ids)
 
-    
+
     outlet_id = fields.Many2one(
             'outlet',
             string='Outlet',
             help='Select a brand for this  PAGE if it exists',
             ondelete='restrict'
-        )        
-    
-    
+        )
+
+
 class  ad_size(models.Model):
     _name  = 'ad.size'
     _description = 'AD  SIZE'
@@ -818,12 +818,12 @@ class  ad_size(models.Model):
 class  outlet_type(models.Model):
     _name  =  'outlet.type'
     _description = 'Outlet Type'
-    
+
     name = fields.Char(string='NAME')
     #fields.Selection(selection=outlettype_, string='OUTLET TYPE')
-    description = fields.Text('Description', translate=True)          
+    description = fields.Text('Description', translate=True)
     logo = fields.Binary('Logo File')
-    outlet_id  = fields.One2many(comodel_name='outlet', inverse_name='outlet_type_id', 
+    outlet_id  = fields.One2many(comodel_name='outlet', inverse_name='outlet_type_id',
                                 string='Outlet Type' ,readonly=True)
     ratecard_sin_radio_id  = fields.One2many(comodel_name='ratecard.sin.radio', inverse_name='outlet_type_id', string='Outlet Type')
     ratecard_sin_tv_id  = fields.One2many(comodel_name='ratecard.sin.tv', inverse_name='outlet_type_id', string='Outlet Type')
@@ -834,27 +834,27 @@ class  outlet_type(models.Model):
 
     ratecard_multiples_id = fields.One2many(comodel_name='ratecard.multiples', inverse_name='outlet_type_id',string='Outlet Type')
 
-    
-    
-    ad_type_id  = fields.One2many(comodel_name='ad.type', inverse_name='outlet_type_id', 
-                                      string='Outlet Type')    
+
+
+    ad_type_id  = fields.One2many(comodel_name='ad.type', inverse_name='outlet_type_id',
+                                      string='Outlet Type')
     product_ids = fields.One2many(
           'product.template',
           'outlet_type_id',
           string='Outlet Type',
-      )    
+      )
 
     products_count = fields.Integer(
         string='Number of products',
         compute='_get_products_count',
     )
-    
+
     @api.one
     @api.depends('product_ids')
     def _get_products_count(self):
         self.products_count = len(self.product_ids)
 
-    
+
     outlet_id = fields.Many2one(
             'outlet',
             string='Outlet',
@@ -862,7 +862,7 @@ class  outlet_type(models.Model):
             ondelete='restrict'
         )
     #def  _check_name(self,cr,uid,ids,context=None):
-        
+
         #if  context  is  None:
             #context = {}
         #outlet_types = self.browse(cr,uid,ids,context=context)
@@ -871,49 +871,49 @@ class  outlet_type(models.Model):
     _sql_constraints = [
         ('name_uniq','unique(name)','Outlet  Type Must Be Unique!'),
     ]
-        
+
 class  digital_location(models.Model):
     _name  =  'digital.location'
     _description = 'Digital  Location'
-    
-    name  =  fields.Char(string='Digital Location',  size=64  ,  required=True)    
-    ratecard_sin_digital_id =fields.One2many(comodel_name='ratecard.sin.digital', inverse_name='digital_location_id', 
+
+    name  =  fields.Char(string='Digital Location',  size=64  ,  required=True)
+    ratecard_sin_digital_id =fields.One2many(comodel_name='ratecard.sin.digital', inverse_name='digital_location_id',
                                     string='Digital Location')
     digital_location_id = fields.Many2one(
             'digital.location',
             string='Digital  Location',
             help='Select the  digital  location for this product'
-        )        
+        )
     location  = fields.Char(string='LOCATION',  size=64  ,  required=True)
     homepage  =  fields.Char(string='HOMEPAGE' , size=64)
     news_page  =  fields.Char(string='NEWS PAGE' , size =64)
     entertainment_page = fields.Char(string='ENTERTAINMENT  HOME  PAGE' , size=64  )
-    
-    description = fields.Text('Description', translate=True)          
+
+    description = fields.Text('Description', translate=True)
     logo = fields.Binary('Logo File')
     product_ids = fields.One2many(
           'product.template',
           'digital_location_id',
           string='Digital Location',
-      )    
+      )
 
     products_count = fields.Integer(
         string='Number of products',
         compute='_get_products_count',
     )
-    
+
     @api.one
     @api.depends('product_ids')
     def _get_products_count(self):
         self.products_count = len(self.product_ids)
 
-    
+
     outlet_id = fields.Many2one(
             'outlet',
             string='Outlet',
             help='Select a brand for this  Digital  Location if it exists',
             ondelete='restrict'
-        )       
+        )
 
 
 
@@ -921,59 +921,59 @@ class  digital_location(models.Model):
 class  digital_type(models.Model):
     _name  =  'digital.type'
     _description = 'DIGITAL  TYPE '
-    
+
     name  =  fields.Char(string='NAME' , size=64  ,  required=True)
     #this  is  supposed to  be  one2one
     _type  = fields.Char(string='TYPE' , size=64  ,  required=True)
     ratecard_sin_digital_id = fields.One2many(comodel_name='ratecard.sin.digital', inverse_name='digital_type_id' , string='Digital  Type')
-    
-    description = fields.Text('Description', translate=True)          
+
+    description = fields.Text('Description', translate=True)
     logo = fields.Binary('Logo File')
     product_ids = fields.One2many(
           'product.template',
           'digital_type_id',
           string='Digital Type',
-      )    
+      )
 
     products_count = fields.Integer(
         string='Number of products',
         compute='_get_products_count',
     )
-    
+
     @api.one
     @api.depends('product_ids')
     def _get_products_count(self):
         self.products_count = len(self.product_ids)
 
-    
+
     outlet_id = fields.Many2one('outlet',string='Outlet',help='Select a brand for this  Digital  Type if it exists', ondelete='restrict')
 
 
-    
+
 
 class  digital_size(models.Model):
     _name  = 'digital.size'
     _description = 'DIGITAL  SIZE '
-    
+
     name  =  fields.Char(string='NAME' , size=64 ,  required=True)
     length =  fields.Integer(string='LENGTH(PIXELS)' , size=64  ,  required=True)
     width  = fields.Integer(string='WIDTH(PIXELS)' , size=64  , required=True)
     digital_type_id  =  fields.Many2one('digital.type' , 'DIGITAL TYPE')
     ratecard_sin_digital_id = fields.One2many(comodel_name='ratecard.sin.digital', inverse_name='digital_size_id' ,  string='Digital Size')
-    
-    
-    description = fields.Text('Description', translate=True)          
+
+
+    description = fields.Text('Description', translate=True)
     logo = fields.Binary('Logo File')
     product_ids = fields.One2many('product.template','digital_size_id',string='Digital Size', )
 
     products_count = fields.Integer( string='Number of products', compute='_get_products_count', )
-    
+
     @api.one
     @api.depends('product_ids')
     def _get_products_count(self):
         self.products_count = len(self.product_ids)
 
-    
+
     outlet_id = fields.Many2one('outlet',string='Outlet',help='Select a brand for this  Digital  Size if it exists', ondelete='restrict')
 
 
@@ -995,11 +995,12 @@ class  ratecard_sin_radio(models.Model):
     quote_stage_id  = fields.Many2one(comodel_name='quote.stage', string='Quote Stage')
     spot_length_id  = fields.Many2one(comodel_name='spot.length', string='Spot Length')
     schedule_type_id=fields.Many2one(comodel_name='schedule.type', string='Schedule Type')
-    description = fields.Text('Description', translate=True)          
+    description = fields.Text('Description', translate=True)
     logo = fields.Binary('Logo File')
     ratecard_multiple_id = fields.Many2one(comodel_name='ratecard.multiple' , string='RADIO SINGULAR RATECARD')
     rate_id  = fields.Many2one(comodel_name='rate',string='TIMEBAND RATE')
     week_id =fields.Many2one(comodel_name='week',string='SCHEDULE SPOTS')
+    schedule_week  =  fields.Integer(string='SCHEDULE WEEKS' , default=4)
 
 
     @api.multi
@@ -1139,23 +1140,23 @@ class  ratecard_sin_radio(models.Model):
     def  create(self,cr,uid, vals,context=None):
         vals['code'] = self.pool.get('ir.sequence').get(cr,uid,'ratecard.sin.radio')
         return super(ratecard_sin_radio,self).create(cr,uid,vals,context=context)
-        
+
     def onchange_outlet(self,cr,uid,ids,outlet_id):
         result = {'value':{'outlet_type_id':False}}
         if  outlet_id:
             outlet = self.pool.get('outlet').browse(cr,uid,outlet_id)
-            print  outlet 
+            print  outlet
             result['value'] = {'outlet_type_id':outlet.outlet_type_id.id}
-        return result    
+        return result
     product_ids = fields.One2many('product.template','ratecard_sin_radio_id',string='RateCard Type  Singular ',)
 
     products_count = fields.Integer( string='Number of products',compute='_get_products_count',)
-    
+
     @api.one
     @api.depends('product_ids')
     def _get_products_count(self):
         self.products_count = len(self.product_ids)
-        
+
     #def  on_change_outlet(self,cr,uid,ids,outlet_id,context=None):
         #val = {}
         #if  not  outlet_id:
@@ -1173,7 +1174,7 @@ class  ratecard_multiples(models.Model):
     outlet_id = fields.Many2one(comodel_name='outlet', string='Outlet')
     outlet_type_id  = fields.Many2one(comodel_name='outlet.type', string='Outlet Type')
     ratecard_multiple_id  = fields.Many2many(comodel_name='ratecard.multiple',  relation='ratecard_multiples_rel',
-                                             column1='ratecard_multiples_id', column2='ratecard_multiple_id' , string='MULTIPLE RATECARD')    
+                                             column1='ratecard_multiples_id', column2='ratecard_multiple_id' , string='MULTIPLE RATECARD')
     description = fields.Text('Description', translate=True)
     logo = fields.Binary('Logo File')
     product_ids = fields.One2many('product.template','ratecard_multiples_id', string='RateCard Multiple',)
@@ -1235,7 +1236,7 @@ class  ratecard_multiples(models.Model):
     def action_done(self):
         self.write({'state': 'done'})
 
-    
+
 class  ratecard_multiple(models.Model):
     #pudb.set_trace()
     _name = 'ratecard.multiple'
@@ -1295,9 +1296,9 @@ class  ratecard_multiple(models.Model):
     @api.constrains('scheduled_for','min_weeks')
     def  _check_min_weeks(self):
         if  self.scheduled_for > self.min_weeks :
-            raise exceptions.ValidationError("Minimum  must  be  greater or  equal to  Scheduled  For ")  
-    
-    
+            raise exceptions.ValidationError("Minimum  must  be  greater or  equal to  Scheduled  For ")
+
+
     allocate_spot = fields.Boolean(string='Allocate')
     state = fields.Selection([
         ('draft', 'Multiple RateCard  Draft'),
@@ -1305,12 +1306,12 @@ class  ratecard_multiple(models.Model):
         ('sale', 'MULTIPLE  RATECARD  FINAL'),
         ('done', 'Done'),
         ('cancel', 'Cancelled'),
-        ], string='Status', readonly=True, copy=False, index=True, track_visibility='onchange', default='draft')  
-    
+        ], string='Status', readonly=True, copy=False, index=True, track_visibility='onchange', default='draft')
+
     validity_date = fields.Date(string='Product Date', readonly=True,default=datetime.today(), states={'draft': [('readonly', False)], 'sent': [('readonly', False)]},required=True)
 
     note = fields.Text('Terms and conditions', default=_default_note)
-    
+
     amount_untaxed = fields.Integer(string='BEFORE TAX', store=True, readonly=True, compute='_amount_all', track_visibility='always')
     amount_tax = fields.Integer(string='TAXED', store=True, readonly=True, compute='_compute_taxedamount', track_visibility='always')
     tax_id = fields.Many2many('account.tax', string='Taxes')
@@ -1338,35 +1339,35 @@ class  ratecard_multiple(models.Model):
             order.update({
                 'discount': discount,
             })
-    
+
     #@api.onchange('discount','amount_untaxed')
     #def  discount_update_amount_untaxed(self):
         #for  order  in self:
             #if  order.discount == False:
-                #raise exceptions.Warning("Kindly Update Discount ,Its  empty ")                
+                #raise exceptions.Warning("Kindly Update Discount ,Its  empty ")
             #if order.discount != 0 :
                 #print  'amount_untaxed  '  , order.amount_untaxed
                 #print  'discount ' , order.discount
-                #order.amount_untaxed  -=  orderamount_untaxed* (1 - (order.discount ) / 100.0)                
-            
+                #order.amount_untaxed  -=  orderamount_untaxed* (1 - (order.discount ) / 100.0)
+
     #company_id = fields.Many2one(comodel='res.company', string='Company', store=True, readonly=True)
 
     subtotal_discounted = fields.Integer(string='TOTAL AFTER DISCOUNT', store=True, readonly=True, compute='_compute_discountamount', track_visibility='always')
-    fiscal_position_id = fields.Many2one('account.fiscal.position', oldname='fiscal_position', string='Fiscal Position')  
+    fiscal_position_id = fields.Many2one('account.fiscal.position', oldname='fiscal_position', string='Fiscal Position')
     #vat_rate  = fields.Many2one(comodel_name='vat.rate', string='TAX  RATE (%)',digits_compute=dp.get_precision('TAX RATE'), default=0.0)
     vat_rate  = fields.Float(string='VAT RATE (%)',digits_compute=dp.get_precision('VAT RATE'), default=17, track_visibility='onchange'  )
     taxed_amount  = fields.Integer( string='TOTAL KSH::',store=True, readonly=True, compute='_compute_taxedamount', track_visibility='always')
     multiple_ratecard_id  = fields.Many2many(comodel_name='ratecard.sin.radio', relation='ratecard_multiple_singular_rel',
                                                 column1='ratecard_multiple_id',
-                                                column2='ratecard_sin_radio_id', 
-                                                string='RATECARDS')   
+                                                column2='ratecard_sin_radio_id',
+                                                string='RATECARDS')
 
 
-    ratecard_sin_radio_id = fields.One2many(comodel_name='ratecard.sin.radio', 
-                                              inverse_name='ratecard_multiple_id', 
+    ratecard_sin_radio_id = fields.One2many(comodel_name='ratecard.sin.radio',
+                                              inverse_name='ratecard_multiple_id',
                                               string='RADIO SINGULAR RATECARD',required=True)
-    
-    
+
+
     allocate_schedule = fields.Many2many(comodel_name='week', relation='ratecard_multiple_week_rel',
                                          column1='ratecard_multiple_id', column2='week_id',
                                          track_visibility='onchange', string='ALLOCATE SPOTS',required=True)
@@ -1542,21 +1543,21 @@ class  ratecard_multiple(models.Model):
         for order in self:
             for  line  in  order:
                 print  '_compute_taxedamount subtotaldiscounted  ' , line.amount_untaxed
-                subtotaldiscounted= line.amount_untaxed* (1 - (line.discount or 0.0) / 100.0)   
+                subtotaldiscounted= line.amount_untaxed* (1 - (line.discount or 0.0) / 100.0)
                 subtotaltaxed  = line.amount_untaxed * (1- (line.vat_rate or 0.0)/100.0)
                 print 'subtotaltaxed' , subtotaltaxed
                 amount_tax  = line.amount_untaxed  - subtotaltaxed
                 print  '_compute_taxedamount  amount taxed  >>>> ' , amount_tax
                 aftertax  = subtotaldiscounted +amount_tax
                 print  '_compute_taxedamount  taxed_amount  >>> '  , aftertax
-                
+
             line.update({
                 'subtotal_discounted':subtotaldiscounted,
                 'taxed_amount':aftertax,
                 'amount_tax':amount_tax,
                 'aftertax':aftertax,
-            })         
-    
+            })
+
     @api.one
     @api.depends('amount_untaxed','discount' )
     def _compute_discountamount(self):
@@ -1566,11 +1567,11 @@ class  ratecard_multiple(models.Model):
             line.update({'subtotal_discounted':subtotaldiscounted})
     #_defaults = {
         #'code': lambda self,cr,uid,context={}: self.pool.get('ir.sequence').get(cr, uid, 'object.object'),
-    #} 
+    #}
     #def  create(self,cr,uid,vals,context=None):
         #if  not  vals['allocate_schedule'][0][2]:
             #raise Exception('MISSING ALLOCATED  SPOTS ')
-        #created_hc  = []    self.update({'spot_total':total})  
+        #created_hc  = []    self.update({'spot_total':total})
         #for  id  in
     @api.depends('scheduled_for','multiple_ratecard_id.noofweeks')
     def _compute_scheduled_for(self):
@@ -1594,7 +1595,7 @@ class  ratecard_multiple(models.Model):
         Compute the total amounts of the Weeks  and  Rate.
         """
         for order in self:
-            print 'order' , order            
+            print 'order' , order
             amount_untaxed = 0.0
             total_spot = 0
             total_cost = 0
@@ -1621,18 +1622,18 @@ class  ratecard_multiple(models.Model):
 
     @api.multi
     def button_dummy(self):
-        return True   
+        return True
     @api.multi
     def action_draft(self):
         self.filtered(lambda s: s.state in ['cancel', 'sent']).write({'state': 'draft'})
-    
+
     @api.multi
     def action_cancel(self):
         self.write({'state': 'cancel'})
     @api.multi
     def action_done(self):
-        self.write({'state': 'done'})    
-    
+        self.write({'state': 'done'})
+
     def  _create_allocate_schedule(self):
         self.allocate_schedule = self.env['ratecard.multiple'].create({
             'name' : self.name,
@@ -1644,39 +1645,39 @@ class  ratecard_multiple(models.Model):
         if  not  rec.allow_schedule:
             rec._create_allocate_schedule()
         return  rec
-    
+
     def  create(self,cr,uid, vals,context=None):
         vals['code'] = self.pool.get('ir.sequence').get(cr,uid,'ratecard.multiple')
         return super(ratecard_multiple,self).create(cr,uid,vals,context=context)
-    #not working  but  compiles --> weird  -- investigate further  
+    #not working  but  compiles --> weird  -- investigate further
     #def create(self, cr, uid, vals, context=None):
         #if not vals:
             #vals = {}
         #if context is None:
             #context = {}
         #vals['code'] = self.pool.get('ir.sequence').get(cr, uid, 'object.object')
-        
+
         #return super(ratecard_multiple, self).create(cr, uid, vals, context=context)
     #def  onchange_allocateschedule(self,cr,uids,ids,allocate_schedule):
-        #res = {} 
+        #res = {}
         #for  record  in  self.browse(cr,uid,ids,context=None, )
-        
-        
-    
+
+
+
     def onchange_outlet(self,cr,uid,ids,outlet_id):
         result = {'value':{'outlet_type_id':False}}
         if  outlet_id:
             outlet = self.pool.get('outlet').browse(cr,uid,outlet_id)
-            print  outlet 
+            print  outlet
             result['value'] = {'outlet_type_id':outlet.outlet_type_id.id}
-        return result        
-        
+        return result
+
     #def name_get(self,cr,uid,ids,context=None):
         #result = {}
         #for record in self.browse(cr,uid,ids,context=context):
             #result[record.id] = record.name + " " + str(record.ratecard_sin_radio_id.id)
-    
-        #return result.items()    
+
+        #return result.items()
 
 
 class ratecard_multiple_week_rel(models.Model):
@@ -1696,10 +1697,11 @@ class ratecard_rnd(models.Model):
 
     field_a  = fields.Char(string='FIELD A ')
     field_b  = fields.Char(string='FIELD B')
+    field_type      = fields.Char(string='TYPE')
     # field_c = fields.Boolean(string='FIELD C', readonly=True, copy=False)
 
 
-    _defaults = {
+    defaults = {
         'field_c': lambda *a: True,
     }
 
@@ -1718,19 +1720,281 @@ class ratecard_rnd(models.Model):
                 'target': 'new',
                 'flags': {'action_buttons': True},
     }
-    #
-    @api.model
-    def fields_view_get(self, view_id=None, view_type='form', context=None, toolbar=False,submenu=False):
-        result = super(ratecard_rnd,self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar, submenu=submenu)
-        active_id = self.env.context.get('active_id', False)
-        passed = self.env['ratecard.rnd'].browse(active_id).field_b
-        from lxml import etree
-        doc = etree.XML(result['arch'])
-        if passed:
-            for node in doc.xpath("//field[@name='field_a']"):
-                node.set('string', passed)
-        result['arch'] = etree.tostring(doc)
+    @api.multi
+    def scheduler2(self):
+    	view_id = self.env.ref('ragtimeorder.view_week_form').id
+    #	context = self._context.copy()
+        return {
+                'name':_('SCHEDULE RATECARD 2'),
+                'view_type': 'form',
+                'view_mode': 'form',
+                'views': [(view_id, 'form'), ],
+                'res_model': 'week',
+               # 'context': self._context,
+                'type': 'ir.actions.act_window',
+                'target': 'new',
+                'flags': {'action_buttons': True},
+    }
 
+    @api.multi
+    def passing_context_id(self):
+        self.ensure_one()
+        self.name = "WITH CONTEXT "
+        return {
+            'context': self.env.context,
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'model_name',
+            'res_id': self.id,
+            'view_id': False,
+            'type': 'ir.actions.act_window',
+            'target': 'new',
+           # 'tag':'reload', #reloads  original view   can  also  be used  with  'type': 'ir.actions.client',
+        }
+    def open_full_record(self, cr, uid, ids, context=None):
+        obj = self.browse(cr, uid, ids, context)
+        if context['type'] == 'Customer':
+            model = 'res.partner'
+        elif context['type'] == 'Lead':
+            model = 'crm.lead'
+        else:
+            return False
+
+        return {
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': model,
+            'type': 'ir.actions.act_window',
+            'target': 'self',
+            'res_id': context['id'],
+            'context': context,
+          }
+    @api.multi
+    def passing_ratecard_multiple(self):
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'form name',
+            'res_model': 'object name',
+            'res_id': self.ratecard_multiple_id ,
+            'view_type': 'form',
+            'view_mode': 'form',
+            'target' : 'new',
+            }
+    def view_init(self, cr, uid, fields_list, context=None):
+        """
+         Creates view dynamically and adding fields at runtime.
+         @param self: The object pointer.
+         @param cr: A database cursor
+         @param uid: ID of the user currently logged in
+         @param context: A standard dictionary
+         @return: New arch of view with new columns.
+        """
+        res = super(ratecard_rnd, self).view_init(cr, uid, fields_list, context=context)
+        order_obj=self.pool.get('ratecard.multiple')
+        if context is None:
+            context={}
+
+        active_ids=context.get('active_ids')
+        for order in order_obj.browse(cr, uid, active_ids, context=context):
+            print "+++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+            print  'Multiple Ratecard Scheduled For' , order.scheduled_for
+            print  'Multiple Ratecard NAME' , order.name
+            print  'Multiple Ratecard CODE' , order.code
+            print  'Multiple Minimum  Weeks' , order.min_weeks
+            print  'Multiple Ratecard Maximum Weeks' , order.max_weeks
+            print  "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+
+           # print  'self._columns' , self._columns , order[:]
+            for line in order.allocate_schedule:
+                print  'self._columns' , self._columns , line[0]
+                if 'return%s'%(line.id) not in self._columns:
+                    self._columns['return%s'%(line.id)] = fields.Float("SCHEDULES")
+
+        return res
+
+    def create_schedule_four_weeks(self, cr, uid, ids, context=None):
+        """
+        This function Opens form of create partner.
+        """
+        view_obj = self.pool.get('ir.ui.view')
+        view_id = view_obj.search(cr, uid, [('model', '=', self._name), \
+                                     ('name', '=', self._name+'.view')])
+        return {
+            'view_mode': 'form',
+            'view_type': 'form',
+            'view_id': view_id or False,
+            'res_model': self._name,
+            'context': context,
+            'type': 'ir.actions.act_window',
+            'target': 'new',
+            'flags': {'form': {'action_buttons': True}}
+
+
+        }
+    @api.multi
+    def  dynamic_call_create_schedule_model(self):
+        self.ensure_one()
+        res = {}
+        ids=self._ids
+        cr = self._cr
+        uid = self._uid
+        context = self._context
+        if context is None: context = {}
+        order_obj=self.pool.get('ratecard.multiple')
+        if context is None:
+            context={}
+
+        active_ids=context.get('active_ids')
+        for order in order_obj.browse(cr, uid, active_ids, context=context):
+            print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+            print  '%%% Multiple Ratecard Scheduled For' , order.scheduled_for
+            print  '%%% Multiple Ratecard NAME' , order.name
+            print  '%%% Multiple Ratecard CODE' , order.code
+            print  '%%% Multiple Minimum  Weeks' , order.min_weeks
+            print  '%%% Multiple Ratecard Maximum Weeks' , order.max_weeks
+            print  "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+
+            if  order.scheduled_for == 5:
+                view_id = self.env.ref('ragtimeorder.view_week_form').id
+    #	context = self._context.copy()
+                res = {
+                            'name':_('SCHEDULE RATECARD'),
+                            'view_type': 'form',
+                            'view_mode': 'form',
+                            'views': [(view_id, 'form'), ],
+                            'res_model': 'week',
+                           # 'context': self._context,
+                            'type': 'ir.actions.act_window',
+                            'target': 'new',
+                            'flags': {'action_buttons': True},
+
+                }
+            elif  order.scheduled_for == 2:
+                form_id = self.env.ref('ragtimeorder','view_schedule_ratecards_form').id
+                tree_id = self.env.ref('ragtimeorder' , 'view_schedule_ratecards_tree').id
+                #	context = self._context.copy()
+               # self.name = "SCHEDULE RATECARD TWO WEEKS "
+                res =  {
+                        'name':_('SCHEDULE RATECARD TWO WEEKS '),
+                        'context': self.env.context,
+                        'view_type': 'form',
+                        'view_mode': 'tree,form',
+                        'views': [(form_id, 'form'),(tree_id ,'tree')],
+                        'res_model': 'schedule.ratecards',
+                        'type': 'ir.actions.act_window',
+                        'res_id': self.id,
+                       # 'type':'ir.actions.client',
+                        'target': 'current',
+                       # 'domain':[('id' , 'in', [x.id for  x  in self.order])],
+                        'tag':'reload',
+                        'flags': {'action_buttons': True},
+                        # 'context': {
+                        #         'default_scheduled_for': order.scheduled_for,
+                        #         'default_code' : order.code,
+                        #         'default_min_weeks': order.min_weeks,
+                        #         'default_name':order.name,
+                        #         'close_after_process': True,
+                        #     }
+
+                }
+            else :
+
+                view_obj = self.pool.get('ir.ui.view')
+                view_id = view_obj.search(cr, uid, [('model', '=', self._name), \
+                                             ('name', '=', self._name+'.view')])
+                res  =  {
+                        'view_mode': 'form',
+                        'view_type': 'form',
+                        'view_id': view_id or False,
+                        'res_model': self._name,
+                        'context': context,
+                        'type': 'ir.actions.act_window',
+                        'target': 'new',
+                        'flags': {'form': {'action_buttons': True}}
+
+                            }
+        return  res
+
+
+
+
+    def fields_view_get(self, cr, uid, view_id=None, view_type='form', context=None, toolbar=False,submenu=False):
+        """
+             Changes the view dynamically
+             @param self: The object pointer.
+             @param cr: A database cursor
+             @param uid: ID of the user currently logged in
+             @param context: A standard dictionary
+             @return: New arch of view.
+        """
+        result = super(ratecard_rnd, self).fields_view_get(cr, uid, view_id, view_type, context, toolbar,submenu)
+        if context is None:
+            context={}
+        active_model = context.get('active_model')
+        if not active_model and active_model != 'ratecard.multiple':
+            return result
+        order_obj = self.pool.get('ratecard.multiple')
+        active_id = context.get('active_id', False)
+        if active_id:
+            _moves_arch_lst="""<?xml version="1.0"?>
+                            <form string="Return lines">
+                            <label string="SCHEDULE CREATION." colspan="4"/>"""
+            _line_fields = result['fields']
+            order=order_obj.browse(cr, uid, active_id, context=context)
+            for line in order.ratecard_sin_radio_id:
+                week=line.week_id
+                print  'line.week_id' , week
+                _line_fields.update({
+                    'return%s'%(line.id) : {
+                        'string': line.name,
+                        'type' : 'float',
+                        'required': True,
+                        'default':week
+                    },
+                })
+                _moves_arch_lst += """
+                        <field name="return%s"/>
+                         <newline/>
+                """%(line.id)
+
+            _moves_arch_lst+="""
+                   <newline/>
+                       <separator colspan="2" col="2"/>
+                       <button icon='gtk-ok' name="dynamic_call_create_schedule_model"
+                                              string="CHOOSE SCHEDULE FOUR WEEKS" type="object" class="oe_highlight"/>
+
+                       <button type="object" string="Open" name="open_full_record" icon="gtk-go-forward" context="{'id':id,'type':type}"/>
+                        <button icon='gtk-go-forward' name="passing_ratecard_multiple"
+                                              string="PASSING RATECARD MULTIPLE" type="object" class="oe_highlight"/>
+                        <button icon='gtk-go-forward' name="passing_context_id"
+                                              string="PASSING CONTEXT" type="object" class="oe_highlight"/>
+                        <button icon='gtk-ok' name="create_schedule_four_weeks"
+                                              string="CREATE SCHEDULE FOUR WEEKS" type="object" class="oe_highlight"/>
+                        <newline/>
+                        <separator colspan="4"/>
+                        <button icon='gtk-ok' name= "scheduler" string="CREATE SCHEDULE" type="object" class="oe_highlight" />
+                        <button icon='gtk-ok' name="scheduler2" string="CREATE SCHEDULE TWO WEEKS" type="object"  class="oe_highlight"/>
+                         <button name="cancel" string="Cancel" special="cancel" class="oe_highlight"/>
+                   </form>
+                            """
+
+            result['arch'] = _moves_arch_lst
+            result['fields'] = _line_fields
+        return result
+
+
+    # @api.model
+    # def fields_view_get(self, view_id=None, view_type='form', context=None, toolbar=False,submenu=False):
+    #     result = super(ratecard_rnd,self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar, submenu=submenu)
+    #     active_id = self.env.context.get('active_id', False)
+    #     passed = self.env['ratecard.rnd'].browse(active_id).field_b
+    #     from lxml import etree
+    #     doc = etree.XML(result['arch'])
+    #     if passed:
+    #         for node in doc.xpath("//field[@name='field_a']"):
+    #             node.set('string', passed)
+    #     result['arch'] = etree.tostring(doc)
+    #
 
 
 
@@ -2128,7 +2392,6 @@ class LoadToOtherWizard(models.TransientModel):
     user_id  = context.get('user_id', False)
 
 
-
 class AnotherWizard(models.TransientModel):
     _name = 'another.wizard'
     user_id  = fields.Integer('User ID'),
@@ -2138,7 +2401,7 @@ class AnotherWizard(models.TransientModel):
 class  ratecard_sin_print(models.Model):
     _name =  'ratecard.sin.print'
     _description  = 'RATECARD SINGULAR PRINT  '
-    
+
     name  =   fields.Char(string='NAME')
     outlet_id = fields.Many2one(comodel_name='outlet', string='Outlet')
     timeband_id  = fields.Many2one(comodel_name='timeband', string='TimeBand')
@@ -2157,19 +2420,19 @@ class  ratecard_sin_print(models.Model):
     rateclass_code_id  = fields.Many2one(comodel_name='rateclass.code', string='RateClass Code')
     quote_stage_id  = fields.Many2one(comodel_name='quote.stage', string='Quote Stage')
     schedule_type_id=fields.Many2one(comodel_name='schedule.type', string='Schedule Type')
-    description = fields.Text('Description', translate=True)          
+    description = fields.Text('Description', translate=True)
     logo = fields.Binary('Logo File')
     product_ids = fields.One2many(
           'product.template',
           'ratecard_sin_print_id',
           string='RateCard Type  Singular ',
-      )    
+      )
 
     products_count = fields.Integer(
         string='Number of products',
         compute='_get_products_count',
     )
-    
+
     @api.one
     @api.depends('product_ids')
     def _get_products_count(self):
@@ -2195,26 +2458,26 @@ class  ratecard_sin_print(models.Model):
             print  outlet
             result['value'] = {'outlet_type_id':outlet.outlet_type_id.id}
         return result
-    
-        
+
+
 class  ratecard_sin_digital(models.Model):
     _name =  'ratecard.sin.digital'
     _description  = 'RATECARD SINGULAR DIGITAL '
-    
+
     name  =   fields.Char(string='NAME')
     outlet_id = fields.Many2one(comodel_name='outlet', string='Outlet')
     timeband_id  = fields.Many2one(comodel_name='timeband', string='TimeBand')
     pages_id  =   fields.Many2one(comodel_name='pages', string='Pages')
     outlet_type_id  = fields.Many2one(comodel_name='outlet.type', string='Outlet Type')
-    
+
     def onchange_outlet(self,cr,uid,ids,outlet_id):
         result = {'value':{'outlet_type_id':False}}
         if  outlet_id:
             outlet = self.pool.get('outlet').browse(cr,uid,outlet_id)
-            print  outlet 
+            print  outlet
             result['value'] = {'outlet_type_id':outlet.outlet_type_id.id}
         return result
-    
+
     digital_location_id  = fields.Many2one(comodel_name='digital.location', string='Digital Location')
     digital_type_id  = fields.Many2one(comodel_name='digital.type', string='Digital Type')
     digital_size_id  = fields.Many2one(comodel_name='digital.size', string='Digital  Size')
@@ -2225,7 +2488,7 @@ class  ratecard_sin_digital(models.Model):
     quote_stage_id  = fields.Many2one(comodel_name='quote.stage', string='Quote Stage')
     spot_length_id  = fields.Many2one(comodel_name='spot.length', string='Spot Length')
     schedule_type_id=fields.Many2one(comodel_name='schedule.type', string='Schedule Type')
-    description = fields.Text('Description', translate=True)          
+    description = fields.Text('Description', translate=True)
     logo = fields.Binary('Logo File')
 
     product_ids = fields.One2many('product.template','ratecard_sin_digital_id', string='RateCard Type  Singular ',)
@@ -2253,12 +2516,12 @@ class  ratecard_sin_digital(models.Model):
         string='Number of products',
         compute='_get_products_count',
     )
-    
+
     @api.one
     @api.depends('product_ids')
     def _get_products_count(self):
         self.products_count = len(self.product_ids)
-        
+
     #def  on_change_outlet(self,cr,uid,ids,outlet_id,context=None):
         #val = {}
         #if  not  outlet_id:
@@ -2268,12 +2531,12 @@ class  ratecard_sin_digital(models.Model):
         #val.update({'outlet_type_id': [ outlet_type_.id for  outlet_type_ in  outlet_data.outlet_types_ids]})
         #return {'value': val}
 
-    
-        
+
+
 class  ratecard_sin_tv(models.Model):
     _name =  'ratecard.sin.tv'
     _description  = 'RATECARD SINGULAR TV'
-    
+
     name  =   fields.Char(string='NAME')
     outlet_id = fields.Many2one(comodel_name='outlet', string='Outlet')
     timeband_id  = fields.Many2one(comodel_name='timeband', string='TimeBand')
@@ -2286,24 +2549,24 @@ class  ratecard_sin_tv(models.Model):
     quote_stage_id  = fields.Many2one(comodel_name='quote.stage', string='Quote Stage')
     spot_length_id  = fields.Many2one(comodel_name='spot.length', string='Spot Length')
     schedule_type_id=fields.Many2one(comodel_name='schedule.type', string='Schedule Type')
-    description = fields.Text('Description', translate=True)          
+    description = fields.Text('Description', translate=True)
     logo = fields.Binary('Logo File')
     product_ids = fields.One2many(
           'product.template',
           'ratecard_sin_tv_id',
           string='RateCard Type  Singular ',
-      )    
+      )
 
     products_count = fields.Integer(
         string='Number of products',
         compute='_get_products_count',
     )
-    
+
     @api.one
     @api.depends('product_ids')
     def _get_products_count(self):
         self.products_count = len(self.product_ids)
-        
+
     code  = fields.Char(string='TV RATECARD CODE',readonly=True)
 
     rate_id  = fields.Many2one(comodel_name='rate',string='TIMEBAND RATE')
@@ -2325,11 +2588,11 @@ class  ratecard_sin_tv(models.Model):
             result['value'] = {'outlet_type_id':outlet.outlet_type_id.id}
         return result
 
-     
+
 
 class  ad_type(models.Model):
     _name  =  'ad.type'
-    
+
     name  =  fields.Char(string='AD  TYPE' , size=64  , required=True)
     outlet_type_id  = fields.Many2one(comodel_name='outlet.type', string='OUTLET TYPE')
     rate_card_type  = fields.Selection(selection=[('0','SINGULAR'),('1','MULTIPLE')], string='RATECARD TYPE')
@@ -2341,8 +2604,8 @@ class  ad_type(models.Model):
     sale_order_line_id = fields.One2many(comodel_name='sale.order.line', inverse_name='ad_type_id',string='AD TYPE')
 
     #name  = fields.One2many(comodel_name='rate', inverse_name='name', string='NAME')
- 
-    description = fields.Text('Description', translate=True)          
+
+    description = fields.Text('Description', translate=True)
     logo = fields.Binary('Logo File')
     product_ids = fields.One2many('product.template','ad_type_id',string='Ad Type',)
 
@@ -2372,7 +2635,7 @@ class  ad_type(models.Model):
     #         print  outlet
     #         result['value'] = {'outlet_type_id':outlet.outlet_type_id.id}
     #     return result
-    
+
     @api.one
     @api.depends('product_ids')
     def _get_products_count(self):
@@ -2384,75 +2647,75 @@ class  ad_type(models.Model):
 class  var_rate(models.Model):
     _name  = 'vat.rate'
     _description = 'VAT  RATE (%)'
-    
+
     name  = fields.Char(string='VAR RATE (%)')
     rate = fields.Float(string='VAR RATE (%)',store=True , digits_compute=dp.get_precision('VAT RATE (%)'), track_visibility='onchange' )
 
-    description = fields.Text('Description', translate=True)          
+    description = fields.Text('Description', translate=True)
     logo = fields.Binary('Logo File')
     product_ids = fields.One2many('product.template','vat_rate_id',string='VAR RATE (%)',)
 
     products_count = fields.Integer(string='Number of products',compute='_get_products_count',)
-    
+
     @api.one
     @api.depends('product_ids')
     def _get_products_count(self):
         self.products_count = len(self.product_ids)
 
-    
+
     outlet_id = fields.Many2one('outlet',string='Outlet',help='Select a brand for this  VAT  RATE if it exists',ondelete='restrict')
     ratecard_multiple_id  = fields.One2many('ratecard.multiple','vat_rate',string='VAT RATE')
 
 
-    
-    
+
+
 class  payment_terms(models.Model):
     _name  =  'payment.terms'
     _description = 'PAYMENT  TERMS'
-    
+
     name   = fields.Selection(selection=payment_type,string='CASH/CHEQUE' , help  = 'NETT 30    for  30 days  ')
     days  =   fields.Selection(selection=payment_duration, string="DAYS")
     ratecard_sin_radio_id = fields.One2many(comodel_name='ratecard.sin.radio', inverse_name='payment_terms_id' , string='Payment Terms')
     ratecard_sin_digital_id = fields.One2many(comodel_name='ratecard.sin.digital', inverse_name='payment_terms_id' , string='Payment Terms')
     ratecard_sin_print_id = fields.One2many(comodel_name='ratecard.sin.print', inverse_name='payment_terms_id' , string='Payment Terms')
     ratecard_sin_tv_id = fields.One2many(comodel_name='ratecard.sin.tv', inverse_name='payment_terms_id' , string='Payment Terms')
-    
-    
-    
-    
-    
-    description = fields.Text('Description', translate=True)          
+
+
+
+
+
+    description = fields.Text('Description', translate=True)
     logo = fields.Binary('Logo File')
     product_ids = fields.One2many(
           'product.template',
           'payment_terms_id',
           string='Payment  Terms',
-      )    
+      )
 
     products_count = fields.Integer(
         string='Number of products',
         compute='_get_products_count',
     )
-    
+
     @api.one
     @api.depends('product_ids')
     def _get_products_count(self):
         self.products_count = len(self.product_ids)
 
-    
+
     outlet_id = fields.Many2one(
             'outlet',
             string='Outlet',
             help='Select a brand for this  Payment  Terms  if it exists',
             ondelete='restrict'
-        )       
+        )
 
 
 
 class  rateclass_code(models.Model):
     _name = 'rateclass.code'
     _description = 'RATECLASS  CODE'
-    
+
     code = fields.Selection(selection=[('FIXED','FIXED'),('MOVEABLE','MOVEABLE') ,('RUN OF STATION','RUN OF STATION')], string='RATECLASS CODE')
     name  =  fields.Selection(selection=[('FIXED','FIXED'),('MOVEABLE','MOVEABLE') ,('RUN OF STATION','RUN OF STATION')], string='RATECLASS CODE')
     rate_class_type  = fields.Selection(selection=[('0','Advertisement is  fixed and  cannot be  moved'),
@@ -2468,7 +2731,7 @@ class  rateclass_code(models.Model):
     quote_stage  = fields.One2many(comodel_name='quote.stage' , inverse_name='rateclass_code_id' ,string='RATECLASS CODE')
 
 
-    description = fields.Text('Description', translate=True)          
+    description = fields.Text('Description', translate=True)
     logo = fields.Binary('Logo File')
     product_ids = fields.One2many('product.template','rateclass_code_id',string='RATECLASS  CODE',)
     products_count = fields.Integer( string='Number of products',compute='_get_products_count',)
@@ -2496,60 +2759,60 @@ class  rateclass_code(models.Model):
     def _get_products_count(self):
         self.products_count = len(self.product_ids)
 
-    
+
     outlet_id = fields.Many2one('outlet',string='Outlet',help='Select a brand for this  RATECLASS  CODE if it exists', ondelete='restrict')
 
 
-    
+
 class  quote_stage(models.Model):
     _name  =  'quote.stage'
     _decription  =  'QUOTE STAGE'
-    
+
     name  =fields.Char(string='Name')
     rateclass_code_id = fields.Many2one('rateclass.code',string='RATECLASS CODE')
     quote_stage =  fields.Selection([('draft' , 'DRAFT'),
                                      ('negotiation' , 'NEGOTIATION'),
-                                     ('delivered' , 'DELIVERED') , 
+                                     ('delivered' , 'DELIVERED') ,
                                      ('closed_accepted' , 'CLOSED  ACCEPTED'),
                                      ('closed_lost' , 'CLOSED LOST'),
                                      ('closed_dead' , 'CLOSED DEAD'),
     ], string='QUOTE STAGE')
-    
-    description = fields.Text('Description', translate=True)          
+
+    description = fields.Text('Description', translate=True)
     logo = fields.Binary('Logo File')
     ratecard_radio_id = fields.One2many(comodel_name='ratecard.sin.radio', inverse_name='quote_stage_id' , string='Quote Stage')
     ratecard_sin_print_id = fields.One2many(comodel_name='ratecard.sin.print', inverse_name='quote_stage_id' , string='Quote Stage')
     ratecard_sin_digital_id = fields.One2many(comodel_name='ratecard.sin.digital', inverse_name='quote_stage_id' , string='Quote Stage')
     ratecard_sin_tv_id = fields.One2many(comodel_name='ratecard.sin.tv', inverse_name='quote_stage_id' , string='Quote Stage')
-    
+
     product_ids = fields.One2many(
           'product.template',
           'quote_stage_id',
           string='QUOTE  STAGE',
-      )    
+      )
 
     products_count = fields.Integer(
         string='Number of products',
         compute='_get_products_count',
     )
-    
+
     @api.one
     @api.depends('product_ids')
     def _get_products_count(self):
         self.products_count = len(self.product_ids)
 
-    
+
     outlet_id = fields.Many2one(
             'outlet',
             string='Outlet',
             help='Select a brand for this  QUOTE  STAGE  Multiple if it exists',
             ondelete='restrict'
-        )   
+        )
 class schedule_type(models.Model):
     _name = 'schedule.type'
-    
+
     #add  name_get  so  that  when  schedule  name  is  called  the  type  to  be  passed  also
-    
+
     name = fields.Selection(selection=[
         ('BANDED','BANDED'),
         ('FIXED','FIXED')
@@ -2560,31 +2823,31 @@ class schedule_type(models.Model):
     ratecard_sin_print_id = fields.One2many(comodel_name='ratecard.sin.print', inverse_name='schedule_type_id' , string='Schedule Type')
     ratecard_sin_digital_id = fields.One2many(comodel_name='ratecard.sin.digital', inverse_name='schedule_type_id' , string='Schedule Type')
     ratecard_sin_tv_id = fields.One2many(comodel_name='ratecard.sin.tv', inverse_name='schedule_type_id' , string='Schedule Type')
-    
+
     description = fields.Text('Description', translate=True)
     logo = fields.Binary('Logo File')
     product_ids = fields.One2many(
               'product.template',
               'schedule_type_id',
               string='QUOTE  STAGE',
-          )        
-    
+          )
+
     products_count = fields.Integer(
         string='Number of products',
         compute='_get_products_count',
     )
-    
+
     @api.one
     @api.depends('product_ids')
     def _get_products_count(self):
-        self.products_count = len(self.product_ids)    
-        
+        self.products_count = len(self.product_ids)
+
 
 class  noof_spots(models.Model):
     _name= 'noof.spots'
-    
+
     #dayofweek=fields.Selection([('0','Monday'),('1','Tuesday'),('2','Wednesday'),('3','Thursday'),('4','Friday'),('5','Saturday'),('6','Sunday')], string='Day of Week', required=True, select=True)
-    sunday   = fields.Integer(string='S')    
+    sunday   = fields.Integer(string='S')
     monday  = fields.Integer(string='M')
     tuesday   = fields.Integer(string='T')
     wednesday   = fields.Integer(string='W')
@@ -2592,26 +2855,26 @@ class  noof_spots(models.Model):
     friday   = fields.Integer(string='F')
     saturday   = fields.Integer(string='S')
     spot_total  = fields.Integer(string='TOTAL SPOTS= ' , compute='_compute_spots' , store=True)
-    weeks  = fields.Integer(string='WEEKS')    
-    
-    description = fields.Text('Description', translate=True) 
+    weeks  = fields.Integer(string='WEEKS')
 
-    
+    description = fields.Text('Description', translate=True)
+
+
     #@api.one
     #@api.depends('sunday' , 'monday','tuesday' ,'wednesday'  , 'thursday'  ,'friday'  , 'saturday')
     #def  _compute_spots(self):
         #self.total = self.sunday + self.monday + self.tuesday+ self.wednesday+self.thursday + self.friday + self.saturday
     @api.one
-    @api.depends('sunday' , 'monday','tuesday' ,'wednesday'  , 'thursday'  ,'friday'  , 'saturday')    
+    @api.depends('sunday' , 'monday','tuesday' ,'wednesday'  , 'thursday'  ,'friday'  , 'saturday')
     def _compute_spots(self):
         self.spot_total = False
         for  line  in  self:
             total  = line.sunday + line.monday + line.tuesday+ line.wednesday+line.thursday + line.friday + line.saturday
         self.update({'spot_total':total})
-        
-        
-        
-        
+
+
+
+
     #def  on_change_spots(self,cr,user,ids,sunday , monday,tuesday ,wednesday  , thursday  ,friday  , saturday,context=None):
         #total  = sunday + monday+tuesday + wednesday  + thursday  + friday  + saturday
         #res  = {
@@ -2620,20 +2883,20 @@ class  noof_spots(models.Model):
             #}
         #}
         #return res
-    
+
     spot_week_id = fields.One2many(
               'noof.spots',
               'spot_week_id',
               string='WEEK SPOTS',
-          )        
+          )
 
 
 class  spot_weeks(models.Model):
     _name = 'spot_week'
-    
+
     name=fields.Selection(selection=year_week_no, string='Year Week No')
     noof_spots_id = fields.Many2one('noof.spots',string='WEEKLY SPOTS',help='Select a weekly  spot for this product')
-    
+
 class  rate(models.Model):
     _name  = 'rate'
     name = fields.Char(string='RATE OUTLET TIMEBAND NAME' , required=True , help='RATE NAME  IS  BASED ON CHOSEN AUTOFIELD TIMEBAND OUTLET ')
@@ -2734,18 +2997,18 @@ class SaleOrder(models.Model):
     }
 
 
-    
+
     def onchange_outlet(self,cr,uid,ids,outlet_id):
             result = {'value':{'outlet_type_id':False}}
             if  outlet_id:
                 outlet = self.pool.get('outlet').browse(cr,uid,outlet_id)
-                print  outlet 
+                print  outlet
                 result['value'] = {'outlet_type_id':outlet.outlet_type_id.id}
-            return result    
+            return result
 
 
     partner_order_id = fields.Many2one('res.partner', 'Sales Person', domain=[('is_company', '=', False)])
-    
+
 
     @api.multi
     def onchange_partner_id(self, partner_id):

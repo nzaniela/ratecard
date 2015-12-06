@@ -11,10 +11,14 @@
                             <button name="action_draft" states="cancel" type="object" string="Set to Quotation"/>
                             <button name="action_done" type="object" string="Set to Done" states="sale"
                                 help="If a sale order is done, you cannot modify it manually anymore. However, you will still be able to invoice or deliver. This is used to freeze the sale order."/>
-                            <field name="state" widget="statusbar" statusbar_visible="draft,sent,sale,done"/>
-                        </header>                            
-                            
+                                <field name="state" widget="statusbar" statusbar_visible="draft,sent,sale,done"/>
+                        </header>
+                        <group colspan="2" col="2">
+                            <button name="%(action_ratecard_rnd)d"  string="RATECARD SCHEDULE RND" type="action" icon="gtk-ok"  context="{'return':'return'}" />
+                        </group>
+
                                     <group colspan="4"  col="4" >
+
                                         <tree  editable="bottom">
                                                 <group colspan="2"  col="2" >
                                                      <field name='name'/>
