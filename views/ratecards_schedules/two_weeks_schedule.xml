@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+                <!--   -->
+        <record id="view_two_weeks_schedule_form" model="ir.ui.view">
+            <field name="name">two.weeks.schedule</field>
+            <field name="model">two.weeks.schedule</field>
+            <field name="arch" type="xml">
+                <form string="SCHEDULING">
+                    <header>
+                        <group>
+                            <button name="call_another"  type="object" string="INVOKE EVENT" class="oe_highlight"/>
+                            <button name="got_something" type="object" string="LOAD" class="oe_highlight"/>
+
+                        </group>
+                    </header>
+                        <!--<span groups="base.group_user">-->
+                            <!--<button string="SCHEDULE" type="object" name="print_report" class="oe_highlight" />-->
+                        <!--</span>-->
+
+                    <group col="4" colspan="4">
+                        <newline/>
+                        <field name="allocating_times"/>
+                        <newline/>
+                        <field name="scheduled"/>
+                        <newline/>
+                        <field name="from_date" />
+                        <field name="to_date" />
+                    </group>
+
+                    <separator string="SCHEDULE ALLOCATION WEEK 1 " />
+
+                     <tree  string="SCHEDULE" editable="top">
+                                             <group col="4" colspan="4">
+                                                <field name='monday'/>
+                                                <field name='tuesday'/>
+                                                <field name='wednesday'/>
+                                                <field name='thursday'/>
+                                                <field name='friday'/>
+                                                <field name='saturday'/>
+                                                 <field name='sunday'/>
+                                                 <newline/>
+                                                  <newline/>
+
+                                                 <field name="spot_total"/>
+                                               <field name='price_subtotal'/>
+                                       </group>
+                    </tree>
+
+                    <separator string="SCHEDULE ALLOCATION WEEK 2 " />
+
+                     <tree  string="SCHEDULE" editable="top">
+                                             <group col="4" colspan="4">
+                                                <field name='_monday'/>
+                                                <field name='_tuesday'/>
+                                                <field name='_wednesday'/>
+                                                <field name='_thursday'/>
+                                                <field name='_friday'/>
+                                                <field name='_saturday'/>
+                                                 <field name='_sunday'/>
+                                                  <newline/>
+                                                  <newline/>
+                                                 <field name="_spot_total"/>
+                                               <field name='_price_subtotal'/>
+                                       </group>
+                    </tree>
+
+                        <group col="4">
+                            <button name="compute_scheduled_for" string="SCHEDULED_FOR ALTER" type="object" class="oe_highlight"/>
+                        </group>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_two_weeks_schedule_tree" model="ir.ui.view">
+            <field name="name">two.weeks.schedule.tree</field>
+            <field name="model">two.weeks.schedule</field>
+            <field name="arch" type="xml">
+                <tree string="SCHEDULE RATECARDS">
+                       <field name="user_id"/>
+                        <field name="scheduled"/>
+                        <field name="from_date" />
+                        <field name="to_date" />
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_two_weeks_schedule" model="ir.actions.act_window">
+            <field name="name">SCHEDULE RATECARDS</field>
+            <field name="res_model">two.weeks.schedule</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+          <menuitem id="timeorder_two_weeks_schedule_menu" name="RATECARDS SCHEDULE" sequence="17" parent ="timeorder_management_menu"/>
+        <menuitem  name="SCHEDULE TWO WEEK" id="menu_two_weeks_schedule"  action="action_two_weeks_schedule"  parent="timeorder_two_weeks_schedule_menu"/>
+         </data>
+</openerp>
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+                <!--   -->
+        <record id="view_two_weeks_schedule_form" model="ir.ui.view">
+            <field name="name">two.weeks.schedule</field>
+            <field name="model">two.weeks.schedule</field>
+            <field name="arch" type="xml">
+                <form string="SCHEDULING">
+                    <header>
+                        <group>
+                            <button name="call_another"  type="object" string="INVOKE EVENT" class="oe_highlight"/>
+                            <button name="got_something" type="object" string="LOAD" class="oe_highlight"/>
+
+                        </group>
+                    </header>
+                        <!--<span groups="base.group_user">-->
+                            <!--<button string="SCHEDULE" type="object" name="print_report" class="oe_highlight" />-->
+                        <!--</span>-->
+
+                    <group col="4" colspan="4">
+                        <newline/>
+                        <field name="allocating_times"/>
+                        <newline/>
+                        <field name="scheduled"/>
+                        <newline/>
+                        <field name="from_date" />
+                        <field name="to_date" />
+                    </group>
+
+                    <separator string="SCHEDULE ALLOCATION WEEK 1 " />
+
+                     <tree  string="SCHEDULE" editable="top">
+                                             <group col="4" colspan="4">
+                                                <field name='monday'/>
+                                                <field name='tuesday'/>
+                                                <field name='wednesday'/>
+                                                <field name='thursday'/>
+                                                <field name='friday'/>
+                                                <field name='saturday'/>
+                                                 <field name='sunday'/>
+                                                 <newline/>
+                                                  <newline/>
+
+                                                 <field name="spot_total"/>
+                                               <field name='price_subtotal'/>
+                                       </group>
+                    </tree>
+
+                    <separator string="SCHEDULE ALLOCATION WEEK 2 " />
+
+                     <tree  string="SCHEDULE" editable="top">
+                                             <group col="4" colspan="4">
+                                                <field name='_monday'/>
+                                                <field name='_tuesday'/>
+                                                <field name='_wednesday'/>
+                                                <field name='_thursday'/>
+                                                <field name='_friday'/>
+                                                <field name='_saturday'/>
+                                                 <field name='_sunday'/>
+                                                  <newline/>
+                                                  <newline/>
+                                                 <field name="_spot_total"/>
+                                               <field name='_price_subtotal'/>
+                                       </group>
+                    </tree>
+
+                        <group col="4">
+                            <button name="compute_scheduled_for" string="SCHEDULED_FOR ALTER" type="object" class="oe_highlight"/>
+                        </group>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_two_weeks_schedule_tree" model="ir.ui.view">
+            <field name="name">two.weeks.schedule.tree</field>
+            <field name="model">two.weeks.schedule</field>
+            <field name="arch" type="xml">
+                <tree string="SCHEDULE RATECARDS">
+                       <field name="user_id"/>
+                        <field name="scheduled"/>
+                        <field name="from_date" />
+                        <field name="to_date" />
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_two_weeks_schedule" model="ir.actions.act_window">
+            <field name="name">SCHEDULE RATECARDS</field>
+            <field name="res_model">two.weeks.schedule</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+          <menuitem id="timeorder_two_weeks_schedule_menu" name="RATECARDS SCHEDULE" sequence="17" parent ="timeorder_management_menu"/>
+        <menuitem  name="SCHEDULE TWO WEEK" id="menu_two_weeks_schedule"  action="action_two_weeks_schedule"  parent="timeorder_two_weeks_schedule_menu"/>
+         </data>
+</openerp>

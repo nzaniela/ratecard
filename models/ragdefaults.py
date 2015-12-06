@@ -1002,6 +1002,93 @@ class  ratecard_sin_radio(models.Model):
     week_id =fields.Many2one(comodel_name='week',string='SCHEDULE SPOTS')
     schedule_week  =  fields.Integer(string='SCHEDULE WEEKS' , default=4)
 
+    @api.multi
+    def  dynamic_call_create_schedule_model(self):
+        self.ensure_one()
+        res = {}
+        ids=self._ids
+        cr = self._cr
+        uid = self._uid
+        context = self._context
+        if context is None: context = {}
+        order_obj=self.pool.get('ratecard.multiple')
+        if context is None:
+            context={}
+
+        active_ids=context.get('active_ids')
+        for order in order_obj.browse(cr, uid, active_ids, context=context):
+            print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+            print  '%%% Multiple Ratecard Scheduled For' , order.scheduled_for
+            print  '%%% Multiple Ratecard NAME' , order.name
+            print  '%%% Multiple Ratecard CODE' , order.code
+            print  '%%% Multiple Minimum  Weeks' , order.min_weeks
+            print  '%%% Multiple Ratecard Maximum Weeks' , order.max_weeks
+            print  "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+
+            if  order.scheduled_for == 5:
+                view_id = self.env.ref('ragtimeorder.view_week_form').id
+    #	context = self._context.copy()
+                res = {
+                            'name':_('SCHEDULE RATECARD'),
+                            'view_type': 'form',
+                            'view_mode': 'form',
+                            'views': [(view_id, 'form'), ],
+                            'res_model': 'week',
+                           # 'context': self._context,
+                            'type': 'ir.actions.act_window',
+                            'target': 'new',
+                            'flags': {'action_buttons': True},
+
+                }
+            elif  order.scheduled_for == 2:
+                form_id = self.env.ref('ragtimeorder.view_schedule_ratecards_form').id
+                tree_id = self.env.ref('ragtimeorder.view_schedule_ratecards_tree').id
+                res  =  {
+                    'name':_('SCHEDULE RATECARD TWO WEEKS '),
+                    'view_mode': 'form',
+                    'view_type': 'form',
+                    'view_id': [form_id,tree_id],
+                    'res_model': 'schedule.ratecards',
+                    'type': 'ir.actions.act_window',
+                    'target': 'new',
+                    'context':context,
+                    # 'context': {
+                    #         'default_scheduled_for': order.scheduled_for,
+                    #         'default_code' : order.code,
+                    #         'default_min_weeks': order.min_weeks,
+                    #         'default_name':order.name,
+                    #
+                    # },
+                    'res_id': ids[0],
+                    'nodestroy': True,
+                    # 'context': {
+                    #         'default_scheduled_for': order.scheduled_for,
+                    #         'default_code' : order.code,
+                    #         'default_min_weeks': order.min_weeks,
+                    #         'default_name':order.name,
+                    #         'close_after_process': True,
+                    #   },
+                    'flags': {'form': {'action_buttons': True}}
+
+
+                }
+            else :
+
+                view_obj = self.pool.get('ir.ui.view')
+                view_id = view_obj.search(cr, uid, [('model', '=', self._name), \
+                                             ('name', '=', self._name+'.view')])
+                res  =  {
+                        'view_mode': 'form',
+                        'view_type': 'form',
+                        'view_id': view_id or False,
+                        'res_model': self._name,
+                        'context': context,
+                        'type': 'ir.actions.act_window',
+                        'target': 'new',
+                        'flags': {'form': {'action_buttons': True}}
+
+                            }
+        return  res
 
     @api.multi
     def scheduler(self):
@@ -1244,7 +1331,8 @@ class  ratecard_multiple(models.Model):
    # _inherits = {'ratecard.sinmul':'ratecard_sinmul_id'}
     name = fields.Char(string='Multiple RateCard Product  Name ' ,required=True)
     code  = fields.Char(string='Multiple RateCard Code ',readonly=True)
-    scheduled_for  = fields.Integer(string='SCHEDULED FOR',  compute='_compute_scheduled_for',default=1 ,track_visibility='always',store=True , readonly=True)
+    scheduled_for = fields.Integer(string='SCHEDULED FOR', default=1 ,track_visibility='always' ,store=True)
+    # scheduled_for  = fields.Integer(string='SCHEDULED FOR',  compute='_compute_scheduled_for',default=1 ,track_visibility='always',store=True)
     min_weeks = fields.Integer(string="MINIMUM NO OF WEEKS" , default=1 ,store=True)
     max_weeks = fields.Integer(string="Maximum NO OF WEEKS" , default=1, track_visibility='always' ,store=True)
 
@@ -1320,6 +1408,14 @@ class  ratecard_multiple(models.Model):
 
     amount_total = fields.Integer(string='TOTAL', store=True, readonly=True, compute='_amount_all', track_visibility='always')
     total_spot = fields.Integer(string='SPOT  TOTAL', store=True, readonly=True, compute='_amount_all', track_visibility='always')
+
+    @api.multi
+    def ratecard_multiple_print(self):
+        '''This function prints the ratecard_multiple  '''
+        self.ensure_one()
+        report_obj = self.env['ir.actions.report.xml']
+        report_name = report_obj.get_report_name('ratecard.multiple', self.ids)
+        return self.env['report'].get_action(self, report_name)
 
 
     @api.one
@@ -1838,12 +1934,17 @@ class ratecard_rnd(models.Model):
         ids=self._ids
         cr = self._cr
         uid = self._uid
-        context = self._context
-        if context is None: context = {}
+        context = self._context.copy()
+        # context.update({
+        #     'default_code': self.code,
+        #     'default_name': self.name,
+        #     'default_reference': self.name,
+        #     'close_after_process': True,
+        #     'ratecard_multiple_id': self.id,
+        #     'default_company_id': self.company_id.id,
+        #     'type': 'code',
+        #     })
         order_obj=self.pool.get('ratecard.multiple')
-        if context is None:
-            context={}
-
         active_ids=context.get('active_ids')
         for order in order_obj.browse(cr, uid, active_ids, context=context):
             print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
@@ -1853,6 +1954,15 @@ class ratecard_rnd(models.Model):
             print  '%%% Multiple Minimum  Weeks' , order.min_weeks
             print  '%%% Multiple Ratecard Maximum Weeks' , order.max_weeks
             print  "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+            context.update({
+            'default_code': order.code,
+            'default_name': order.name,
+            'default_reference': order.name,
+            'close_after_process': True,
+            'default_res_id': order.ids[0],
+            'ratecard_multiple_id': self.id,
+            'type': 'code',
+            })
 
             if  order.scheduled_for == 5:
                 view_id = self.env.ref('ragtimeorder.view_week_form').id
@@ -1870,31 +1980,23 @@ class ratecard_rnd(models.Model):
 
                 }
             elif  order.scheduled_for == 2:
-                form_id = self.env.ref('ragtimeorder','view_schedule_ratecards_form').id
-                tree_id = self.env.ref('ragtimeorder' , 'view_schedule_ratecards_tree').id
-                #	context = self._context.copy()
-               # self.name = "SCHEDULE RATECARD TWO WEEKS "
-                res =  {
-                        'name':_('SCHEDULE RATECARD TWO WEEKS '),
-                        'context': self.env.context,
-                        'view_type': 'form',
-                        'view_mode': 'tree,form',
-                        'views': [(form_id, 'form'),(tree_id ,'tree')],
-                        'res_model': 'schedule.ratecards',
-                        'type': 'ir.actions.act_window',
-                        'res_id': self.id,
-                       # 'type':'ir.actions.client',
-                        'target': 'current',
-                       # 'domain':[('id' , 'in', [x.id for  x  in self.order])],
-                        'tag':'reload',
-                        'flags': {'action_buttons': True},
-                        # 'context': {
-                        #         'default_scheduled_for': order.scheduled_for,
-                        #         'default_code' : order.code,
-                        #         'default_min_weeks': order.min_weeks,
-                        #         'default_name':order.name,
-                        #         'close_after_process': True,
-                        #     }
+                view_id = self.env.ref('ragtimeorder.view_two_weeks_schedule_form').id
+                form_id = self.env.ref('ragtimeorder.view_two_weeks_schedule_form').id
+                tree_id = self.env.ref('ragtimeorder.view_two_weeks_schedule_tree').id
+                res = {
+                            'name':_('SCHEDULE RATECARD'),
+                            'view_type': 'form',
+                            'view_mode': 'form',
+                            'views': [(view_id, 'form'), ],
+                            'res_model': 'two.weeks.schedule',
+                          #  'res_id':self.id,
+                            'type': 'ir.actions.act_window',
+                            'nodestroy': True,
+                            'target': 'new',
+                            'domain': '[]',
+                            'context': context,
+                            'flags': {'form': {'action_buttons': True}}
+
 
                 }
             else :
@@ -1914,6 +2016,7 @@ class ratecard_rnd(models.Model):
 
                             }
         return  res
+
 
 
 
@@ -2114,8 +2217,8 @@ class generic_request(models.TransientModel):
                 'type': 'ir.actions.act_window_close',
          }
 
-class ScheduleRatecards(models.TransientModel):
-    _name = 'schedule.ratecards'
+class TwoWeeksSchedule(models.Model):
+    _name = 'two.weeks.schedule'
     user_id = fields.Many2one('res.users', 'User')
     scheduled = fields.Integer(string='SCHEDULED')
     my_field = fields.Integer(string='VALUE PASSED')
@@ -2383,6 +2486,321 @@ class ScheduleRatecards(models.TransientModel):
                 'target': 'new',
                 'flags': {'action_buttons': True},
         }
+
+class ThreeWeeksSchedule(models.Model):
+    _name = 'three.weeks.schedule'
+    user_id = fields.Many2one('res.users', 'User')
+    scheduled = fields.Integer(string='SCHEDULED')
+    my_field = fields.Integer(string='VALUE PASSED')
+    from_date = fields.Date(
+        'From Date', required=True, default=lambda self: fields.Date.today())
+    to_date = fields.Date(
+        'To Date', required=True, default=lambda self: fields.Date.today())
+
+    allocating_times = fields.Boolean('ALLOCATING TIMES',  copy=False)
+
+
+    _defaults = {
+        'allocating_times': lambda *a: False,
+    }
+
+    monday  = fields.Integer(string='MON')
+    tuesday   = fields.Integer(string='TUE')
+    wednesday   = fields.Integer(string='WED')
+    thursday   = fields.Integer(string='THUR')
+    friday   = fields.Integer(string='FRI')
+    saturday   = fields.Integer(string='SAT')
+    sunday   = fields.Integer(string='SUN')
+    spot_total  = fields.Integer( compute='compute_totalspots' , string='SPOTS TOTAL' ,readonly=True ,  store=True)
+
+    price_subtotal = fields.Integer(compute='compute_spotrateweektotal', string='SUBTOTAL', readonly=True, store=True)
+
+    _monday  = fields.Integer(string='MON')
+    _tuesday   = fields.Integer(string='TUE')
+    _wednesday   = fields.Integer(string='WED')
+    _thursday   = fields.Integer(string='THUR')
+    _friday   = fields.Integer(string='FRI')
+    _saturday   = fields.Integer(string='SAT')
+    _sunday   = fields.Integer(string='SUN')
+
+    _spot_total  = fields.Integer( compute='_compute_totalspots' , string='SPOTS TOTAL' ,readonly=True ,  store=True)
+
+    _price_subtotal = fields.Integer(compute='_compute_spotrateweektotal', string='SUBTOTAL', readonly=True, store=True)
+
+
+    __monday  = fields.Integer(string='MON')
+    __tuesday   = fields.Integer(string='TUE')
+    __wednesday   = fields.Integer(string='WED')
+    __thursday   = fields.Integer(string='THUR')
+    __friday   = fields.Integer(string='FRI')
+    __saturday   = fields.Integer(string='SAT')
+    __sunday   = fields.Integer(string='SUN')
+
+    __spot_total  = fields.Integer( compute='__compute_totalspots' , string='SPOTS TOTAL' ,readonly=True ,  store=True)
+
+    __price_subtotal = fields.Integer(compute='__compute_spotrateweektotal', string='SUBTOTAL', readonly=True, store=True)
+
+
+    @api.one
+    @api.depends('sunday' , 'monday','tuesday' ,'wednesday'  , 'thursday'  ,'friday'  , 'saturday')
+    def compute_totalspots(self):
+        for order in self:
+            for  line  in  order:
+                spottotal  = line.sunday + line.monday + line.tuesday+ line.wednesday+line.thursday + line.friday + line.saturday
+            self.update({'spot_total':spottotal})
+
+    @api.one
+    @api.depends('sunday' , 'monday','tuesday' ,'wednesday'  , 'thursday'  ,'friday'  , 'saturday')
+    def compute_spotrateweektotal(self):
+        for order in self:
+            for  line  in  order:
+                week_spot_total  = line.sunday + line.monday + line.tuesday+ line.wednesday+line.thursday + line.friday + line.saturday
+                subtotal = week_spot_total *1
+            self.update({'price_subtotal':subtotal})
+
+    @api.one
+    @api.depends('_sunday' , '_monday','_tuesday' ,'_wednesday'  , '_thursday'  ,'_friday'  , '_saturday')
+    def _compute_totalspots(self):
+        for order in self:
+            for  line  in  order:
+                _spottotal  = line._sunday + line._monday + line._tuesday+ line._wednesday+line._thursday + line._friday + line._saturday
+            self.update({'_spot_total':_spottotal})
+
+    @api.one
+    @api.depends('_sunday' ,'_monday','_tuesday' ,'_wednesday'  , '_thursday'  ,'_friday'  , '_saturday')
+    def _compute_spotrateweektotal(self):
+        for order in self:
+            for  line  in  order:
+                week_spot_total  = line._sunday + line._monday + line._tuesday+ line._wednesday+line._thursday + line._friday + line._saturday
+                _subtotal = week_spot_total *  1
+            self.update({'_price_subtotal':_subtotal})
+
+      #THIRD  WEEK
+    @api.one
+    @api.depends('__sunday' , '__monday','__tuesday' ,'__wednesday'  , '__thursday'  ,'__friday'  , '__saturday')
+    def __compute_totalspots(self):
+        for order in self:
+            for  line  in  order:
+                __spottotal  = line.__sunday + line.__monday + line.__tuesday+ line.__wednesday+line.__thursday + line.__friday + line.__saturday
+            self.update({'_spot_total':__spottotal})
+
+    @api.one
+    @api.depends('__sunday' ,'__monday','__tuesday' ,'__wednesday'  , '__thursday'  ,'__friday'  , '__saturday')
+    def __compute_spotrateweektotal(self):
+        for order in self:
+            for  line  in  order:
+                week_spot_total  = line.__sunday + line.__monday + line.__tuesday+ line.__wednesday+line.__thursday + line.__friday + line.__saturday
+                __subtotal = week_spot_total *  1
+            self.update({'__price_subtotal':__subtotal})
+
+
+
+
+    @api.one
+    @api.constrains('from_date', 'to_date')
+    def check_dates(self):
+        from_date = fields.Date.from_string(self.from_date)
+        to_date = fields.Date.from_string(self.to_date)
+        if to_date < from_date:
+            raise exceptions.ValidationError("From Date is not greater than To Date!")
+
+
+
+    def compute_scheduled_for(self, cr, uid, ids, context=None):
+        calve_obj = self.pool.get('ratecard.multiple')
+        if context is None:
+            context = {}
+        cnt = 0
+        for ac in calve_obj.browse(cr,uid,context.get('active_ids',[])):
+            print  'PRINT ID ' , ac.id
+            if ac.scheduled_for != 0:
+                print  'SCHEDULED_FOR ' , ac.scheduled_for
+                ac.scheduled_for = 10
+                print  'ALTERED SCHEDULED_FOR' ,ac.scheduled_for
+                continue
+            print  calve_obj.scheduled_for(cr,uid,[ac.id],context)
+            cnt+=1
+            print cnt,"ac..confirmed"
+        return cnt
+
+
+
+
+    def write_boolean(self, cr, uid, ids, context=None):
+        return self.write(cr, uid, ids, {'checked': True})
+
+class FourWeeksSchedule(models.Model):
+    _name = 'four.weeks.schedule'
+    user_id = fields.Many2one('res.users', 'User')
+    scheduled = fields.Integer(string='SCHEDULED')
+    my_field = fields.Integer(string='VALUE PASSED')
+    from_date = fields.Date(
+        'From Date', required=True, default=lambda self: fields.Date.today())
+    to_date = fields.Date(
+        'To Date', required=True, default=lambda self: fields.Date.today())
+
+    allocating_times = fields.Boolean('ALLOCATING TIMES',  copy=False)
+
+
+    _defaults = {
+        'allocating_times': lambda *a: False,
+    }
+
+    monday  = fields.Integer(string='MON')
+    tuesday   = fields.Integer(string='TUE')
+    wednesday   = fields.Integer(string='WED')
+    thursday   = fields.Integer(string='THUR')
+    friday   = fields.Integer(string='FRI')
+    saturday   = fields.Integer(string='SAT')
+    sunday   = fields.Integer(string='SUN')
+    spot_total  = fields.Integer( compute='compute_totalspots' , string='SPOTS TOTAL' ,readonly=True ,  store=True)
+
+    price_subtotal = fields.Integer(compute='compute_spotrateweektotal', string='SUBTOTAL', readonly=True, store=True)
+
+    _monday  = fields.Integer(string='MON')
+    _tuesday   = fields.Integer(string='TUE')
+    _wednesday   = fields.Integer(string='WED')
+    _thursday   = fields.Integer(string='THUR')
+    _friday   = fields.Integer(string='FRI')
+    _saturday   = fields.Integer(string='SAT')
+    _sunday   = fields.Integer(string='SUN')
+
+    _spot_total  = fields.Integer( compute='_compute_totalspots' , string='SPOTS TOTAL' ,readonly=True ,  store=True)
+
+    _price_subtotal = fields.Integer(compute='_compute_spotrateweektotal', string='SUBTOTAL', readonly=True, store=True)
+
+
+    __monday  = fields.Integer(string='MON')
+    __tuesday   = fields.Integer(string='TUE')
+    __wednesday   = fields.Integer(string='WED')
+    __thursday   = fields.Integer(string='THUR')
+    __friday   = fields.Integer(string='FRI')
+    __saturday   = fields.Integer(string='SAT')
+    __sunday   = fields.Integer(string='SUN')
+
+    __spot_total  = fields.Integer( compute='__compute_totalspots' , string='SPOTS TOTAL' ,readonly=True ,  store=True)
+
+    __price_subtotal = fields.Integer(compute='__compute_spotrateweektotal', string='SUBTOTAL', readonly=True, store=True)
+
+
+
+    monday_  = fields.Integer(string='MON')
+    tuesday_   = fields.Integer(string='TUE')
+    wednesday_   = fields.Integer(string='WED')
+    thursday_   = fields.Integer(string='THUR')
+    friday_   = fields.Integer(string='FRI')
+    saturday_   = fields.Integer(string='SAT')
+    sunday_   = fields.Integer(string='SUN')
+    spot_total_  = fields.Integer( compute='compute_totalspots_' , string='SPOTS TOTAL' ,readonly=True ,  store=True)
+
+    price_subtotal_ = fields.Integer(compute='compute_spotrateweektotal_', string='SUBTOTAL', readonly=True, store=True)
+
+
+    @api.one
+    @api.depends('sunday' , 'monday','tuesday' ,'wednesday'  , 'thursday'  ,'friday'  , 'saturday')
+    def compute_totalspots(self):
+        for order in self:
+            for  line  in  order:
+                spottotal  = line.sunday + line.monday + line.tuesday+ line.wednesday+line.thursday + line.friday + line.saturday
+            self.update({'spot_total':spottotal})
+
+    @api.one
+    @api.depends('sunday' , 'monday','tuesday' ,'wednesday'  , 'thursday'  ,'friday'  , 'saturday')
+    def compute_spotrateweektotal(self):
+        for order in self:
+            for  line  in  order:
+                week_spot_total  = line.sunday + line.monday + line.tuesday+ line.wednesday+line.thursday + line.friday + line.saturday
+                subtotal = week_spot_total *1
+            self.update({'price_subtotal':subtotal})
+
+
+
+
+    @api.one
+    @api.depends('_sunday' , '_monday','_tuesday' ,'_wednesday'  , '_thursday'  ,'_friday'  , '_saturday')
+    def _compute_totalspots(self):
+        for order in self:
+            for  line  in  order:
+                _spottotal  = line._sunday + line._monday + line._tuesday+ line._wednesday+line._thursday + line._friday + line._saturday
+            self.update({'_spot_total':_spottotal})
+
+    @api.one
+    @api.depends('_sunday' ,'_monday','_tuesday' ,'_wednesday'  , '_thursday'  ,'_friday'  , '_saturday')
+    def _compute_spotrateweektotal(self):
+        for order in self:
+            for  line  in  order:
+                week_spot_total  = line._sunday + line._monday + line._tuesday+ line._wednesday+line._thursday + line._friday + line._saturday
+                _subtotal = week_spot_total *  1
+            self.update({'_price_subtotal':_subtotal})
+
+    @api.one
+    @api.depends('__sunday' , '__monday','__tuesday' ,'__wednesday'  , '__thursday'  ,'__friday'  , '__saturday')
+    def __compute_totalspots(self):
+        for order in self:
+            for  line  in  order:
+                __spottotal  = line.__sunday + line.__monday + line.__tuesday+ line.__wednesday+line.__thursday + line.__friday + line.__saturday
+            self.update({'_spot_total':__spottotal})
+
+    @api.one
+    @api.depends('__sunday' ,'__monday','__tuesday' ,'__wednesday'  , '__thursday'  ,'__friday'  , '__saturday')
+    def __compute_spotrateweektotal(self):
+        for order in self:
+            for  line  in  order:
+                week_spot_total  = line.__sunday + line.__monday + line.__tuesday+ line.__wednesday+line.__thursday + line.__friday + line.__saturday
+                __subtotal = week_spot_total *  1
+            self.update({'__price_subtotal':__subtotal})
+
+   #FOURTH
+    @api.one
+    @api.depends('sunday_' , 'monday_','tuesday_' ,'wednesday_'  , 'thursday_'  ,'friday_'  , 'saturday_')
+    def compute_totalspots_(self):
+        for order in self:
+            for  line  in  order:
+                spottotal  = line.sunday + line.monday + line.tuesday+ line.wednesday+line.thursday + line.friday + line.saturday
+            self.update({'spot_total_':spottotal})
+
+    @api.one
+    @api.depends('sunday_' , 'monday_','tuesday_' ,'wednesday_'  , 'thursday_'  ,'friday_'  , 'saturday_')
+    def compute_spotrateweektotal_(self):
+        for order in self:
+            for  line  in  order:
+                week_spot_total  = line.sunday_ + line.monday_ + line.tuesday_+ line.wednesday_+line.thursday_ + line.friday_ + line.saturday_
+                subtotal = week_spot_total *1
+            self.update({'price_subtotal_':subtotal})
+
+
+    @api.one
+    @api.constrains('from_date', 'to_date')
+    def check_dates(self):
+        from_date = fields.Date.from_string(self.from_date)
+        to_date = fields.Date.from_string(self.to_date)
+        if to_date < from_date:
+            raise exceptions.ValidationError("From Date is not greater than To Date!")
+
+
+
+    def compute_scheduled_for(self, cr, uid, ids, context=None):
+        calve_obj = self.pool.get('ratecard.multiple')
+        if context is None:
+            context = {}
+        cnt = 0
+        for ac in calve_obj.browse(cr,uid,context.get('active_ids',[])):
+            print  'PRINT ID ' , ac.id
+            if ac.scheduled_for != 0:
+                print  'SCHEDULED_FOR ' , ac.scheduled_for
+                ac.scheduled_for = 10
+                print  'ALTERED SCHEDULED_FOR' ,ac.scheduled_for
+                continue
+            print  calve_obj.scheduled_for(cr,uid,[ac.id],context)
+            cnt+=1
+            print cnt,"ac..confirmed"
+        return cnt
+
+
+
+
+    def write_boolean(self, cr, uid, ids, context=None):
+        return self.write(cr, uid, ids, {'checked': True})
 
 
 class LoadToOtherWizard(models.TransientModel):

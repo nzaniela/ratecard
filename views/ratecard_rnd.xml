@@ -7,10 +7,27 @@
             <field name="model">ratecard.rnd</field>
             <field name="arch" type="xml">
                 <form string="RND RATECARD">
+                    <!--<header>-->
+                        <!--<group>-->
+                            <!--<button name="dynamic_call_create_schedule_model" string="SCHEDULE" type="object" class="oe_highlight"/>-->
+                            <!--<button special="cancel" string="Close" type="object" />-->
+                        <!--</group>-->
+                    <!--</header>-->
+
                     <group>
+                        <button icon='gtk-ok' name="dynamic_call_create_schedule_model"
+                                              string="CHOOSE SCHEDULE FOUR WEEKS" type="object" class="oe_highlight"/>
+
                         <field name="field_a"/>
                         <field name="field_b"/>
                     </group>
+
+                      <!--<footer>-->
+                        <!--<group>-->
+                            <!--<button name="dynamic_call_create_schedule_model" string="SCHEDULE" type="object" class="oe_highlight"/>-->
+                            <!--<button special="cancel" string="Close" type="object" />-->
+                        <!--</group>-->
+                    <!--</footer>-->
                         <!--<field name="field_c"/>-->
                 </form>
             </field>
@@ -35,7 +52,7 @@
             <field name="view_mode">tree,form</field>
         </record>
 
-          <menuitem id="timeorder_ratecard_rnd_menu" name="RESEARCH AND DEVELOPMENT" sequence="17" parent ="timeorder_management_menu"/>
+          <menuitem id="timeorder_ratecard_rnd_menu" name="RESEARCH AND DEVELOPMENT" sequence="3" parent ="timeorder_management_menu"/>
         <menuitem  name="RND RATECARDS" id="menu_ratecard_rnd"  action="action_ratecard_rnd"  parent="timeorder_ratecard_rnd_menu"/>
          </data>
 </openerp>

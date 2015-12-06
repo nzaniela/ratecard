@@ -26,7 +26,6 @@
         'views/opinion.xml',
         #NO OF SPOTS  WEEKLY MANAGEMENT
         'views/rag_defaults_week.xml',
-        'views/schedule_ratecards.xml',
 
         #
         'views/rag_defaults_timeband.xml',
@@ -60,16 +59,18 @@
         # 'views/rag_defaults_ratecard_mul.xml',
         'views/rag_defaults_ratecard_multiple.xml', 
         'views/rag_defaults_ratecard_multiples.xml', 
-        
-        
-        #MULTIPLE  QUOTATION
-        #'views/rag_defaults_quo_mul.xml',    
-        
-        
-             
-        
-        
         'views/rag_defaults_quote_stage.xml',
+
+        #SCHEDULING
+        # 'views/ratecards_schedules/two_weeks_schedule.xml',
+        # 'views/ratecards_schedules/three_weeks_schedule.xml',
+        # 'views/ratecards_schedules/four_weeks_schedule.xml',
+
+
+
+
+        #REPORTS
+        # 'views/ratecard_multiple/report_view.xml',
         
         
         

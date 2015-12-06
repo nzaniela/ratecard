@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="view_four_weeks_schedule_form" model="ir.ui.view">
+            <field name="name">four.weeks.schedule</field>
+            <field name="model">four.weeks.schedule</field>
+            <field name="arch" type="xml">
+                <form string="SCHEDULING">
+
+                    <group col="4" colspan="4">
+                        <newline/>
+                        <field name="allocating_times"/>
+                        <newline/>
+                        <field name="scheduled"/>
+                        <newline/>
+                        <field name="from_date" />
+                        <field name="to_date" />
+                    </group>
+
+                    <separator string="SCHEDULE ALLOCATION FIRST WEEK " />
+
+                     <tree  string="SCHEDULE" editable="top">
+                                             <group col="4" colspan="4">
+                                                <field name='monday'/>
+                                                <field name='tuesday'/>
+                                                <field name='wednesday'/>
+                                                <field name='thursday'/>
+                                                <field name='friday'/>
+                                                <field name='saturday'/>
+                                                 <field name='sunday'/>
+                                                 <newline/>
+                                                  <newline/>
+
+                                                 <field name="spot_total"/>
+                                               <field name='price_subtotal'/>
+                                       </group>
+                    </tree>
+
+                    <separator string="SCHEDULE ALLOCATION SECOND WEEK" />
+
+                     <tree  string="SCHEDULE" editable="top">
+                                             <group col="4" colspan="4">
+                                                <field name='_monday'/>
+                                                <field name='_tuesday'/>
+                                                <field name='_wednesday'/>
+                                                <field name='_thursday'/>
+                                                <field name='_friday'/>
+                                                <field name='_saturday'/>
+                                                 <field name='_sunday'/>
+                                                  <newline/>
+                                                  <newline/>
+                                                 <field name="_spot_total"/>
+                                               <field name='_price_subtotal'/>
+                                       </group>
+                    </tree>
+
+                    <separator string="SCHEDULE ALLOCATION THIRD WEEK " />
+
+                     <tree  string="SCHEDULE" editable="top">
+                                             <group col="4" colspan="4">
+                                                <field name='__monday'/>
+                                                <field name='__tuesday'/>
+                                                <field name='__wednesday'/>
+                                                <field name='__thursday'/>
+                                                <field name='__friday'/>
+                                                <field name='__saturday'/>
+                                                 <field name='__sunday'/>
+                                                  <newline/>
+                                                  <newline/>
+                                                 <field name="__spot_total"/>
+                                               <field name='__price_subtotal'/>
+                                       </group>
+                    </tree>
+
+                    <separator string="SCHEDULE ALLOCATION FOURTH WEEK " />
+
+                     <tree  string="SCHEDULE" editable="top">
+                                             <group col="4" colspan="4">
+                                                <field name='monday_'/>
+                                                <field name='tuesday_'/>
+                                                <field name='wednesday_'/>
+                                                <field name='thursday_'/>
+                                                <field name='friday_'/>
+                                                <field name='saturday_'/>
+                                                 <field name='sunday_'/>
+                                                 <newline/>
+                                                  <newline/>
+
+                                                 <field name="spot_total_"/>
+                                               <field name='price_subtotal_'/>
+                                       </group>
+                    </tree>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_four_weeks_schedule_tree" model="ir.ui.view">
+            <field name="name">four.weeks.schedule.tree</field>
+            <field name="model">four.weeks.schedule</field>
+            <field name="arch" type="xml">
+                <tree string="SCHEDULE RATECARDS">
+                       <field name="user_id"/>
+                        <field name="scheduled"/>
+                        <field name="from_date" />
+                        <field name="to_date" />
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_four_weeks_schedule" model="ir.actions.act_window">
+            <field name="name">SCHEDULE RATECARDS</field>
+            <field name="res_model">four.weeks.schedule</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+          <menuitem id="timeorder_four_weeks_schedule_menu" name="RATECARDS SCHEDULE" sequence="17" parent ="timeorder_management_menu"/>
+        <menuitem  name="SCHEDULE FOUR WEEKS" id="menu_four_weeks_schedule"  action="action_four_weeks_schedule"  parent="timeorder_four_weeks_schedule_menu"/>
+         </data>
+</openerp>
