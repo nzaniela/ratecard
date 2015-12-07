@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+                <!--   -->
+        <record id="view_one_week_schedule_form" model="ir.ui.view">
+            <field name="name">one.week.schedule</field>
+            <field name="model">one.week.schedule</field>
+            <field name="arch" type="xml">
+                <form string="SCHEDULING">
+                    <group col="4" colspan="4">
+                        <newline/>
+                        <field name="allocating_times"/>
+                        <newline/>
+                        <field name="scheduled"/>
+                        <newline/>
+                        <field name="from_date" />
+                        <field name="to_date" />
+                    </group>
+
+                    <separator string="ONE WEEK SCHEDULE ALLOCATION FOR  RATECARD " />
+
+                     <tree  string="SCHEDULE" editable="top">
+                                             <group col="4" colspan="4">
+                                                <field name='monday'/>
+                                                <field name='tuesday'/>
+                                                <field name='wednesday'/>
+                                                <field name='thursday'/>
+                                                <field name='friday'/>
+                                                <field name='saturday'/>
+                                                 <field name='sunday'/>
+                                                 <newline/>
+                                                  <newline/>
+
+                                                 <field name="spot_total"/>
+                                               <field name='price_subtotal'/>
+                                       </group>
+                    </tree>
+
+                </form>
+            </field>
+        </record>
+
+        <record id="view_one_week_schedule_tree" model="ir.ui.view">
+            <field name="name">one.week.schedule.tree</field>
+            <field name="model">one.week.schedule</field>
+            <field name="arch" type="xml">
+                <tree string="SCHEDULE RATECARDS">
+                        <field name="scheduled"/>
+                        <field name="from_date" />
+                        <field name="to_date" />
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_one_week_schedule" model="ir.actions.act_window">
+            <field name="name">SCHEDULE RATECARDS</field>
+            <field name="res_model">one.week.schedule</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem  name="ONE SCHEDULE WEEK" id="menu_one_week_schedule"  action="action_one_week_schedule"  parent="timeorder_weeks_schedule_menu"/>
+         </data>
+</openerp>

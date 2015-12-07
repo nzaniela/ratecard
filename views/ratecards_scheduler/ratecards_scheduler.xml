@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="view_ratecards_scheduler_form" model="ir.ui.view">
+            <field name="name">ratecards.scheduler</field>
+            <field name="model">ratecards.scheduler</field>
+            <field name="arch" type="xml">
+                <form string="RATECARDS SCHEDULER">
+                     <sheet>
+                        <group name="group_top">
+                            <group name="group_left">
+                                <field name="display_name"/>
+                                <group colspan="2">
+                                    <button icon='gtk-ok' name="dynamic_call_create_schedule_model" string="CREATE SCHEDULE" type="object" class="oe_highlight"/>
+                                </group>
+                            </group>
+                       </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_ratecards_scheduler_tree" model="ir.ui.view">
+            <field name="name">ratecards.scheduler.tree</field>
+            <field name="model">ratecards.scheduler</field>
+            <field name="arch" type="xml">
+                <tree string="RATECARDS SCHEDULER">
+                       <field name="display_name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_ratecards_scheduler" model="ir.actions.act_window">
+            <field name="name">RATECARDS SCHEDULER</field>
+            <field name="res_model">ratecards.scheduler</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+          <menuitem id="timeorder_ratecards_scheduler_menu" name="SCHEDULING" sequence="2" parent ="timeorder_management_menu"/>
+        <menuitem  name="RATECARDS SCHEDULER" id="menu_ratecards_scheduler"  action="action_ratecards_scheduler"  parent="timeorder_ratecards_scheduler_menu"/>
+         </data>
+</openerp>

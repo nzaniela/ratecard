@@ -27,6 +27,10 @@
         #NO OF SPOTS  WEEKLY MANAGEMENT
         'views/rag_defaults_week.xml',
 
+
+        #RATECARDS SCHEDULING
+        'views/ratecards_scheduler/ratecards_scheduler.xml',
+
         #
         'views/rag_defaults_timeband.xml',
         'views/rag_defaults_pages.xml',
@@ -62,9 +66,11 @@
         'views/rag_defaults_quote_stage.xml',
 
         #SCHEDULING
-        # 'views/ratecards_schedules/two_weeks_schedule.xml',
-        # 'views/ratecards_schedules/three_weeks_schedule.xml',
-        # 'views/ratecards_schedules/four_weeks_schedule.xml',
+        'views/ratecards_schedules/one_week_schedule.xml',
+        'views/ratecards_schedules/two_weeks_schedule.xml',
+        'views/ratecards_schedules/three_weeks_schedule.xml',
+        'views/ratecards_schedules/four_weeks_schedule.xml',
+
 
 
 

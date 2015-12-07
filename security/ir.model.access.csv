@@ -31,4 +31,9 @@ access_spot_week,access_spot_week,model_spot_week,,1,0,0,0
 access_rate,access_rate,model_rate,,1,0,0,0
 access_ratecard_rnd,access_ratecard_rnd,model_ratecard_rnd,,1,0,0,0
 access_rate_default,access_rate_default,model_rate_default,,1,0,0,0
+access_two_weeks_schedule,access_two_weeks_schedule,model_two_weeks_schedule,,1,0,0,0
+access_three_weeks_schedule,access_three_weeks_schedule,model_three_weeks_schedule,,1,0,0,0
+access_four_weeks_schedule,access_four_weeks_schedule,model_four_weeks_schedule,,1,0,0,0
+access_one_week_schedule,access_one_week_schedule,model_one_week_schedule,,1,0,0,0
+access_ratecards_scheduler,access_ratecards_scheduler,model_ratecards_scheduler,,1,0,0,0
 

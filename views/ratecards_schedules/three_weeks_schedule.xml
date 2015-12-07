@@ -8,6 +8,7 @@
                 <form string="SCHEDULING">
 
                     <group col="4" colspan="4">
+                        <field name="code" />
                         <newline/>
                         <field name="allocating_times"/>
                         <newline/>
@@ -54,21 +55,21 @@
                                        </group>
                     </tree>
 
-                    <separator string="SCHEDULE ALLOCATION THIRD WEEK " />
+                     <separator string="SCHEDULE ALLOCATION THIRD WEEK " />
 
                      <tree  string="SCHEDULE" editable="top">
                                              <group col="4" colspan="4">
-                                                <field name='__monday'/>
-                                                <field name='__tuesday'/>
-                                                <field name='__wednesday'/>
-                                                <field name='__thursday'/>
-                                                <field name='__friday'/>
-                                                <field name='__saturday'/>
-                                                 <field name='__sunday'/>
+                                                <field name='mon'/>
+                                                <field name='tue'/>
+                                                <field name='wed'/>
+                                                <field name='thur'/>
+                                                <field name='fri'/>
+                                                <field name='sat'/>
+                                                 <field name='sun'/>
                                                   <newline/>
                                                   <newline/>
-                                                 <field name="__spot_total"/>
-                                               <field name='__price_subtotal'/>
+                                                 <field name="total_spots"/>
+                                               <field name='third_total_spot'/>
                                        </group>
                     </tree>
                 </form>
@@ -80,7 +81,7 @@
             <field name="model">three.weeks.schedule</field>
             <field name="arch" type="xml">
                 <tree string="SCHEDULE RATECARDS">
-                       <field name="user_id"/>
+                    <field name="code"/>
                         <field name="scheduled"/>
                         <field name="from_date" />
                         <field name="to_date" />
@@ -95,7 +96,6 @@
             <field name="view_mode">tree,form</field>
         </record>
 
-          <menuitem id="timeorder_three_weeks_schedule_menu" name="RATECARDS SCHEDULE" sequence="17" parent ="timeorder_management_menu"/>
-        <menuitem  name="SCHEDULE THREE WEEKS" id="menu_three_weeks_schedule"  action="action_three_weeks_schedule"  parent="timeorder_three_weeks_schedule_menu"/>
+        <menuitem  name="SCHEDULE THREE WEEKS" id="menu_three_weeks_schedule"  action="action_three_weeks_schedule"  parent="timeorder_weeks_schedule_menu"/>
          </data>
 </openerp>

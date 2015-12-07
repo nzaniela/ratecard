@@ -15,6 +15,9 @@
                     <!--</header>-->
 
                     <group>
+                        <button name="action_four_weeks_schedule_form" string="FOUR WEEKS SCHEDULE"
+                                type="object" icon="terp-stock_effects-object-colorize" colspan="1"/>
+
                         <button icon='gtk-ok' name="dynamic_call_create_schedule_model"
                                               string="CHOOSE SCHEDULE FOUR WEEKS" type="object" class="oe_highlight"/>
 
