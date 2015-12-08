@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="view_passed_context_form" model="ir.ui.view">
+            <field name="name">passed.context</field>
+            <field name="model">passed.context</field>
+            <field name="arch" type="xml">
+                <form string="PASSED CONTEXT">
+                    <group col="4" colspan="4">
+                        <newline/>
+                        <field name="code"/>
+                        <newline/>
+                        <field name="scheduled_for" />
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_passed_context_tree" model="ir.ui.view">
+            <field name="name">passed.context.tree</field>
+            <field name="model">passed.context</field>
+            <field name="arch" type="xml">
+                <tree string="PASSED CONTEXT">
+                        <field name="code"/>
+                        <field name="scheduled_for" />
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_passed_context" model="ir.actions.act_window">
+            <field name="name">PASSED CONTEXT</field>
+            <field name="res_model">passed.context</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem  name="PASSED CONTEXT" id="menu_passed_context"  action="action_passed_context"  parent="timeorder_weeks_schedule_menu"/>
+         </data>
+</openerp>

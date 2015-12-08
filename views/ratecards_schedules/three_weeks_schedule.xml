@@ -6,17 +6,32 @@
             <field name="model">three.weeks.schedule</field>
             <field name="arch" type="xml">
                 <form string="SCHEDULING">
+                     <sheet>
+                        <group name="group_top">
+                            <group name="group_left">
+                                <field name="display_name"/>
+                                   <field name='multiple_code'/>
+                                <field name="multiple_name"/>
+                                <field name="scheduled_for"/>
+                                <field name="min_weeks"/>
+                                <field name="max_weeks"/>
+                                <group colspan="2">
+                                    <button icon='gtk-ok' name="dynamic_call_create_schedule_model" string="CREATE SCHEDULE" type="object" class="oe_highlight"/>
+                                </group>
+                               <group col="4" colspan="2">
+                                    <field name="code" />
+                                    <newline/>
+                                    <field name="allocating_times"/>
+                                    <newline/>
+                                    <field name="scheduled"/>
+                                    <newline/>
+                                    <field name="from_date" />
+                                    <field name="to_date" />
+                                </group>
+                            </group>
+                       </group>
+                    </sheet>
 
-                    <group col="4" colspan="4">
-                        <field name="code" />
-                        <newline/>
-                        <field name="allocating_times"/>
-                        <newline/>
-                        <field name="scheduled"/>
-                        <newline/>
-                        <field name="from_date" />
-                        <field name="to_date" />
-                    </group>
 
                     <separator string="SCHEDULE ALLOCATION FIRST WEEK " />
 

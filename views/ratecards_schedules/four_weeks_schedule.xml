@@ -8,10 +8,13 @@
                 <form string="SCHEDULING">
 
                     <group col="4" colspan="4">
+                        <group col="4" colspan="4">
                         <newline/>
-                        <field name="allocating_times"/>
+                        <field name="code"/>
                         <newline/>
-                        <field name="scheduled"/>
+                        <field name="scheduled_for" />
+                       </group>
+                        <newline/>
                         <newline/>
                         <field name="from_date" />
                         <field name="to_date" />
@@ -99,7 +102,8 @@
             <field name="model">four.weeks.schedule</field>
             <field name="arch" type="xml">
                 <tree string="SCHEDULE RATECARDS">
-                        <field name="scheduled"/>
+                       <field name="code"/>
+                        <field name="scheduled_for"/>
                         <field name="from_date" />
                         <field name="to_date" />
                 </tree>

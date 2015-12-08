@@ -13,7 +13,10 @@
                                 help="If a sale order is done, you cannot modify it manually anymore. However, you will still be able to invoice or deliver. This is used to freeze the sale order."/>
                                 <field name="state" widget="statusbar" statusbar_visible="draft,sent,sale,done"/>
                         </header>
-                        <group colspan="2" col="2">
+                        <group colspan="3" col="1">
+                            <button name="action_four_weeks_schedule_form" type="object" string="CREATE RATECARD SCHEDULE" class="oe_highlight" />
+                            <button name="%(action_passed_context)d"  string="ACTION PASSED CONTEXT" type="action" icon="gtk-ok"  context="{'scheduled_for':'scheduled_for'}" />
+                            <button name="creates" string="PASSED CONTEXT" type="object"/>
                             <!--<button name="ratecard_multiple_print" class="oe_highlight" string="Print Receipt" type="object" />-->
                             <button name="%(action_ratecards_scheduler)d"  string="RATECARD SCHEDULE RND" type="action" icon="gtk-ok"  context="{'return':'return'}" />
 
@@ -40,8 +43,8 @@
                                                       </group>
                                                 <field name='multiple_ratecard_id' nolabel="1" options="{'reload_on_button': true}">  <!-- widget="many2many"-->
                                                 <tree  string="ALLOCATE SPOTS" editable="bottom" >
-                                                    <button name="action_four_weeks_schedule_form" string="RATECARDS SCHEDULE"
-                                type="object"/>
+                                                    <button name="action_four_weeks_schedule_form" type="object" string="CREATE RATECARD SCHEDULE" class="oe_highlight" />
+
                                                                     <!--<field name="week_id" widget="one2many_list"/>-->
                                                     <!--<button type="action" icon="fa-pencil-square-o"  class="oe_stat_button">-->
                                                            <!--<button name="dynamic_call_create_schedule_model" string="SCHEDULE" type="object" context="{-->
@@ -50,6 +53,7 @@
                                                            <!--'search_default_multiple_ratecard_id':name-->
                                                                 <!--}" class="oe_highlight oe_highlight"/>-->
                                                        <!--</button>-->
+                                                                  <field name="radio_scheduled_for"/>
                                                                    <field name="code"/>
                                                                     <field name="name"/>
                                                                     <field name="outlet_id" on_change="onchange_outlet(outlet_id)" placeholder="OUTLET"/>

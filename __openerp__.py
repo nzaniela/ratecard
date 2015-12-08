@@ -12,6 +12,7 @@
     'depends': ['product','sale'],
     'data': [
         #Entry
+        'views/ratecards_schedules/passed_context.xml',
         'views/product_template.xml',
         'views/res_partner.xml',
         'views/rag_defaults_outlet.xml',

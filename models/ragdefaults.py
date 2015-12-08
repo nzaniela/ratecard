@@ -1068,93 +1068,26 @@ class ratecard_sin_radio(models.Model):
 
         return res
 
-    @api.multi
-    @api.depends('ratecard_multiple_id.scheduled_for')
-    def action_four_weeks_schedule_form(self):
-        res = {}
-        ids = self._ids
-        cr = self._cr
-        uid = self._uid
-        context = self._context.copy()
-        schedule_for = {}
-        schedule_for = 3
-        for  order  in  self:
-            print '################# ' ,  order.id
-            print  '######' , order.code
-            for  lineitems  in  order:
-                print '################# ' ,  lineitems.id
-                print '################# ' ,  lineitems.code
-                print  '################' , lineitems.ratecard_multiple_id.code
-                print '#################' , lineitems.ratecard_multiple_id.scheduled_for
-                for  line  in  lineitems:
-                    print '################# ' ,  line.id
-                    print '################# ' ,  line.code
-                    print  '################' , line.ratecard_multiple_id.code
-                    print '#################' , line.ratecard_multiple_id.scheduled_for
+    def action_four_weeks_schedule_form(self,cr,uid,ids,context):
+        for id in ids:
+            order_obj = self.pool.get('ratecard.multiple').browse(cr,uid,id)
+            my_id=int(order_obj.id)
+        scheduled_for= order_obj.scheduled_for
+        code= order_obj.code
+        return {
+            'name':_("Four  Week Schedule to Process"),
+            'view_mode': 'form',
+            'view_id': False,
+            'view_type': 'form',
+            'res_model': 'four.weeks.schedule',
+            'context':{'default_scheduled_for':scheduled_for,'default_code':code},
+            'type': 'ir.actions.act_window',
+            'nodestroy': True,
+            'target': 'new',
+            'domain': '[]',
+            'flags': {'form': {'action_buttons': True}}
 
-
-        order_obj = self.env['ratecard.multiple']
-        order_obj_ids  = order_obj.browse(self._context.get('active_ids'))
-        for  order  in  order_obj_ids:
-            print  'Record  id  ' , order.id
-            print  'SCHEDULED FOR  ' , order.scheduled_for
-        print  '****************  RATECARD MULTIPLE' , order_obj
-        # for  lineitems in  self:
-        #     print lineitems._columns
-        #     print  lineitems.id
-        #     print  lineitems.name
-        #     print lineitems.code
-
-        for  line  in  self:
-            print  "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-            print   '@@@@ NAME' ,    line.name
-            print   '@@@@ CODE' ,    line.code
-            print   '@@@@ Outlet' ,  line.outlet_id.name
-            print   '@@@@ Outlet Type' ,  line.outlet_type_id
-            print   '@@@@ Ad Type' ,  line.ad_type_id
-            print   '@@@@ Schedule Type' ,  line.schedule_type_id
-            print   '@@@@ Timeband Type' ,  line.timeband_id
-            print   '@@@@ Spot Length' ,  line.spot_length_id
-            print   '@@@@ RateClass Code' ,  line.rateclass_code_id
-            print   '@@@@ Payment Terms' ,  line.payment_terms_id
-            print   '@@@@ Rate ID' ,  line.rate_id
-            print   '&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&  '
-            print   '%%%%%%  RATECARD WEEKS SCHEDULE'
-            print   '@@@@ Monday' ,  line.monday
-            print   '@@@@ Tuesday' ,  line.tuesday
-            print   '@@@@ Wednesday' ,  line.wednesday
-            print   '@@@@ Thursday' ,  line.thursday
-            print   '@@@@ Friday' ,  line.friday
-            print   '@@@@ Saturday' ,  line.saturday
-            print   '@@@@ Sunday' ,  line.sunday
-            print   "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-            context.update({
-                'default_code': line.code,
-                'default_name': line.name,
-                'default_reference': line.name,
-                'close_after_process': True,
-                'default_res_id': line.ids[0],
-                'ratecard_sin_radio_id': self.id,
-                'type': 'code',
-            })
-
-            view_id = self.env.ref('ragtimeorder.view_three_weeks_schedule_form').id
-            form_id = self.env.ref('ragtimeorder.view_three_weeks_schedule_form').id
-            tree_id = self.env.ref('ragtimeorder.view_three_weeks_schedule_tree').id
-            return  {
-                'name': _('THREE WEEKS SCHEDULE FOR  RATECARD'),
-                'view_type': 'form',
-                'view_mode': 'form',
-                'views': [(view_id, 'form'), ],
-                'res_model': 'three.weeks.schedule',
-                #  'res_id':self.id,
-                'type': 'ir.actions.act_window',
-                'nodestroy': True,
-                'target': 'new',
-                'domain': '[]',
-                'context': context,
-                'flags': {'form': {'action_buttons': True}}
-            }
+        }
 
     @api.multi
     def dynamic_call_create_schedule_model(self):
@@ -1373,7 +1306,9 @@ class ratecard_sin_radio(models.Model):
     friday = fields.Integer(string='FRI', track_visibility='always', store=True)
     saturday = fields.Integer(string='SAT', track_visibility='always', store=True)
     sunday = fields.Integer(string='SUN', track_visibility='always', store=True)
-    noofweeks = fields.Integer(string="WEEKS", default=1, store=True, track_visibility='always')
+    noofweeks = fields.Integer( _compute='_onchange_scheduled_for_noofweeks' , string="WEEKS",  store=True, track_visibility='always')
+    scheduled_for = fields.Integer(string="SCHEDULED FOR", _compute='_onchange_scheduled_for_noofweeks', store=True, track_visibility='always')
+
 
     # compute='_noofweeks',
     spot_total = fields.Integer(compute='_compute_totalspots', string='SPOTS', track_visibility='always', readonly=True,
@@ -1381,21 +1316,38 @@ class ratecard_sin_radio(models.Model):
     allocate_subtotal = fields.Integer(compute='_compute_spotrateweektotal', string='SPOTS WEEKS TOTAL', readonly=True,
                                        store=True)
 
-    #
-    # multiple_ratecard_id = fields.Many2one(comodel_name='ratecard.multiple',string='MULTIPLE RATECARD')
-    #
-    @api.onchange('multiple_ratecard_id.scheduled_for', 'noofweeks')
-    def _onchange_scheduled_for_noofweeks(self):
-        self.multiple_ratecard_id.scheduled_for = 0
-        self.noofweeks = self.multiple_ratecard_id.scheduled_for
-        print 'self.multiple_ratecard_id.scheduled_for', self.multiple_ratecard_id.scheduled_for
-        for line in self:
-            print 'I  HAVE  BEEN  CALLED '
-            print 'noofweeks ', line.noofweeks
-            for lineitems in line.multiple_ratecard_id:
-                line.noofweeks = lineitems.scheduled_for
-                print 'lineitems.scheduled_for', lineitems.scheduled_for
-                print 'line.noofweeks', line.noofweeks
+    radio_scheduled_for =  fields.Integer(compute = 'daniel_scheduled_for' , string='SCHEDULED FOR ')
+    multiple_ratecard_id = fields.Many2one(comodel_name='ratecard.multiple',string='MULTIPLE RATECARD')
+
+    @api.one
+    @api.onchange('multiple_ratecard_id', 'scheduled_for')
+    @api.depends('multiple_ratecard_id', 'scheduled_for')
+    def daniel_scheduled_for(self):
+        k  = 0
+        print    ' self.multiple_ratecard_id.scheduled_for' ,self.multiple_ratecard_id.scheduled_for
+        self.radio_scheduled_for = self.multiple_ratecard_id.scheduled_for
+        print  'RADIO  SCHEDULED FOR ' , self.radio_scheduled_for
+        for  order  in  self:
+            print 'Orders  are  Equal  to  ' , order.id
+            print  'NAME OF SCHEDULED  FOR  ' , order.code
+            print    ' self.multiple_ratecard_id.scheduled_for' ,order.scheduled_for
+            k = order.scheduled_for
+
+        order.update({
+            'radio_scheduled_for': k,
+        })
+
+        print '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'
+        # self.noofweeks  = 0
+        # for  line  in  self:
+        #     print  '%$$$$$$$$$$$$$$$$$$$$$%%%%%  MULTIPLE RATECARD ID   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'
+        #     print  '&&&&&&&&   RADIO  SINGULAR  ' , line._columns
+        #     print   '{}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}]   ' ,  line.code
+        #     print  '^^^^^^^^^^^^^^^ ' , line.name
+        #     print  '@@@@@@@@@@@@@' , line.code
+        #     print  '@@@@@@@@@@@@@' , line.scheduled_for
+        #     self.noofweeks = line.scheduled_for
+        # print  '%%%%%%%% loaded Successfully %%%%%'
 
     @api.one
     @api.depends('sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday')
@@ -1608,6 +1560,7 @@ class ratecard_multiple(models.Model):
     description = fields.Text('Description', translate=True)
     logo = fields.Binary('Logo File')
     product_ids = fields.One2many('product.template', 'ratecard_multiple_id', string='RateCard Multiple', )
+    three_weeks_scedule = fields.One2many(comodel_name='three.weeks.schedule' ,inverse_name='ratecard_multiple_id',string='Three Weeks Schedule')
 
     products_count = fields.Integer(string='Number of products', compute='_get_products_count', )
 
@@ -1619,32 +1572,27 @@ class ratecard_multiple(models.Model):
         names  = [self.name , self.code]
         self.display_name = '/'.join(filter(None,names))
 
-    @api.multi
-    def action_four_weeks_schedule_form(self):
-        self.ensure_one()
-        res = {}
-        ids = self._ids
-        cr = self._cr
-        uid = self._uid
-        context = self._context.copy()
-        if context is None: context = {}
-        if context.get('active_model') != self._name:
-            context.update(active_ids=ids, active_model=self._name)
-        partial_id = self.pool.get("four.weeks.schedule").create(
-            cr, uid, {}, context=context)
-        return {
-            'name':_("Four  Week Schedule to Process"),
-            'view_mode': 'form',
-            'view_id': False,
-            'view_type': 'form',
-            'res_model': 'four.weeks.schedule',
-            'res_id': partial_id,
-            'type': 'ir.actions.act_window',
-            'nodestroy': True,
-            'target': 'new',
-            'domain': '[]',
-            'context': context
-        }
+
+
+    def creates(self,cr,uid,ids,context):
+        for id in ids:
+            order_obj = self.pool.get('ratecard.multiple').browse(cr,uid,id)
+            my_id=int(order_obj.id)
+        scheduled_for= order_obj.scheduled_for
+        code= order_obj.code
+        return{
+              'view_type': 'form',
+              'view_mode': 'form',
+              'res_model': 'passed.context',
+              'context':{'default_scheduled_for':scheduled_for,'default_code':code},
+              'type': 'ir.actions.act_window',
+              'nodestroy':True,
+              'target': 'new',
+              'flags': {'form': {'action_buttons': True}}
+              }
+
+
+
 
     @api.one
     @api.depends('product_ids')
@@ -3061,10 +3009,15 @@ class TwoWeeksSchedule(models.Model):
             'target': 'new',
             'flags': {'action_buttons': True},
         }
-
+class passedContext(models.Model):
+    _name = 'passed.context'
+    code = fields.Char(  string='Multiple RateCard Code ',)
+    scheduled_for = fields.Integer(string='SCHEDULED FOR', track_visibility='always', store=True)
 
 class ThreeWeeksSchedule(models.Model):
     _name = 'three.weeks.schedule'
+
+
     code  =  fields.Many2one(comodel_name='ratecard.sin.radio',string=' LINKING SINGULAR RATECARD CODE')
     scheduled = fields.Integer(string='SCHEDULED')
     my_field = fields.Integer(string='VALUE PASSED')
@@ -3114,6 +3067,220 @@ class ThreeWeeksSchedule(models.Model):
 
     third_total_spot = fields.Integer(compute='compute_third_spotrateweektotal', string='SUBTOTAL', readonly=True,
                                       store=True)
+
+    display_name  = fields.Many2one(comodel_name='ratecard.multiple' , string='MULTIPLE RATECARD')
+    ratecard_multiple_id  =  fields.Many2one(comodel_name='ratecard.multiple',string='THREE WEEKS')
+
+    multiple_name = fields.Char(compute='fetch_parameters'  ,string='Multiple RateCard Product  Name ', required=True)
+    multiple_code = fields.Char( compute='fetch_parameters'  , string='Multiple RateCard Code ',)
+    scheduled_for = fields.Integer( compute='fetch_parameters'  , string='SCHEDULED FOR', track_visibility='always', store=True)
+    min_weeks = fields.Integer( compute='fetch_parameters'  , string="MINIMUM NO OF WEEKS",  store=True)
+    max_weeks = fields.Integer( compute='fetch_parameters'  , string="Maximum NO OF WEEKS", track_visibility='always', store=True)
+
+
+
+    @api.depends('ratecard_multiple_id.scheduled_for')
+    def  fetch_parameters(self):
+        for  k  in  self:
+            print 'k', k
+            print  'k code' ,  k.code
+        for order in self.ratecard_multiple_id:
+            print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+            print  '%%% Multiple Ratecard Scheduled For', order.scheduled_for
+            print  '%%% Multiple Ratecard NAME', order.name
+            print  '%%% Multiple Ratecard CODE', order.code
+            print  '%%% Multiple Minimum  Weeks', order.min_weeks
+            print  '%%% Multiple Ratecard Maximum Weeks', order.max_weeks
+            print  "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+            print  '%%% CONTENTS  OF  RATECARD  MULTIPLE' , order.multiple_ratecard_id[:]
+            print  "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+        order.update({
+                'multiple_name': order.name,
+                'multiple_code': order.code,
+                'min_weeks': order.min_weeks,
+                'max_weeks': order.max_weeks,
+
+
+            })
+
+
+    @api.multi
+    def dynamic_call_create_schedule_model(self):
+        self.ensure_one()
+        res = {}
+        ids = self._ids
+        cr = self._cr
+        uid = self._uid
+       # context = self._context.copy()
+        context = self._context
+        # context.update({
+        #     'default_code': self.code,
+        #     'default_name': self.name,
+        #     'default_reference': self.name,
+        #     'close_after_process': True,
+        #     'ratecard_multiple_id': self.id,
+        #     'default_company_id': self.company_id.id,
+        #     'type': 'code',
+        #     })
+        rate_mul = self.pool.get['ratecard.multiple'].browse(cr, uid, ids)
+
+        order_obj = self.env['ratecard.multiple'].search([('id', 'in', ids)])
+        for  k  in  order_obj:
+            print 'k', k
+            print  'k code' ,  k.order.code
+        print  'OBJECTS  IN  RATECARD.MULTIPLE ' , rate_mul
+        active_ids = context.get('active_ids')
+        for order in rate_mul:
+            print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+            print  '%%% Multiple Ratecard Scheduled For', order.scheduled_for
+            print  '%%% Multiple Ratecard NAME', order.name
+            print  '%%% Multiple Ratecard CODE', order.code
+            print  '%%% Multiple Minimum  Weeks', order.min_weeks
+            print  '%%% Multiple Ratecard Maximum Weeks', order.max_weeks
+            print  "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+            print  '%%% CONTENTS  OF  RATECARD  MULTIPLE' , order.multiple_ratecard_id[:]
+            print  "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+            for  line  in  order.multiple_ratecard_id:
+                print  "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+                print   '@@@@ NAME' ,    line.name
+                print   '@@@@ CODE' ,    line.code
+                print   '@@@@ Outlet' ,  line.outlet_id.name
+                print   '@@@@ Outlet Type' ,  line.outlet_type_id
+                print   '@@@@ Ad Type' ,  line.ad_type_id
+                print   '@@@@ Schedule Type' ,  line.schedule_type_id
+                print   '@@@@ Timeband Type' ,  line.timeband_id
+                print   '@@@@ Spot Length' ,  line.spot_length_id
+                print   '@@@@ RateClass Code' ,  line.rateclass_code_id
+                print   '@@@@ Payment Terms' ,  line.payment_terms_id
+                print   '@@@@ Rate ID' ,  line.rate_id
+                print   '&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&  '
+                print   '%%%%%%  RATECARD WEEKS SCHEDULE'
+                print   '@@@@ Monday' ,  line.monday
+                print   '@@@@ Tuesday' ,  line.tuesday
+                print   '@@@@ Wednesday' ,  line.wednesday
+                print   '@@@@ Thursday' ,  line.thursday
+                print   '@@@@ Friday' ,  line.friday
+                print   '@@@@ Saturday' ,  line.saturday
+                print   '@@@@ Sunday' ,  line.sunday
+                print   "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+            context.update({
+                'default_code': order.code,
+                'default_name': order.name,
+                'default_reference': order.name,
+                'close_after_process': True,
+                'default_res_id': order.ids[0],
+                'ratecard_multiple_id': self.id,
+                'type': 'code',
+            })
+
+            if order.scheduled_for == 5:
+                view_id = self.env.ref('ragtimeorder.view_week_form').id
+                #	context = self._context.copy()
+                res = {
+                    'name': _('SCHEDULE RATECARD'),
+                    'view_type': 'form',
+                    'view_mode': 'form',
+                    'views': [(view_id, 'form'), ],
+                    'res_model': 'week',
+                    # 'context': self._context,
+                    'type': 'ir.actions.act_window',
+                    'target': 'new',
+                    'flags': {'action_buttons': True},
+
+                }
+            elif order.scheduled_for == 2:
+                view_id = self.env.ref('ragtimeorder.view_two_weeks_schedule_form').id
+                form_id = self.env.ref('ragtimeorder.view_two_weeks_schedule_form').id
+                tree_id = self.env.ref('ragtimeorder.view_two_weeks_schedule_tree').id
+                res = {
+                    'name': _('TWO WEEKS SCHEDULE FOR  RATECARD'),
+                    'view_type': 'form',
+                    'view_mode': 'form',
+                    'views': [(view_id, 'form'), ],
+                    'res_model': 'two.weeks.schedule',
+                    #  'res_id':self.id,
+                    'type': 'ir.actions.act_window',
+                    'nodestroy': True,
+                    'target': 'new',
+                    'domain': '[]',
+                    'context': context,
+                    'flags': {'form': {'action_buttons': True}}
+
+                }
+            elif order.scheduled_for == 3:
+                view_id = self.env.ref('ragtimeorder.view_three_weeks_schedule_form').id
+                form_id = self.env.ref('ragtimeorder.view_three_weeks_schedule_form').id
+                tree_id = self.env.ref('ragtimeorder.view_three_weeks_schedule_tree').id
+                res = {
+                    'name': _('THREE WEEKS SCHEDULE FOR  RATECARD'),
+                    'view_type': 'form',
+                    'view_mode': 'form',
+                    'views': [(view_id, 'form'), ],
+                    'res_model': 'three.weeks.schedule',
+                    #  'res_id':self.id,
+                    'type': 'ir.actions.act_window',
+                    'nodestroy': True,
+                    'target': 'new',
+                    'domain': '[]',
+                    'context': context,
+                    'flags': {'form': {'action_buttons': True}}
+
+                }
+            elif order.scheduled_for == 4:
+                view_id = self.env.ref('ragtimeorder.view_four_weeks_schedule_form').id
+                form_id = self.env.ref('ragtimeorder.view_four_weeks_schedule_form').id
+                tree_id = self.env.ref('ragtimeorder.view_four_weeks_schedule_tree').id
+                res = {
+                    'name': _('FOUR WEEKS SCHEDULE FOR  RATECARD'),
+                    'view_type': 'form',
+                    'view_mode': 'form',
+                    'views': [(view_id, 'form'), ],
+                    'res_model': 'four.weeks.schedule',
+                    #  'res_id':self.id,
+                    'type': 'ir.actions.act_window',
+                    'nodestroy': True,
+                    'target': 'new',
+                    'domain': '[]',
+                    'context': context,
+                    'flags': {'form': {'action_buttons': True}}
+
+                }
+            elif order.scheduled_for == 1:
+                view_id = self.env.ref('ragtimeorder.view_one_week_schedule_form').id
+                form_id = self.env.ref('ragtimeorder.view_one_week_schedule_form').id
+                tree_id = self.env.ref('ragtimeorder.view_one_week_schedule_tree').id
+                res = {
+                    'name': _('ONE WEEK SCHEDULE FOR  RATECARD'),
+                    'view_type': 'form',
+                    'view_mode': 'form',
+                    'views': [(view_id, 'form'), ],
+                    'res_model': 'one.week.schedule',
+                    #  'res_id':self.id,
+                    'type': 'ir.actions.act_window',
+                    'nodestroy': True,
+                    'target': 'new',
+                    'domain': '[]',
+                    'context': context,
+                    'flags': {'form': {'action_buttons': True}}
+
+                }
+            else:
+
+                view_obj = self.pool.get('ir.ui.view')
+                view_id = view_obj.search(cr, uid, [('model', '=', self._name), \
+                                                    ('name', '=', self._name + '.view')])
+                res = {
+                    'view_mode': 'form',
+                    'view_type': 'form',
+                    'view_id': view_id or False,
+                    'res_model': self._name,
+                    'context': context,
+                    'type': 'ir.actions.act_window',
+                    'target': 'new',
+                    'flags': {'form': {'action_buttons': True}}
+
+                }
+        return res
 
     @api.one
     @api.depends('sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday')
@@ -3200,18 +3367,12 @@ class ThreeWeeksSchedule(models.Model):
 class FourWeeksSchedule(models.Model):
     _name = 'four.weeks.schedule'
 
-    scheduled = fields.Integer(string='SCHEDULED')
-    my_field = fields.Integer(string='VALUE PASSED')
+    code = fields.Char(  string='Multiple RateCard Code ',)
+    scheduled_for = fields.Integer(string='SCHEDULED FOR', track_visibility='always', store=True)
     from_date = fields.Date(
         'From Date', required=True, default=lambda self: fields.Date.today())
     to_date = fields.Date(
         'To Date', required=True, default=lambda self: fields.Date.today())
-
-    allocating_times = fields.Boolean('ALLOCATING TIMES', copy=False)
-
-    _defaults = {
-        'allocating_times': lambda *a: False,
-    }
 
     monday = fields.Integer(string='MON')
     tuesday = fields.Integer(string='TUE')
