@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+                <!--   -->
+        <record id="view_ratecard_singulars_radio_form" model="ir.ui.view">
+            <field name="name">ratecard.singulars.radio</field>
+            <field name="model">ratecard.singulars.radio</field>
+            <field name="arch" type="xml">
+                <form string="RATECARD RADIO SINGULARS">
+                  <sheet>
+                      <group>
+                          <field name="name"/>
+                          <field name='display_name'/>
+                          <field name='code'/>
+                      </group>
+                      <group>
+                          <newline/>
+                          <button icon='gtk-ok' name="creates" string="CREATE SCHEDULE" type="object" class="oe_highlight"/>
+                          <newline/>
+                       </group>
+                  </sheet>
+                    <newline/>
+                        <field name="ratecard_sin_radio_id" widget="one2many_list">
+                            <tree editable="top">
+                                <field name="sequence"    widget="handle"/>
+                                <field name="name"/>
+                                <field name="code"/>
+                                <field name="outlet_id" on_change="onchange_outlet(outlet_id)" placeholder="OUTLET"/>
+                                <field name="outlet_type_id" domain="[('outlet_id', '=' ,outlet_id)]" placeholder="OUTLET TYPE" />
+                                <field name="ad_type_id" placeholder="AD TYPE" />
+                                <field name="schedule_type_id" placeholder="SCHEDULE TYPE"/>
+                                <!--<field name="pages_id" placeholder="PAGES" />-->
+                                <field name="timeband_id" placeholder="TIME BAND" />
+                                <field name="spot_length_id" placeholder="Spot Length" />
+                                <field name="rateclass_code_id" placeholder="RATECLASS CODE" />
+                                <field name="payment_terms_id" placeholder="PAYMENT  TERMS" />
+                                <!--<field name="vat_rate_id" placeholder="VAT RATE " />-->
+                                <!--<field name="quote_stage_id" placeholder="QUOTE  STAGE" />-->
+                                <field name="rate_id" placeholder="TIMEBAND RATE" />
+                            </tree>
+                          </field>
+
+                </form>
+            </field>
+        </record>
+
+        <record id="view_ratecard_singulars_radio_tree" model="ir.ui.view">
+            <field name="name">ratecard.singulars.radio.tree</field>
+            <field name="model">ratecard.singulars.radio</field>
+            <field name="arch" type="xml">
+                <tree string="RATECARD RADIO SINGULARS">
+                    <field name="name"/>
+                    <field name='display_name'/>
+                    <field name='code'/>
+                    <field name="ratecard_sin_radio_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_ratecard_singulars_radio" model="ir.actions.act_window">
+            <field name="name">RATECARD RADIO SINGULARS</field>
+            <field name="res_model">ratecard.singulars.radio</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+         <!-- Sequences for Multiple Ratecard -->
+        <record id="seq_ratecard_singulars_type" model="ir.sequence.type">
+            <field name="name">RATECARD RADIO SINGULARS CODE</field>
+            <field name="code">ratecard.singulars.radio</field>
+        </record>
+
+        <record id="seq_ratecard_singulars_sequence" model="ir.sequence">
+            <field name="name">RATECARD RADIO SINGULARS CODE</field>
+            <field name="code">ratecard.singulars.radio</field>
+            <field name="prefix">RATECARDSINGULARSRADIO/%(year)s/%(month)s/%(day)s/</field>
+            <field name="padding">5</field>
+        </record>
+
+        <menuitem id="timeorder_ratecardsingulars" name="RATECARD SINGULARS" sequence="4" parent ="timeorder_management_menu"/>
+        <menuitem  name="RATECARD RADIO SINGULARS" id="menu_ratecardsingulars"  action="action_ratecard_singulars_radio"  parent="timeorder_ratecardsingulars"/>
+         </data>
+</openerp>

@@ -58,7 +58,7 @@
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
         </record>
-
+        <menuitem id="timeorder_weeks_schedule_menu" name="RATECARDS SCHEDULE" sequence="17" parent ="timeorder_management_menu"/>
         <menuitem  name="ONE SCHEDULE WEEK" id="menu_one_week_schedule"  action="action_one_week_schedule"  parent="timeorder_weeks_schedule_menu"/>
          </data>
 </openerp>

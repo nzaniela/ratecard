@@ -11,6 +11,8 @@
                         <field name="code"/>
                         <newline/>
                         <field name="scheduled_for" />
+                        <button name="find_value"  string="SCHEDULE " type="object" icon="gtk-ok"  />
+
                     </group>
                 </form>
             </field>

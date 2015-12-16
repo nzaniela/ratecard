@@ -121,6 +121,8 @@
                                                   </div>
                                                   <h1>
                                                       <field name="name"/>
+                                                      <button name="action_four_weeks_schedule_form" string="CREATE SCHEDULE" type="object" />
+
                                                   </h1>
                                     </div>
                                   <div class="oe_right oe_button_box">

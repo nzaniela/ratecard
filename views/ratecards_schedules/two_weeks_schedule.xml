@@ -92,7 +92,6 @@
             <field name="view_mode">tree,form</field>
         </record>
 
-          <menuitem id="timeorder_weeks_schedule_menu" name="RATECARDS SCHEDULE" sequence="17" parent ="timeorder_management_menu"/>
         <menuitem  name="SCHEDULE TWO WEEK" id="menu_two_weeks_schedule"  action="action_two_weeks_schedule"  parent="timeorder_weeks_schedule_menu"/>
          </data>
 </openerp>

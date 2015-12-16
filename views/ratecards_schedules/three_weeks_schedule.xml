@@ -10,14 +10,14 @@
                         <group name="group_top">
                             <group name="group_left">
                                 <field name="display_name"/>
-                                   <field name='multiple_code'/>
-                                <field name="multiple_name"/>
-                                <field name="scheduled_for"/>
-                                <field name="min_weeks"/>
-                                <field name="max_weeks"/>
-                                <group colspan="2">
-                                    <button icon='gtk-ok' name="dynamic_call_create_schedule_model" string="CREATE SCHEDULE" type="object" class="oe_highlight"/>
-                                </group>
+                                   <!--<field name='multiple_code'/>-->
+                                <!--<field name="multiple_name"/>-->
+                                <!--<field name="scheduled_for"/>-->
+                                <!--<field name="min_weeks"/>-->
+                                <!--<field name="max_weeks"/>-->
+                                <!--<group colspan="2">-->
+                                    <!--<button icon='gtk-ok' name="dynamic_call_create_schedule_model" string="CREATE SCHEDULE" type="object" class="oe_highlight"/>-->
+                                <!--</group>-->
                                <group col="4" colspan="2">
                                     <field name="code" />
                                     <newline/>

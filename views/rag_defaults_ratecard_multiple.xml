@@ -14,13 +14,13 @@
                                 <field name="state" widget="statusbar" statusbar_visible="draft,sent,sale,done"/>
                         </header>
                         <group colspan="3" col="1">
-                            <button name="action_four_weeks_schedule_form" type="object" string="CREATE RATECARD SCHEDULE" class="oe_highlight" />
-                            <button name="%(action_passed_context)d"  string="ACTION PASSED CONTEXT" type="action" icon="gtk-ok"  context="{'scheduled_for':'scheduled_for'}" />
-                            <button name="creates" string="PASSED CONTEXT" type="object"/>
+                            <!--<button name="action_four_weeks_schedule_form" type="object" string="CREATE RATECARD SCHEDULE" class="oe_highlight" />-->
+                            <!--<button name="%(action_passed_context)d"  string="ACTION PASSED CONTEXT" type="action" icon="gtk-ok"  context="{'scheduled_for':'scheduled_for'}" />-->
+                            <!--<button name="creates" string="PASSED CONTEXT" type="object"/>-->
                             <!--<button name="ratecard_multiple_print" class="oe_highlight" string="Print Receipt" type="object" />-->
-                            <button name="%(action_ratecards_scheduler)d"  string="RATECARD SCHEDULE RND" type="action" icon="gtk-ok"  context="{'return':'return'}" />
-
-                            <button name="%(action_ratecard_rnd)d"  string="RATECARD SCHEDULE RND" type="action" icon="gtk-ok"  context="{'return':'return'}" />
+                            <button name="%(action_ratecards_scheduler)d"  string="RATECARD SCHEDULE TESTING" type="action" icon="gtk-ok"  context="{'return':'return'}" />
+                            <button name="list_scheduled" string="WRITE TO  MANY2MANY" type="object"/>
+                            <!--<button name="%(action_ratecard_rnd)d"  string="RATECARD SCHEDULE RND" type="action" icon="gtk-ok"  context="{'return':'return'}" />-->
                         </group>
 
                                     <group colspan="4"  col="4" >
@@ -38,22 +38,24 @@
                                                     <field name="multiple_ratecard_id_count" widget="statinfo"/>
 
 
+                                                    <notebook colspan="4">
+                                                        <page string="SCHEDULE">
+                                                            <button name="four_weeks_schedule_form"  string="CREATE SCHEDULE FOR RATECARDS" type="object" icon="gtk-ok"  context="{'scheduled_for':'scheduled_for'}" />
+
+                                                         <field colspan="4" name="multiple_ratecard_id" nolabel="1"  widget='many2many_tags'   mode="tree"/>
+                                                        </page>
+                                                    </notebook>
+
+
                                                      <!--<field name="allocate_schedule_count"/>-->
                                                      <!--<field name='company_id'/>-->
                                                       </group>
-                                                <field name='multiple_ratecard_id' nolabel="1" options="{'reload_on_button': true}">  <!-- widget="many2many"-->
+                                                <field name='multiple_ratecard_id' context="{'default_scheduled_for': active_id}" nolabel="1" options="{'reload_on_button': true}">  <!-- widget="many2many"-->
                                                 <tree  string="ALLOCATE SPOTS" editable="bottom" >
-                                                    <button name="action_four_weeks_schedule_form" type="object" string="CREATE RATECARD SCHEDULE" class="oe_highlight" />
+                                                    <field name="radio_scheduled_for" />
+                                                    <field name="update_code"/>
+                                                         <button name="action_four_weeks_schedule_form" string="CREATE SCHEDULE" type="object" />
 
-                                                                    <!--<field name="week_id" widget="one2many_list"/>-->
-                                                    <!--<button type="action" icon="fa-pencil-square-o"  class="oe_stat_button">-->
-                                                           <!--<button name="dynamic_call_create_schedule_model" string="SCHEDULE" type="object" context="{-->
-                                                           <!--'default_code':code,-->
-                                                           <!--'default_name':name,-->
-                                                           <!--'search_default_multiple_ratecard_id':name-->
-                                                                <!--}" class="oe_highlight oe_highlight"/>-->
-                                                       <!--</button>-->
-                                                                  <field name="radio_scheduled_for"/>
                                                                    <field name="code"/>
                                                                     <field name="name"/>
                                                                     <field name="outlet_id" on_change="onchange_outlet(outlet_id)" placeholder="OUTLET"/>

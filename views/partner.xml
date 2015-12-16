@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record id="base_view_partner_form" model="ir.ui.view">
+            <field name="name">openjobs.res.partner.form</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form" />
+            <field name="arch" type="xml">
+                <data>
+                    <notebook position="inside">
+                        <page string="Link Relations">
+                            <field name="m2m_left2right" widget="many2many" />
+                        </page>
+
+                        <page string="RIGHT TO  LEFT Relations">
+                            <field name="m2m_right2left" widget="many2many" />
+                        </page>
+
+
+                        <page string="Relations">
+                            <field name="o2m_left_ids" widget="one2many" >
+                                <tree>
+                                    <field name='property_left2right'/>
+                                    <field name='partner_right_id'/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                 </data>
+            </field>
+        </record>
+
+         <record id="action_many2many" model="ir.actions.act_window">
+            <field name="name">MANY2MANY</field>
+            <field name="res_model">res.partner</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+        </record>
+
+
+        <menuitem  name="MANY2MANY RELATION WITH ATTRIBUTES" id="menu_many2many_relation_attributes"  action="action_many2many"  parent="timeorder_weeks_schedule_menu"/>
+
+    </data>
+</openerp>

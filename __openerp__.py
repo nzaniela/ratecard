@@ -11,16 +11,20 @@
        'license': 'AGPL-3',
     'depends': ['product','sale'],
     'data': [
+
+
+
+
         #Entry
-        'views/ratecards_schedules/passed_context.xml',
-        'views/product_template.xml',
-        'views/res_partner.xml',
+
         'views/rag_defaults_outlet.xml',
         'views/rag_defaults_outlet_type.xml',
         'views/rag_defaults_singulars_quotations.xml',
         # 'views/rag_defaults_multiples_quotations.xml',
-        
-        
+        'views/product_template.xml',
+        'views/res_partner.xml',
+
+
         # 'views/sale_view.xml',
         'views/ratecard_rnd.xml',
         'views/generic_request.xml',
@@ -31,6 +35,20 @@
 
         #RATECARDS SCHEDULING
         'views/ratecards_scheduler/ratecards_scheduler.xml',
+
+            #SCHEDULING
+        'views/ratecards_schedules/one_week_schedule.xml',
+        'views/ratecards_schedules/two_weeks_schedule.xml',
+        'views/ratecards_schedules/three_weeks_schedule.xml',
+        'views/ratecards_schedules/four_weeks_schedule.xml',
+        'views/ratecards_schedules/passed_context.xml',
+
+          #MANY2MANY RELATION DONT  ADD  THIS for  now
+        # 'views/partner.xml',
+
+        'views/ratecard_singulars/ratecard_singulars.xml',
+
+
 
         #
         'views/rag_defaults_timeband.xml',
@@ -65,13 +83,6 @@
         'views/rag_defaults_ratecard_multiple.xml', 
         'views/rag_defaults_ratecard_multiples.xml', 
         'views/rag_defaults_quote_stage.xml',
-
-        #SCHEDULING
-        'views/ratecards_schedules/one_week_schedule.xml',
-        'views/ratecards_schedules/two_weeks_schedule.xml',
-        'views/ratecards_schedules/three_weeks_schedule.xml',
-        'views/ratecards_schedules/four_weeks_schedule.xml',
-
 
 
 
