@@ -1056,11 +1056,38 @@ class ratecard_sin_radio(models.Model):
         uid = self._uid
         context = self._context.copy()
         for id in ids:
-            order_obj = self.pool.get('ratecard.multiple').browse(cr,uid,id)
-            ratecard_multiple_id=int(order_obj.id)
+            order_obj = self.pool.get('ratecard.multiple').browse(cr,uid,ids)[0]
+            ratecard_multiple_id=order_obj.id  #int(order_obj.id)
+            print  '##############################################'
+            print  'ratecard_multiple_id', ratecard_multiple_id
             print  'action_four_weeks_schedule_form ratecard_multiple_id ' , ratecard_multiple_id
+            print  '##################################################################'
+            for  lineitems  in  order_obj.multiple_ratecard_id:
+                print  'Ratecard Codes of  selected  ' , lineitems.code
+                for  ln  in  lineitems:
+                    print  '***************************************'
+                    print  'ratecard singular name' , ln.name
+                    print  'ratecard singular code' ,  ln.code
+                    print  '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
+
+
+            # for line in id:
+            #     line_obj = self.pool.get('ratecard.multiple').browse(cr,uid,ids)[0]
+            #     print  'line_obj contains' , line_obj
+            #     print  '***************************************'
+            #     print  'INNER  LOOP action_four_weeks_schedule_form   scheduled_for ' , line_obj.scheduled_for
+            #     print  ' INNER LOOP action_four_weeks_schedule_form  code ' , line_obj.code
+            #     print  'Can  i  get  code  of  selected   line_obj.multiple_ratecard_id.code  ' , line_obj.multiple_ratecard_id.code
+            #     print  '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
+            #     ratecard_multiple_id=line.id
+            #     print  'inner line_obj  action_four_weeks_schedule_form ratecard_multiple_id ' , ratecard_multiple_id
+
+            # scheduled_for= line_obj.scheduled_for
+            # code= line_obj.code
+
         scheduled_for= order_obj.scheduled_for
         code= order_obj.code
+
         print  'action_four_weeks_schedule_form   scheduled_for ' , scheduled_for
         print  'action_four_weeks_schedule_form  code ' , code
         res = {}
@@ -1157,21 +1184,7 @@ class ratecard_sin_radio(models.Model):
 
             }
         return res
-        #This  is  working
-        # return {
-        #     'name':_("Four  Week Schedule to Process"),
-        #     'view_mode': 'form',
-        #     'view_id': False,
-        #     'view_type': 'form',
-        #     'res_model': 'four.weeks.schedule',
-        #     'context':{'default_scheduled_for':scheduled_for,'default_code':code},
-        #     'type': 'ir.actions.act_window',
-        #     'nodestroy': True,
-        #     'target': 'new',
-        #     'domain': '[]',
-        #     'flags': {'form': {'action_buttons': True}}
-        #
-        # }
+
 
     @api.multi
     def dynamic_call_create_schedule_model(self):
@@ -1726,7 +1739,7 @@ class ratecard_multiple(models.Model):
         print  'ratecard_multiple  Context' , context
         for r in res:
             if r.has_key('name'):
-                r['name'] = 'DANIEL RECORD ***' + r['name']
+                r['name'] = 'RADIOAFRICAPRODUCT' + r['name']
                 #replace line above with replacement value from external database
             res[idx] = r
             idx = idx + 1
