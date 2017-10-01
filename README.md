@@ -1,3 +1,3 @@
-RADIO  AFRICA  GROUP  TIMEORDER  MANAGEMENT MODULE
+RATECARD TIMEORDER  MANAGEMENT MODULE
 ====================================================
 ====================================================
